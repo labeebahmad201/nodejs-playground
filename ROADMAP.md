@@ -12,7 +12,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done
 | #  | Topic                        | Example dirs                 | Status | Notes |
 |----|------------------------------|------------------------------|--------|-------|
 | 1  | Node.js basics               | `1-hello-world`, `2-http-server` | [x] | hello world, minimal http server |
-| 2  | Event loop & async model     | `2-event-loop`               | [ ]    | placeholder |
+| 2  | Event loop & async model     | `5-event-loop`               | [x]    | phases, microtasks, blocking; CJS vs ESM nextTick order |
 | 3  | Modules (ESM / CJS)          | `3-modules`                  | [ ]    | placeholder |
 | 4  | TypeScript setup             | `3-type-checking`, `4-tsc-noemit` | [x] | `tsc --noEmit`, type stripping limits |
 | 5  | Async patterns               | `5-async-patterns`           | [ ]    | promises, AbortController, concurrency limits |
