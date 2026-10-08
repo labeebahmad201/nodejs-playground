@@ -129,6 +129,10 @@ Material used to shape these topics. Reference only — no content is copied int
 - **I/O definitions** (for `7-io`): Wikipedia *Input/output*; IBM z/OS Basic Skills
   *Input and output*; NIST CSRC glossary *Input/Output (I/O)*; Yale CS/Aspnes
   *InputOutput*. Full links in `7-io/README.md`.
+- **Production failure modes** (for the incidents section): Node.js official *Diagnostics*
+  guides (`memory`, `poor-performance`, `live-debugging`, `flame-graphs`, `user-journey`);
+  Node.js *Diagnostic report* API; Node.js core `memory` issues; danluu/post-mortems;
+  hjacobs/kubernetes-failure-stories. Full inline links in that section.
 
 ## Deferred / later
 
@@ -177,9 +181,30 @@ watch the difference. One example dir per incident, each with a README.
 For every incident, reference it properly: source link, author/company, date, and a note
 on what was reproduced verbatim vs. adapted/simplified.
 
-Candidate sources: company engineering blogs/post-mortems, Node.js core issues & PRs,
-conference talks (e.g. Matteo's "Do not thrash the Node.js Event Loop"), npm/registry
-incidents. Candidate failure modes to hunt for:
+Sources to draw incidents and failure modes from (authoritative first — every incident
+must cite its source, author/company and date):
+
+- **Node.js official diagnostics guides** — canonical failure modes with *symptoms* and
+  *side effects*: memory (OOM vs inefficient use) <https://nodejs.org/learn/diagnostics/memory>;
+  poor performance <https://nodejs.org/learn/diagnostics/poor-performance>;
+  live debugging <https://nodejs.org/learn/diagnostics/live-debugging>;
+  flame graphs <https://nodejs.org/learn/diagnostics/flame-graphs>;
+  user journey <https://nodejs.org/learn/diagnostics/user-journey>.
+- **Node.js diagnostic report** (`--report-on-fatalerror`, `process.report`) — captures
+  event-loop state, heap stats, resource usage and system limits at crash time.
+  <https://nodejs.org/api/report.html>.
+- **Node.js core issues** — real, reproducible bugs with repro scripts (`memory` label):
+  <https://github.com/nodejs/node/labels/memory>, e.g.
+  <https://github.com/nodejs/node/issues/58380> (`fetch` response `.text()` leak) and
+  <https://github.com/nodejs/node/issues/54614> (`AbortSignal.any()` leak).
+- **Curated post-mortem collections** — danluu/post-mortems
+  <https://github.com/danluu/post-mortems>; kubernetes-failure-stories
+  <https://github.com/hjacobs/kubernetes-failure-stories> (K8s/Node deployment failures).
+- **Talks / book** — Matteo Collina, *Do not thrash the Node.js Event Loop*
+  <https://www.youtube.com/watch?v=81AqwvXqgG0>; *The Definitive Guide for Node.js in
+  Enterprise* ch. 7 (resilience).
+
+Candidate failure modes to hunt for:
 
 - [ ] Event loop blocked by sync work (`JSON.parse`, sync `fs`/crypto) → latency spike
 - [ ] libuv threadpool starvation (`fs`/`dns`/`zlib`/`crypto`, `UV_THREADPOOL_SIZE`)
