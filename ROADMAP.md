@@ -69,6 +69,13 @@ Material used to shape these topics. Reference only — no content is copied int
 - Platformatic / Watt hands-on (commercial — optional).
 - Event-loop delay & utilization deep-dive using `perf_hooks` (`monitorEventLoopDelay`,
   `performance.eventLoopUtilization`) — book Appendix A.
+- Monitoring: instrument the **event loop**, the **app** (latency, throughput, errors,
+  ops/sec), and **garbage collection** (`PerformanceObserver` GC entries, `--trace-gc`,
+  `v8.getHeapStatistics`).
+- GC vs memory leak: learn to tell them apart. GC is healthy and bounded (sawtooth heap
+  that recovers); a leak is unbounded (heap baseline rises and never returns). Cover the
+  signals — heap-used trend, `--expose-gc` + `gc()`, heap snapshots / `--inspect`, and
+  `process.memoryUsage()` — and how to distinguish a live-body signal from a transient spike.
 - Streams vs `async` iteration for large payloads.
 
 ### I/O modules to cover (examples later)
