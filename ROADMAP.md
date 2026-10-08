@@ -97,6 +97,28 @@ One small example per `node:` module that performs I/O — tick off as built.
 
 (Which use the OS event queue vs libuv's threadpool: see `7-io/README.md`.)
 
+### Production incidents to reproduce (examples later)
+
+Find **real** Node.js production incidents and post-mortems from the internet, rebuild a
+minimal reproduction locally, make the failure happen, then apply the documented fix and
+watch the difference. One example dir per incident, each with a README.
+
+For every incident, reference it properly: source link, author/company, date, and a note
+on what was reproduced verbatim vs. adapted/simplified.
+
+Candidate sources: company engineering blogs/post-mortems, Node.js core issues & PRs,
+conference talks (e.g. Matteo's "Do not thrash the Node.js Event Loop"), npm/registry
+incidents. Candidate failure modes to hunt for:
+
+- [ ] Event loop blocked by sync work (`JSON.parse`, sync `fs`/crypto) → latency spike
+- [ ] libuv threadpool starvation (`fs`/`dns`/`zlib`/`crypto`, `UV_THREADPOOL_SIZE`)
+- [ ] Unbounded in-memory cache / listener leak → OOM or growing RSS
+- [ ] Unhandled promise rejection / uncaught exception crashing the process
+- [ ] File-descriptor / socket leak (missing `close`/destroy)
+- [ ] DB / connection-pool exhaustion under load
+- [ ] ReDoS via catastrophic regex backtracking
+- [ ] Backpressure ignored on a `stream`/socket → memory growth
+
 ## How to add a topic
 
 1. Pick the next example number and name the directory `{n}-{name}`.
