@@ -71,6 +71,25 @@ Material used to shape these topics. Reference only — no content is copied int
   `performance.eventLoopUtilization`) — book Appendix A.
 - Streams vs `async` iteration for large payloads.
 
+### I/O modules to cover (examples later)
+
+One small example per `node:` module that performs I/O — tick off as built.
+
+- [ ] `node:fs` — files (callback / sync / `fs.promises` / streams)
+- [ ] `node:net` — TCP & Unix sockets
+- [ ] `node:http`, `node:https`, `node:http2` — web
+- [ ] `node:dgram` — UDP
+- [ ] `node:dns` — name resolution
+- [ ] `node:child_process` — `spawn` / `exec`
+- [ ] `node:zlib` — compression (threadpool)
+- [ ] `node:crypto` — async crypto ops (threadpool)
+- [ ] `node:tls` — TLS sockets
+- [ ] `node:stream`, `node:readline`, `readline/promises` — streaming I/O
+- [ ] `node:worker_threads` — message passing
+- [ ] `process` — stdin / stdout / stderr
+
+(Which use the OS event queue vs libuv's threadpool: see `7-io/README.md`.)
+
 ## How to add a topic
 
 1. Pick the next example number and name the directory `{n}-{name}`.
