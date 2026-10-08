@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 
-const port = Number(process.env.PORT ?? 3000);
+const port = Number(process.env.PORT ?? 3005);
 
 const server = createServer((req, res) => {
   res.writeHead(200, { "content-type": "application/json" });
