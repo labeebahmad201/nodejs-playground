@@ -55,18 +55,56 @@ node index.ts
 end`). Then the microtask queues drain (`promise microtask`, `process.nextTick
 microtask`) *before* the `0ms` timer, because a timer must wait for the timers phase.
 
-**2 — `setImmediate` vs `setTimeout` inside I/O.** From a poll-phase I/O callback,
-`setImmediate` (check phase) always runs **before** `setTimeout(…, 0)` (timers phase,
-next loop turn). Outside I/O, the order of these two is not guaranteed.
+**2 — `setImmediate` vs `setTimeout` inside I/O.** The confusing part: timers is at the
+**top** of the loop, yet `setImmediate` (check) runs first here. The reason is *where*
+they're scheduled, not the list order. Both are scheduled from the `readFile` callback,
+which runs in the **poll** phase — already past this lap's timers phase:
+
+```
+iteration N
+  ├─ timers      (already passed — our setTimeout is not here)
+  ├─ pending
+  ├─ poll        ← readFile callback runs; schedules setTimeout + setImmediate
+  ├─ check       ← setImmediate fires   (still ahead this lap)
+  └─ close
+iteration N+1
+  ├─ timers      ← setTimeout fires      (waits for the next lap)
+  └─ ...
+```
+
+`setImmediate` is later in the same cycle; `setTimeout` is in timers, which already
+went by, so it waits for the **next** lap. A 0ms timer is never "now" — it's "the next
+time the timers phase comes around." Outside an I/O callback (e.g. top level), the
+order of these two is not guaranteed at all.
 
 **3 — blocking the loop.** A synchronous busy-wait for 200ms prevents *any* timer from
 firing. The `0ms` timer fires only after the loop is free, ~200ms late. This is why
 CPU-heavy work must be offloaded to `worker_threads` (topic 23) or chunked.
 
+## Why the top-level `await`?
+
+Each of the three steps is wrapped in `await new Promise(...)` — not to use the promise's
+value, but as a **sequencer**. The `await` parks the module (yields back to the event
+loop) until that step's event fires, then resumes with the next step. Without it the
+three demos would schedule their timers at once and their output would interleave.
+Top-level `await` is legal here precisely because the file is ESM.
+
+## Where the ESM/CJS setting comes from
+
+The module system is **not** decided in `index.ts`. Node walks **up** from the file's
+directory to the nearest `package.json` and reads its `"type"` field:
+
+- `"type": "module"` → `.js`/`.ts` are ESM
+- `"type": "commonjs"` (or absent) → `.js`/`.ts` are CJS
+- an explicit `.mjs` / `.cjs` extension overrides the `package.json`
+
+For `5-event-loop/index.ts` that nearest ancestor is the repo-root
+[`package.json`](../package.json), which sets `"type": "module"` — so this file is ESM.
+
 ## Gotcha: `process.nextTick` vs promises is not universal
 
-This playground is **ESM** (`"type": "module"`), so here the *promise* job drains
-before `process.nextTick`. In **CommonJS** the two lines flip:
+Because that root `package.json` sets `"type": "module"`, this file is **ESM**, so here
+the *promise* job drains before `process.nextTick`. In **CommonJS** the two lines flip:
 
 | Module system | Order after sync code |
 |---------------|-----------------------|
