@@ -12,6 +12,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done
 `worker_threads`, the event loop, I/O, performance and limits are thin JS layers over OS
 primitives. Learn these first and the rest reads as obvious. Read before (or alongside)
 topics 2 (event loop), 23 (workers) and 31 (I/O). Every claim below is sourced.
+Example dir: `0-os-fundamentals` (runnable observations for each bullet).
 
 - **Process vs thread** — a process owns memory and at least one thread; threads in one
   process share the address space (so they share memory, which is why data races are even

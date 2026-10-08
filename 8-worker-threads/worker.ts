@@ -25,6 +25,7 @@ export function countPrimes(limit: number): number {
 }
 
 if (parentPort) {
+  console.log('workerData', workerData);
   // We're on a worker thread. Compute and send the result back to the main thread.
   parentPort.postMessage(countPrimes(workerData as number));
 }
