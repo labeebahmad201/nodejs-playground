@@ -33,7 +33,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done
 | 20 | HTTP clients                 | `20-http-clients`            | [ ]    | undici, keep-alive, retries · book ch2 |
 | 21 | App health & observability   | `21-app-health`              | [ ]    | metrics, health checks, OpenTelemetry · book ch7 |
 | 22 | Fault tolerance              | `22-fault-tolerance`         | [ ]    | retries, timeouts, circuit breakers · book ch7 |
-| 23 | Workers & scaling            | `23-workers`                 | [ ]    | worker_threads, cluster · book ch7 (scaling) |
+| 23 | Workers & scaling            | `8-worker-threads`           | [~]    | worker_threads: main vs worker, CPU-bound off the loop; cluster next · book ch7 (scaling) |
 | 24 | Capstone                     | `24-capstone`                | [ ]    | placeholder |
 | 25 | SSR frontends                | `25-ssr`                     | [ ]    | server-side rendering, Next.js · book ch3 |
 | 26 | App architecture & DI        | `26-architecture`            | [ ]    | modularity, dependency injection, monolith→microservices · book ch5 |
@@ -92,7 +92,7 @@ One small example per `node:` module that performs I/O — tick off as built.
 - [ ] `node:crypto` — async crypto ops (threadpool)
 - [ ] `node:tls` — TLS sockets
 - [ ] `node:stream`, `node:readline`, `readline/promises` — streaming I/O
-- [ ] `node:worker_threads` — message passing
+- [x] `node:worker_threads` — message passing (`8-worker-threads`)
 - [ ] `process` — stdin / stdout / stderr
 
 (Which use the OS event queue vs libuv's threadpool: see `7-io/README.md`.)
