@@ -13,7 +13,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done
 |----|------------------------------|------------------------------|--------|-------|
 | 1  | Node.js basics               | `1-hello-world`, `2-http-server` | [x] | hello world, minimal http server · book ch1 |
 | 2  | Event loop & async model     | `5-event-loop`               | [x]    | phases, microtasks, blocking; CJS vs ESM nextTick order · book App. A (delay, utilization) |
-| 3  | Modules (ESM / CJS)          | `6-modules`                  | [x]    | .mjs vs .cjs, package.json "type", interop, import.meta · book ch5 (module mgmt) |
+| 3  | Modules (ESM / CJS)          | `6-modules`, `9-import-meta` | [x]    | .mjs vs .cjs, package.json "type", interop; import.meta (url/filename/dirname/main/resolve) & CJS equivalents · book ch5 (module mgmt) |
 | 4  | TypeScript setup             | `3-type-checking`, `4-tsc-noemit` | [x] | `tsc --noEmit`, type stripping limits · book ch2 |
 | 5  | Async patterns               | `5-async-patterns`           | [ ]    | promises, AbortController, concurrency limits |
 | 6  | Error handling               | `6-error-handling`           | [ ]    | placeholder · book ch2 (meaningful errors/logs) |
