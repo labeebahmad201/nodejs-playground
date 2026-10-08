@@ -44,6 +44,23 @@ console.log(`work: count primes below ${LIMIT.toLocaleString()}\n`);
   const beat = heartbeat();
   const t0 = performance.now();
   const primes = await new Promise<number>((resolve, reject) => {
+    // `new Worker(entryPoint, options)` spawns a NEW OS THREAD and runs `entryPoint`
+    // as its own module, with its own V8 isolate and event loop. It starts immediately
+    // (asynchronously) on construction, so we must attach listeners to hear from it.
+    //
+    // Entry point: `new URL("./worker.ts", import.meta.url)`
+    //   - `import.meta.url` is THIS file's absolute URL, e.g. "file:///.../8-worker-threads/index.ts".
+    //   - `new URL("./worker.ts", <base>)` resolves the sibling path against that base,
+    //     producing an absolute URL to worker.ts. Because it's anchored to this file
+    //     (not the current working directory), it still works no matter where `node` is
+    //     launched from. A bare "./worker.ts" string would be resolved relative to cwd.
+    //   - The `.ts` extension is because we run TypeScript directly via Node's type
+    //     stripping; a compiled project would point at "./worker.js".
+    //
+    // Options: `{ workerData: LIMIT }`
+    //   - `workerData` is the initial value handed to the worker, read there as the
+    //     imported `workerData` binding. It is structured-cloned (a deep COPY), not
+    //     shared — mutating it in the worker does not affect this thread.
     const worker = new Worker(new URL("./worker.ts", import.meta.url), { workerData: LIMIT });
     worker.once("message", resolve);   // result posted back via parentPort
     worker.once("error", reject);
