@@ -12,7 +12,8 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done
 `worker_threads`, the event loop, I/O, performance and limits are thin JS layers over OS
 primitives. Learn these first and the rest reads as obvious. Read before (or alongside)
 topics 2 (event loop), 23 (workers) and 31 (I/O). Every claim below is sourced.
-Example dir: `0-os-fundamentals` (runnable observations for each bullet).
+Example dir: `0-os-fundamentals` (runnable observations for each bullet) and
+`10-request-lifecycle` (watch a request allocate fds/sockets live).
 
 - **Process vs thread** — a process owns memory and at least one thread; threads in one
   process share the address space (so they share memory, which is why data races are even
@@ -105,7 +106,7 @@ Example dir: `0-os-fundamentals` (runnable observations for each bullet).
 | 28 | Orchestration & cloud        | `28-cloud`                   | [ ]    | Kubernetes, serverless, Node-aware scaling signals · book ch6 |
 | 29 | Runtime validation           | `29-validation`              | [ ]    | JSON Schema, Ajv, TypeBox · book ch2 |
 | 30 | Database integration         | `30-database`                | [ ]    | connections, pooling, migrations · book ch2 |
-| 31 | I/O fundamentals             | `7-io`                       | [x]    | input vs output, blocking vs non-blocking; cited refs |
+| 31 | I/O fundamentals             | `7-io`, `10-request-lifecycle` | [x]  | input vs output, blocking vs non-blocking; live fd/socket trace per request; cited refs |
 
 ## Sources / references
 
