@@ -197,6 +197,10 @@ Material used to shape these topics. Reference only — no content is copied int
   that recovers); a leak is unbounded (heap baseline rises and never returns). Cover the
   signals — heap-used trend, `--expose-gc` + `gc()`, heap snapshots / `--inspect`, and
   `process.memoryUsage()` — and how to distinguish a live-body signal from a transient spike.
+- [ ] **Set up GC for apps** — for each application, tune the heap flags
+  (`--max-semi-space-size`, `--max-old-space-size`) against real load, bake the chosen values
+  into the production start command, and monitor GC pause time + event-loop lag. Mechanics and
+  sizing in `15-v8-memory`.
 - Streams vs `async` iteration for large payloads.
 
 ### Per-process metrics to track (observability)
