@@ -201,6 +201,10 @@ Material used to shape these topics. Reference only — no content is copied int
   (`--max-semi-space-size`, `--max-old-space-size`) against real load, bake the chosen values
   into the production start command, and monitor GC pause time + event-loop lag. Mechanics and
   sizing in `15-v8-memory`.
+- [ ] **Common memory leak patterns** — catalog the usual suspects (unbounded caches / `Map`s,
+  event-listener & subscription leaks, timers/closures retaining scope, request-scoped state on
+  module globals, streams not consumed/destroyed, off-heap `Buffer`/native leaks) with a
+  minimal repro + fix for each; detection in `15-v8-memory`.
 - Streams vs `async` iteration for large payloads.
 
 ### Per-process metrics to track (observability)
