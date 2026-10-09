@@ -5,7 +5,7 @@ HTTP server and a client **in one process**, walks through three requests, and p
 each step exactly what the OS allocates: the process's fd-table size, RSS/heap, active
 libuv handles, the server socket's raw fd number, and the kernel's own view via `lsof`.
 
-It turns the abstract diagrams (`0-os-fundamentals/diagrams.md`) into observed numbers.
+It turns the abstract fd/socket model into observed numbers.
 
 ## Run it
 
@@ -96,4 +96,4 @@ connection allocates **nothing new**.
   <https://nodejs.org/api/process.html#processgetactiveresourcesinfo>
 - Node.js, `http` / `net` — <https://nodejs.org/api/http.html>, <https://nodejs.org/api/net.html>
 - `lsof(8)` — <https://man7.org/linux/man-pages/man8/lsof.8.html>
-- fd / socket model — `0-os-fundamentals/diagrams.md` (sections 1 and 4)
+- fd / socket model — `13-sockets`
