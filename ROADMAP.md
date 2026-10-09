@@ -106,7 +106,7 @@ Example dir: `0-os-fundamentals` (runnable observations for each bullet) and
 | 28 | Orchestration & cloud        | `28-cloud`                   | [ ]    | Kubernetes, serverless, Node-aware scaling signals · book ch6 |
 | 29 | Runtime validation           | `29-validation`              | [ ]    | JSON Schema, Ajv, TypeBox · book ch2 |
 | 30 | Database integration         | `30-database`                | [ ]    | connections, pooling, migrations · book ch2 |
-| 31 | I/O fundamentals             | `7-io`, `10-request-lifecycle` | [x]  | input vs output, blocking vs non-blocking; live fd/socket trace per request; cited refs |
+| 31 | I/O fundamentals             | `7-io`, `10-request-lifecycle`, `11-ports` | [x] | input vs output, blocking vs non-blocking; live fd/socket trace; ports (what & why) · cited refs |
 
 ## Sources / references
 
@@ -159,7 +159,7 @@ Material used to shape these topics. Reference only — no content is copied int
 One small example per `node:` module that performs I/O — tick off as built.
 
 - [ ] `node:fs` — files (callback / sync / `fs.promises` / streams)
-- [ ] `node:net` — TCP & Unix sockets
+- [x] `node:net` — TCP & Unix sockets (`11-ports`)
 - [ ] `node:http`, `node:https`, `node:http2` — web
 - [ ] `node:dgram` — UDP
 - [ ] `node:dns` — name resolution

@@ -87,6 +87,7 @@ const get = (port: number, agent: http.Agent, label: string) =>
 
 server.listen(0, "127.0.0.1", async () => {
   const { port } = server.address() as { port: number };
+  console.log('process', process.pid, port);
   log("demo", `server listening on 127.0.0.1:${port} (pid ${process.pid})`);
   log("demo", `baseline  ${snapshot()}`);
   log("demo", `baseline resources: ${resources()}`);
@@ -102,10 +103,10 @@ server.listen(0, "127.0.0.1", async () => {
   // 3: a brand-new agent opens a NEW connection -> a new socket fd.
   await get(port, new http.Agent(), "req 3 (new connection)");
 
-  server.close(() => {
-    log("demo", `after close  ${snapshot()}`);
-    log("demo", `final resources: ${resources()}`);
-  });
+  // server.close(() => {
+  //   log("demo", `after close  ${snapshot()}`);
+  //   log("demo", `final resources: ${resources()}`);
+  // });
 });
 
 // Actual output (fds/ports/addresses vary by machine):
