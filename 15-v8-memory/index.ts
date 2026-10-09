@@ -13,17 +13,21 @@
 //   node --max-semi-space-size=1  index.ts    # tiny young generation
 //
 // Watch `heapTotal` change with --max-semi-space-size; watch `heapUsed` vs
-// `rss` diverge as objects are freed.
+// `rss` diverge as objects are freed; watch the used/total ratio fall after GC.
 
 const MB = (n: number) => (n / 1024 / 1024).toFixed(1).padStart(7) + " MB";
 
 function snapshot(label: string) {
   const m = process.memoryUsage();
+  // used/total: how full the committed heap is. Low = mostly reserved-but-free
+  // (healthy); near 100% = heap nearly full (GC pressure).
+  const ratio = ((m.heapUsed / m.heapTotal) * 100).toFixed(1).padStart(5) + "%";
   console.log(
     `${label.padEnd(26)}` +
       ` rss=${MB(m.rss)}` +
       ` heapTotal=${MB(m.heapTotal)}` +
       ` heapUsed=${MB(m.heapUsed)}` +
+      ` used/total=${ratio}` +
       ` external=${MB(m.external)}`
   );
 }
@@ -41,10 +45,16 @@ for (let i = 0; i < CHUNKS; i++) {
 }
 snapshot("after retaining chunks");
 
-// Drop the references: the memory is now reclaimable.
-retained.length = 0;
+// Drop the references. This doesn't free anything by itself — it just makes the
+// objects unreachable, i.e. eligible for collection. They're still counted in
+// heapUsed until a GC runs.
+// retained.length = 0;
 
-// Force a collection if the runtime allows it (--expose-gc).
+// Force a collection if the runtime allows it. gc() only exists if you run with
+// --expose-gc; TypeScript doesn't know it, so we cast globalThis and call it
+// optionally. With --expose-gc we get a deterministic collection → heapUsed drops
+// to the live set. Without it, no collection is forced, so heapUsed stays at the
+// high value (showing why you can't trust a random snapshot).
 const maybeGc = (globalThis as { gc?: () => void }).gc;
 if (maybeGc) {
   maybeGc();
