@@ -79,6 +79,45 @@ server.on("request", (req, res) => {
 
 That's why "multiple sources" is never ambiguous: **each source = its own connection socket.**
 
+## The lifecycle story: one listener → many sockets → serviced by the event loop
+
+The whole thing as one narrative:
+
+1. **`server.listen(3000)`** → the OS creates **one listening socket**, bound to port 3000,
+   in `LISTEN` state. Node wraps it in the `server` object.
+2. **Client A connects.** The SYN arrives at `server:3000`; the kernel matches it to the
+   **listening socket**, completes the handshake, and creates a **new connection socket**
+   (full 4-tuple), placing it in the accept queue. *The listener itself is untouched and
+   keeps listening.*
+3. **Node accepts.** The listening socket becomes "readable" (connections pending); libuv
+   (Node's event loop) calls `accept()` and gets **connection socket #1**. Node wraps it as a
+   `net.Socket` and registers it with the event loop (`epoll`/`kqueue`). The server emits
+   `'connection'` (and, for HTTP, `'request'`).
+4. **Client B connects** → the same sequence creates **connection socket #2**. Now there are
+   **1 listener + 2 connection sockets**, all on port 3000.
+5. **Data flows.** A packet from Client A → the kernel demuxes by 4-tuple → connection
+   socket #1 becomes readable → `epoll` reports it → **libuv runs the callback for socket #1
+   on the main thread**. Then socket #2's turn, and so on. This is "serviced by Node": the
+   event loop runs whichever connection socket is ready, **one at a time**, on the single
+   thread.
+6. **Close.** When a connection ends, its connection socket is destroyed (fd freed). The
+   **listening socket remains**, ready for the next client.
+
+The mental picture:
+
+```
+                     accept()                epoll says "socket 1 ready"
+[listener @ :3000] ──────────► [conn socket #1] ──────► Node runs its callback
+        │        \                                   (single main thread)
+        │         \ accept()                epoll says "socket 2 ready"
+        │          ─────────► [conn socket #2] ──────► Node runs its callback
+        │  (keeps listening; never carries data)
+```
+
+Key point: **Node doesn't poll or route.** It registers each connection socket with the OS
+(`epoll`/`kqueue`/`IOCP`) and gets told *which ones are ready*; the kernel does the waiting
+and demuxing, the event loop does the work.
+
 ## TCP vs UDP
 
 - **TCP** is connection-oriented: **one socket per connection**. The kernel demuxes by
