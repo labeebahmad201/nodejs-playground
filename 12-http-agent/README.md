@@ -100,7 +100,7 @@ new connection (new fd). `active`/`free` are the agent's live pool counts for th
 ## Why `maxSockets` is the one to care about
 
 - It is your outbound **concurrency limit** — and therefore the cap on **fds / sockets**
-  and ephemeral-port use (see `11-ports` and `10-request-lifecycle`).
+  and ephemeral-port use (see `10-request-lifecycle`).
 - Too high → you exhaust ports/fds and hammer the upstream; too low → requests queue and
   latency balloons. Size it deliberately (usually to the upstream's capacity), not by
   leaving it unbounded.
@@ -120,4 +120,4 @@ new connection (new fd). `active`/`free` are the agent's live pool counts for th
 - Node.js, `http.Agent` — <https://nodejs.org/api/http.html#class-httpagent>
 - Node.js, `new Agent([options])` — <https://nodejs.org/api/http.html#new-agentoptions>
 - Node.js, `http.globalAgent` — <https://nodejs.org/api/http.html#httpglobalagent>
-- Related: `10-request-lifecycle` (fds per connection), `11-ports`
+- Related: `10-request-lifecycle` (fds per connection), `13-sockets`

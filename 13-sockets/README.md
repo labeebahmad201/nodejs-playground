@@ -190,5 +190,5 @@ multiplexes one thread across many sockets.**
 - Dan Kegel, *The C10K problem* — <http://www.kegel.com/c10k.html>
 - libuv, *Design overview* — <https://docs.libuv.org/en/latest/design.html>
 - Beej's Guide to Network Programming — <https://beej.us/guide/bgnet/>
-- Related dirs: `11-ports` (the number), `10-request-lifecycle` (fds per connection),
+- Related dirs: `10-request-lifecycle` (fds per connection),
   `12-http-agent` (socket reuse)
