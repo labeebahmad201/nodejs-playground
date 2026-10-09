@@ -95,7 +95,7 @@ Example dir: `0-os-fundamentals` (runnable observations for each bullet) and
 | 17 | Flaky tests                  | `17-flaky-tests`             | [ ]    | placeholder |
 | 18 | Stuck processes & handles    | `18-stuck-processes`         | [ ]    | placeholder |
 | 19 | HTTP server                  | `19-http-server`             | [ ]    | Fastify, plugins, hooks · book ch2 |
-| 20 | HTTP clients                 | `20-http-clients`            | [ ]    | undici, keep-alive, retries · book ch2 |
+| 20 | HTTP clients                 | `12-http-agent`              | [~]    | http.Agent keep-alive pool, maxSockets & next-socket selection; undici/retries next · book ch2 |
 | 21 | App health & observability   | `21-app-health`              | [ ]    | metrics, health checks, OpenTelemetry · book ch7 |
 | 22 | Fault tolerance              | `22-fault-tolerance`         | [ ]    | retries, timeouts, circuit breakers · book ch7 |
 | 23 | Workers & scaling            | `8-worker-threads`           | [~]    | worker_threads: main vs worker, CPU-bound off the loop; cluster next · book ch7 (scaling) |
