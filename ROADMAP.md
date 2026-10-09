@@ -72,6 +72,47 @@ Example dir: `0-os-fundamentals` (runnable observations for each bullet) and
 | heap / GC | `process.memoryUsage()`, `worker.getHeapStatistics()`, `--max-old-space-size` |
 | rlimits / cgroups | `ulimit`, `resourceLimits`, container limits |
 
+## Scaling checklist (what to worry about)
+
+The practical "so what" of topic 0 + topics 20/23/31. To write scalable Node, manage these,
+in priority order. (Demos: `10-request-lifecycle`, `11-ports`, `12-http-agent`.)
+
+1. **The event loop is one thread — biggest lever.** Never block it (sync `fs`/`crypto`,
+   big `JSON.parse`, catastrophic regex, tight loops). Offload CPU work to `worker_threads`.
+   **Measure** it: `monitorEventLoopDelay` + `eventLoopUtilization` (`perf_hooks`).
+2. **Concurrency ≠ parallelism.** Async I/O = concurrency on one core; only workers/cluster
+   give parallelism. Know which your workload is.
+3. **Connections = sockets = fds, both directions.**
+   - Inbound: each connection = a socket + fd. Raise `ulimit -n`, cap with
+     `server.maxConnections`, use keep-alive, **watch for fd leaks**.
+   - Outbound: pool with a keep-alive `http.Agent`/undici; set **`maxSockets` deliberately**
+     (it's your outbound concurrency + fd + ephemeral-port cap). See `12-http-agent`.
+4. **Memory is more than `heapUsed`.** Respect **backpressure** (streams/`pipeline`,
+   `write()`→`false`); never accumulate unbounded arrays/queues. Unbounded caches,
+   unremoved listeners and timers leak. Distinguish GC sawtooth vs a rising floor. Set
+   `--max-old-space-size`; **watch RSS** (socket buffers/native memory OOM-kill containers).
+5. **libuv threadpool is only 4 threads.** `fs`/`dns`/`zlib`/`crypto` share it; heavy use
+   starves everything (symptom: latency spikes, not CPU). Tune `UV_THREADPOOL_SIZE` or use
+   workers.
+6. **Resilience defaults you must add.** Timeouts on everything (outbound, server, sockets);
+   handle unhandled rejections/exceptions; implement **graceful shutdown** (stop accepting,
+   drain, close on `SIGTERM`); return errors, don't swallow.
+7. **Use all cores.** One process = one core by default → `cluster`, `worker_threads`, or
+   multiple containers/replicas. Size pools to **cores**, not concurrency. Know your splitter
+   (cluster round-robin vs `reusePort` kernel vs LB).
+8. **Observability — you can't scale what you can't see.** Track event-loop lag, **p50/p99
+   latency**, throughput, GC pauses, RSS, open fds, active handles, connection counts.
+9. **The real bottleneck is often elsewhere.** CPU-bound Node tops out ~tens of thousands of
+   trivial req/s per core; the DB/upstream usually breaks first. Pool DB connections, cache,
+   avoid N+1.
+
+**Minimum-viable checklist:** event-loop lag metric · worker/worker-pool for CPU · keep-alive
++ bounded `maxSockets` out · connection cap + raised `ulimit -n` in · backpressure on all
+streams · timeouts everywhere · graceful shutdown · cluster/replicas · RSS + fd dashboards.
+
+If you do only three: **don't block the loop, bound every queue/socket, and measure p99 +
+event-loop lag.**
+
 ## Modules
 
 | #  | Topic                        | Example dirs                 | Status | Notes |
