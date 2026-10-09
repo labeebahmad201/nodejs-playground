@@ -165,6 +165,66 @@ Sources: Node.js *C++ addons* <https://nodejs.org/api/addons.html>, *Node-API*
 
 ---
 
+## 4. Three-level indirection: fd → open file description → file / socket
+
+> Model (classic Unix): a process's **fd table** maps small integers to **open file
+> descriptions** in a system-wide **open file description table**; each description records
+> the file offset, status flags and access mode and points to a kernel object — an
+> **in-core inode** (file) or a **socket** (network fd). Two fds can share one description
+> (`dup`, `fork` → *shared* offset/flags). Two descriptions can share one inode (two
+> `open()`s → *independent* offsets). In-core inodes are loaded from the on-disk inode;
+> sockets exist only in kernel memory. One description points to exactly **one** object.
+
+```mermaid
+graph LR
+    subgraph PROCESS["PROCESS (user space)"]
+        subgraph FDT["per-process file descriptor table"]
+            FD0["fd 0"]
+            FD1["fd 1"]
+            FD2["fd 2"]
+            FD3["fd 3"]
+            FD4["fd 4"]
+        end
+    end
+
+    subgraph KERNEL["KERNEL SPACE (kernel memory)"]
+        subgraph OFT["Open File Description Table (system-wide)"]
+            OFDA["desc A<br/>offset=0 · flags=R · refcount=2"]
+            OFDB["desc B<br/>offset=1024 · flags=W · refcount=1"]
+            OFDC["desc C<br/>offset=0 · flags=RW · refcount=1"]
+        end
+        subgraph INODE["in-core inode table"]
+            INO["inode #42<br/>(file)"]
+        end
+        subgraph SOCK["socket objects"]
+            S1(["TCP socket"])
+        end
+    end
+
+    subgraph DISK["DISK (persistent)"]
+        DINODE[("on-disk inode<br/>+ data blocks")]
+    end
+
+    FD0 --> OFDA
+    FD1 --> OFDB
+    FD2 --> OFDC
+    FD3 --> OFDA
+    FD4 --> OFDA
+    OFDA --> INO
+    OFDB --> INO
+    OFDC --> S1
+    INO -. "loaded from" .-> DINODE
+```
+
+Key points: fd numbers are per-process, descriptions are system-wide (shared by fork/dup),
+and the object behind a description is shared (`dup` → same offset; separate `open` → new
+offset). This is why `dup2`/`fork` share file position but two `open()`s don't. — Linux
+`open(2)` <https://man7.org/linux/man-pages/man2/open.2.html>, `dup(2)`
+<https://man7.org/linux/man-pages/man2/dup.2.html>; Kerrisk, *The Linux Programming
+Interface* ch. 5.
+
+---
+
 ## Official upstream diagrams (canonical)
 
 When you want a diagram that upstream maintains (not ours):
