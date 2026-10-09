@@ -202,7 +202,7 @@ One small example per `node:` module that performs I/O — tick off as built.
 - [ ] `node:fs` — files (callback / sync / `fs.promises` / streams)
 - [x] `node:net` — TCP & Unix sockets (`11-ports`)
 - [ ] `node:http`, `node:https`, `node:http2` — web
-- [x] `node:dgram` — UDP (`13-sockets`)
+- [ ] `node:dgram` — UDP
 - [ ] `node:dns` — name resolution
 - [ ] `node:child_process` — `spawn` / `exec`
 - [ ] `node:zlib` — compression (threadpool)

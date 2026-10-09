@@ -147,13 +147,7 @@ Important corrections to the common story:
 - **Node did not invent this.** Event-driven servers (nginx, 2004) predate Node (2009), and
   Node is **V8 + libuv**, where libuv just wraps `epoll`/`kqueue`/IOCP.
 
-## Run it
-
-```sh
-node index.ts
-```
-
-## Actual output
+## What you'd see (illustrative)
 
 ```
 === 1. TCP — listener vs connection sockets ===
@@ -177,7 +171,7 @@ UDP socket bound 127.0.0.1:53830   (ONE socket for every peer)
 Read the TCP part: **two distinct connection sockets (fd 15 and fd 16)** exist at the same
 time, both with `local=…:65384` (the **same server port**), told apart only by the **client
 port** — that's the 5-tuple in action. The UDP part shows the opposite: **one** socket
-handling two different peers.
+handling two different peers. (Illustrative output; this dir is explanation-only.)
 
 ## One-line summary
 
