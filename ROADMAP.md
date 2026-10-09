@@ -150,6 +150,8 @@ event-loop lag.**
 | 29 | Runtime validation           | `29-validation`              | [ ]    | JSON Schema, Ajv, TypeBox · book ch2 |
 | 30 | Database integration         | `30-database`                | [ ]    | connections, pooling, migrations · book ch2 |
 | 31 | I/O fundamentals             | `7-io`, `10-request-lifecycle`, `13-sockets` | [x] | input/output, blocking vs non-blocking; live fd/socket trace; sockets (listener vs connection, 5-tuple, UDP) · cited refs |
+| 32 | Package tooling (npm / npx)  | `14-npx`                     | [x]    | npx = the runner half of npm (`npm exec`); local `node_modules/.bin` vs just-in-time fetch; why not global installs |
+| 33 | V8 memory & GC tuning        | `15-v8-memory`               | [x]    | generational GC (scavenger, promotion, mark-sweep); RSS vs `heapUsed`; don't kill at 80%; `--max-semi-space-size` · Collina dotJS 2025 |
 
 ## Sources / references
 
@@ -195,6 +197,14 @@ Material used to shape these topics. Reference only — no content is copied int
   that recovers); a leak is unbounded (heap baseline rises and never returns). Cover the
   signals — heap-used trend, `--expose-gc` + `gc()`, heap snapshots / `--inspect`, and
   `process.memoryUsage()` — and how to distinguish a live-body signal from a transient spike.
+- [ ] **Set up GC for apps** — for each application, tune the heap flags
+  (`--max-semi-space-size`, `--max-old-space-size`) against real load, bake the chosen values
+  into the production start command, and monitor GC pause time + event-loop lag. Mechanics and
+  sizing in `15-v8-memory`.
+- [ ] **Common memory leak patterns** — catalog the usual suspects (unbounded caches / `Map`s,
+  event-listener & subscription leaks, timers/closures retaining scope, request-scoped state on
+  module globals, streams not consumed/destroyed, off-heap `Buffer`/native leaks) with a
+  minimal repro + fix for each; detection in `15-v8-memory`.
 - Streams vs `async` iteration for large payloads.
 
 ### Per-process metrics to track (observability)
