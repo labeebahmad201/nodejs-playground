@@ -50,7 +50,7 @@ server.on("connection", (sock) => {
 const client = net.connect(addr.port, "127.0.0.1");
 client.on("error", ignore);
 await once(client, "connect");
-console.log(`[client] local=${client.localAddress}:${client.localPort} [${range(client.localPort)}] -> remote=${client.remoteAddress}:${client.remotePort}`);
+console.log(`[client] local=${client.localAddress}:${client.localPort} [${range(client.localPort ?? 0)}] -> remote=${client.remoteAddress}:${client.remotePort}`);
 console.log("the connection is the 5-tuple: (TCP, clientIP, clientPort, serverIP, serverPort)");
 console.log("WHY: the kernel demuxes by that tuple, so MANY connections share the server's one port.");
 client.end();
