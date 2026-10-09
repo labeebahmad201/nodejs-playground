@@ -147,7 +147,7 @@ event-loop lag.**
 | 28 | Orchestration & cloud        | `28-cloud`                   | [ ]    | Kubernetes, serverless, Node-aware scaling signals · book ch6 |
 | 29 | Runtime validation           | `29-validation`              | [ ]    | JSON Schema, Ajv, TypeBox · book ch2 |
 | 30 | Database integration         | `30-database`                | [ ]    | connections, pooling, migrations · book ch2 |
-| 31 | I/O fundamentals             | `7-io`, `10-request-lifecycle`, `11-ports` | [x] | input vs output, blocking vs non-blocking; live fd/socket trace; ports (what & why) · cited refs |
+| 31 | I/O fundamentals             | `7-io`, `10-request-lifecycle`, `11-ports`, `13-sockets` | [x] | input/output, blocking vs non-blocking; live fd/socket trace; ports; sockets (listener vs connection, 5-tuple, UDP) · cited refs |
 
 ## Sources / references
 
@@ -202,7 +202,7 @@ One small example per `node:` module that performs I/O — tick off as built.
 - [ ] `node:fs` — files (callback / sync / `fs.promises` / streams)
 - [x] `node:net` — TCP & Unix sockets (`11-ports`)
 - [ ] `node:http`, `node:https`, `node:http2` — web
-- [ ] `node:dgram` — UDP
+- [x] `node:dgram` — UDP (`13-sockets`)
 - [ ] `node:dns` — name resolution
 - [ ] `node:child_process` — `spawn` / `exec`
 - [ ] `node:zlib` — compression (threadpool)
