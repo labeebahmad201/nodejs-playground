@@ -151,6 +151,7 @@ event-loop lag.**
 | 30 | Database integration         | `30-database`                | [ ]    | connections, pooling, migrations · book ch2 |
 | 31 | I/O fundamentals             | `7-io`, `10-request-lifecycle`, `13-sockets` | [x] | input/output, blocking vs non-blocking; live fd/socket trace; sockets (listener vs connection, 5-tuple, UDP) · cited refs |
 | 32 | Package tooling (npm / npx)  | `14-npx`                     | [x]    | npx = the runner half of npm (`npm exec`); local `node_modules/.bin` vs just-in-time fetch; why not global installs |
+| 33 | V8 memory & GC tuning        | `15-v8-memory`               | [x]    | generational GC (scavenger, promotion, mark-sweep); RSS vs `heapUsed`; don't kill at 80%; `--max-semi-space-size` · Collina dotJS 2025 |
 
 ## Sources / references
 
