@@ -137,7 +137,7 @@ event-loop lag.**
 | 18 | Stuck processes & handles    | `18-stuck-processes`         | [ ]    | placeholder |
 | 19 | HTTP server                  | `19-http-server`             | [ ]    | Fastify, plugins, hooks · book ch2 |
 | 20 | HTTP clients                 | `12-http-agent`              | [~]    | http.Agent keep-alive pool, maxSockets & next-socket selection; undici/retries next · book ch2 |
-| 21 | App health & observability   | `21-app-health`              | [ ]    | metrics, health checks, OpenTelemetry · book ch7 |
+| 21 | App health & observability   | `21-app-health`              | [ ]    | metrics, health checks, OpenTelemetry; per-process metrics (fds, sockets, memory breakdown, CPU) · book ch7 |
 | 22 | Fault tolerance              | `22-fault-tolerance`         | [ ]    | retries, timeouts, circuit breakers · book ch7 |
 | 23 | Workers & scaling            | `8-worker-threads`           | [~]    | worker_threads: main vs worker, CPU-bound off the loop; cluster next · book ch7 (scaling) |
 | 24 | Capstone                     | `24-capstone`                | [ ]    | placeholder |
@@ -194,6 +194,27 @@ Material used to shape these topics. Reference only — no content is copied int
   signals — heap-used trend, `--expose-gc` + `gc()`, heap snapshots / `--inspect`, and
   `process.memoryUsage()` — and how to distinguish a live-body signal from a transient spike.
 - Streams vs `async` iteration for large payloads.
+
+### Per-process metrics to track (observability)
+
+The numbers that actually tell you if a Node service is healthy. Track them **per process/PID**
+(cluster/workers), not just host-wide. See topic 21 and the scaling checklist.
+
+- [ ] **Open fds** — count, trend, and **% of limit** (`process.report.getReport().userLimits.open_files`;
+  count via `/proc/<pid>/fd`, `lsof`, or `process_open_fds` in node_exporter). Watch for a
+  monotonic rise (leak).
+- [ ] **Sockets / connections** — inbound active (`server.getConnections()`), outbound pool
+  (`agent.sockets`/`freeSockets`, undici pool), **accept-queue length** (`ss -lnt` `Recv-Q`)
+  and listen-overflow counters, and socket states (`TIME_WAIT`, `CLOSE_WAIT`).
+- [ ] **Memory (process)** — `rss` + `heapTotal`/`heapUsed`/`external`/`arrayBuffers`
+  (`process.memoryUsage()`, `v8.getHeapStatistics()`).
+- [ ] **Memory (breakdown)** — process **RSS** vs **kernel socket buffers**
+  (`/proc/net/sockstat`, `ss -tmn`) vs **cgroup total** (`memory.current`); socket buffers
+  are kernel memory and OOM-kill containers without showing in `rss`.
+- [ ] **CPU per process** — `process.cpuUsage()` (user/system), % of cores, per worker thread.
+- [ ] **Event loop** — lag (`monitorEventLoopDelay`) + utilization (`eventLoopUtilization`).
+- [ ] **GC** — pause/activity (`PerformanceObserver` GC entries, `--trace-gc`).
+- [ ] **App** — latency p50/p99, throughput, error rate, in-flight requests.
 
 ### I/O modules to cover (examples later)
 
