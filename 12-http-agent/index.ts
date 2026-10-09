@@ -38,11 +38,19 @@ const pool = (agent: Agent) => {
 };
 
 // Fire a request; log which socket it got (by the socket's local port).
+// This time we READ the response body with a 'data' listener (instead of the
+// res.resume() shortcut) so we can see the data arrive. Adding a 'data' listener puts the
+// stream in flowing mode just like resume(), but we keep the chunks instead of discarding.
 const call = (agent: Agent | false, label: string) =>
   new Promise<void>((resolve) => {
     const req = http.get({ host, port, agent }, (res) => {
-      res.resume();
-      res.on("end", resolve);
+      res.setEncoding("utf8");
+      const chunks: string[] = [];
+      res.on("data", (chunk: string) => chunks.push(chunk));
+      res.on("end", () => {
+        console.log(`[${label}] response body: ${JSON.stringify(chunks.join(""))}`);
+        resolve();
+      });
     });
     req.on("socket", (sock) => {
       const how = sock.connecting ? "NEW socket" : "REUSED socket";
@@ -91,32 +99,44 @@ server.close();
 // Actual output (ports vary):
 //
 // === A. agent:false -> a NEW socket per request (no pooling) ===
+// [A1] NEW socket localPort=49557
 // [server] accepted connection #1
-// [A1] NEW socket localPort=63501
+// [A1] response body: "ok\n"
+// [A2] NEW socket localPort=49558
 // [server] accepted connection #2
-// [A2] NEW socket localPort=63502
+// [A2] response body: "ok\n"
+// [A3] NEW socket localPort=49559
 // [server] accepted connection #3
-// [A3] NEW socket localPort=63503
+// [A3] response body: "ok\n"
 // -> 3 requests, 3 connections
 //
 // === B. keepAlive agent -> same socket reused (1 connection) ===
+// [B1] NEW socket localPort=49560
 // [server] accepted connection #4
-// [B1] NEW socket localPort=63504
-// [B2] REUSED socket localPort=63504
-// [B3] REUSED socket localPort=63504
+// [B1] response body: "ok\n"
+// [B2] REUSED socket localPort=49560
+// [B2] response body: "ok\n"
+// [B3] REUSED socket localPort=49560
+// [B3] response body: "ok\n"
 // -> 3 requests, 1 connections   active=0 free=1
 //
 // === C. maxSockets=1 -> concurrency capped, 2nd/3rd requests QUEUE ===
+// [C1] NEW socket localPort=49561
 // [server] accepted connection #5
-// [C1] NEW socket localPort=63505
-// [C2] REUSED socket localPort=63505   <- only after C1 finished
-// [C3] REUSED socket localPort=63505
+// [C1] response body: "ok\n"
+// [C2] REUSED socket localPort=49561
+// [C2] response body: "ok\n"
+// [C3] REUSED socket localPort=49561
+// [C3] response body: "ok\n"
 // -> 3 requests, 1 connection(s)   active=0 free=1
 //
 // === D. maxSockets=2 -> 2 sockets, 3rd request waits for a free one ===
+// [D1] NEW socket localPort=49562
+// [D2] NEW socket localPort=49563
 // [server] accepted connection #6
 // [server] accepted connection #7
-// [D1] NEW socket localPort=63506
-// [D2] NEW socket localPort=63507
-// [D3] REUSED socket localPort=63506   <- waited for a free socket
+// [D1] response body: "ok\n"
+// [D3] REUSED socket localPort=49562   <- waited for a free socket
+// [D2] response body: "ok\n"
+// [D3] response body: "ok\n"
 // -> 3 requests, 2 connections   active=0 free=2

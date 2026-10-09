@@ -218,6 +218,21 @@ The numbers that actually tell you if a Node service is healthy. Track them **pe
 - [ ] **GC** — pause/activity (`PerformanceObserver` GC entries, `--trace-gc`).
 - [ ] **App** — latency p50/p99, throughput, error rate, in-flight requests.
 
+### Binary data to cover (examples later)
+
+How Node represents bytes — and where each type's memory lives.
+
+- [ ] `Buffer` — Node's binary type; backed by an `ArrayBuffer` (pooled for small
+  allocations); `Buffer.from` / `alloc` / `allocUnsafe`; slice vs copy.
+- [ ] `ArrayBuffer` / `TypedArray` — the underlying JS binary types; `Buffer` is a
+  `Uint8Array` subclass.
+- [ ] `Blob` / `File` — web-standard immutable binary objects (`node:buffer`); `arrayBuffer()`,
+  `stream()`, `text()`.
+- [ ] `SharedArrayBuffer` + `Atomics` — memory **shared** across worker threads (the only
+  truly shared memory); synchronization and data races.
+- [ ] Where the bytes live — `external` / `arrayBuffers` vs the V8 heap; why they show in
+  **RSS** but not `heapUsed` (ties to observability).
+
 ### I/O modules to cover (examples later)
 
 One small example per `node:` module that performs I/O — tick off as built.
