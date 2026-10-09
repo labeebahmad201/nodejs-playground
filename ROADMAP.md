@@ -86,7 +86,9 @@ in priority order. (Demos: `10-request-lifecycle`, `12-http-agent`, `13-sockets`
    - Inbound: each connection = a socket + fd. Raise `ulimit -n`, cap with
      `server.maxConnections`, use keep-alive, **watch for fd leaks**.
    - Outbound: pool with a keep-alive `http.Agent`/undici; set **`maxSockets` deliberately**
-     (it's your outbound concurrency + fd + ephemeral-port cap). See `12-http-agent`.
+     (it's your outbound concurrency + fd + ephemeral-port cap). When all sockets to an origin
+     are busy, **excess requests queue and serialize** (growing latency, not errors) — bound it.
+     See `12-http-agent`.
 4. **Memory is more than `heapUsed`.** Respect **backpressure** (streams/`pipeline`,
    `write()`→`false`); never accumulate unbounded arrays/queues. Unbounded caches,
    unremoved listeners and timers leak. Distinguish GC sawtooth vs a rising floor. Set

@@ -107,6 +107,13 @@ new connection (new fd). `active`/`free` are the agent's live pool counts for th
 - The trade-off is explicit: `maxSockets` bounds resources at the cost of **queueing
   latency** when saturated.
 
+**Excess requests line up (serialize), they don't fail.** Once `maxSockets` sockets to an
+origin are busy, additional requests **wait in the agent's queue** and are dispatched **one at
+a time as sockets free up** — so they complete in sequence, not concurrently. (See section C
+above: with `maxSockets: 1`, requests 2 and 3 ran only after request 1 finished.) The queue
+is unbounded by default, so a saturated agent means **growing latency and memory**, not errors
+— bound it with `maxSockets`/timeouts rather than letting it pile up.
+
 ## Caveats
 
 - `http.globalAgent` keeps sockets alive by default since Node 19 (5 s). Older Node didn't,
