@@ -230,8 +230,8 @@ One minimal repro + fix per pattern. Detection in `15-v8-memory`: a rising **pos
 `heapUsed`** floor = JS-heap leak; a rising **`rss` / `external` / `arrayBuffers`** floor with
 flat `heapUsed` = off-heap leak.
 
-- [ ] **Unbounded caches / collections** — module-level `Map`/array/object growing per request;
-  memoization keyed by user input; nothing ever evicted.
+- [x] **Unbounded caches / collections** — module-level `Map`/array/object growing per request;
+  memoization keyed by user input; nothing ever evicted (`16-memory-leak-cache`).
 - [ ] **Listener / subscription leaks** — `.on()` added per request on a long-lived emitter;
   RxJS/observable subscriptions never unsubscribed; `process.on` inside handlers.
 - [ ] **Closures & timers retaining scope** — `setInterval` never cleared; recursive timers; a
