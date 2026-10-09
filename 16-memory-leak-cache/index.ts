@@ -14,11 +14,13 @@ const MB = (n: number) => (n / 1024 / 1024).toFixed(1).padStart(7) + " MB";
 
 function snapshot(label: string) {
   const m = process.memoryUsage();
+  const ratio = ((m.heapUsed / m.heapTotal) * 100).toFixed(1).padStart(5) + "%";
   console.log(
     `${label.padEnd(24)}` +
       ` rss=${MB(m.rss)}` +
       ` heapUsed=${MB(m.heapUsed)}` +
-      ` heapTotal=${MB(m.heapTotal)}`
+      ` heapTotal=${MB(m.heapTotal)}` +
+      ` used/total=${ratio}`
   );
 }
 

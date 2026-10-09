@@ -57,12 +57,12 @@ node --expose-gc index.ts
 Output (Node v24):
 
 ```
-start                    rss=   67.5 MB heapUsed=    7.1 MB heapTotal=    8.7 MB
-leaky: 20000 unique keys rss=  253.9 MB heapUsed=  166.0 MB heapTotal=  234.3 MB
-leaky: post-GC           rss=  253.9 MB heapUsed=  166.0 MB heapTotal=  234.3 MB
-after clear + GC         rss=  253.0 MB heapUsed=    7.2 MB heapTotal=   73.4 MB
-bounded: 20000 unique keys rss=  288.2 MB heapUsed=   90.5 MB heapTotal=  220.7 MB
-bounded: post-GC         rss=  288.2 MB heapUsed=   15.2 MB heapTotal=  145.7 MB
+start                    rss=   69.6 MB heapUsed=    7.1 MB heapTotal=    8.7 MB used/total= 82.4%
+leaky: 20000 unique keys rss=  275.9 MB heapUsed=  166.0 MB heapTotal=  234.6 MB used/total= 70.8%
+leaky: post-GC           rss=  276.0 MB heapUsed=  166.0 MB heapTotal=  234.3 MB used/total= 70.9%
+after clear + GC         rss=  275.1 MB heapUsed=    7.2 MB heapTotal=   73.4 MB used/total=  9.8%
+bounded: 20000 unique keys rss=  307.0 MB heapUsed=   92.1 MB heapTotal=  222.4 MB used/total= 41.4%
+bounded: post-GC         rss=  307.0 MB heapUsed=   15.7 MB heapTotal=  145.7 MB used/total= 10.8%
 
 retained entries — leaky=0  bounded=1000
 ```
@@ -70,11 +70,13 @@ retained entries — leaky=0  bounded=1000
 Read it:
 
 - **Leaky post-GC `heapUsed` = 166 MB and does not drop** — every record is still reachable, so
-  the GC can't free any of it. That's the leak.
-- **`after clear + GC` → 7.2 MB** — proving those 166 MB *were* the cache. (And `rss` stayed at
-  253 MB: V8 keeps the pages — see [`../15-v8-memory/rss.md`](../15-v8-memory/rss.md).)
-- **Bounded post-GC = 15 MB** — only the capped 1,000 entries survive. The mid-run 90 MB is just
-  uncollected garbage from evictions, gone after GC.
+  the GC can't free any of it. That's the leak. The **`used/total` ratio stays ~71%** even after
+  GC: the committed heap is genuinely full of live data, not slack.
+- **`after clear + GC` → 7.2 MB, ratio 9.8%** — proving those 166 MB *were* the cache; once
+  cleared, the heap is mostly free space again. (And `rss` stayed at ~275 MB: V8 keeps the pages
+  — see [`../15-v8-memory/rss.md`](../15-v8-memory/rss.md).)
+- **Bounded post-GC = 15 MB, ratio 10.8%** — only the capped 1,000 entries survive. The mid-run
+  92 MB (ratio 41%) is just uncollected garbage from evictions, gone after GC.
 
 > Note: both caches are kept **reachable** at the end (a real module-level cache would be). If
 > nothing read them after the GC, V8's liveness analysis would collect them regardless — the
