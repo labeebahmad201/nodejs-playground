@@ -201,10 +201,6 @@ Material used to shape these topics. Reference only — no content is copied int
   (`--max-semi-space-size`, `--max-old-space-size`) against real load, bake the chosen values
   into the production start command, and monitor GC pause time + event-loop lag. Mechanics and
   sizing in `15-v8-memory`.
-- [ ] **Common memory leak patterns** — catalog the usual suspects (unbounded caches / `Map`s,
-  event-listener & subscription leaks, timers/closures retaining scope, request-scoped state on
-  module globals, streams not consumed/destroyed, off-heap `Buffer`/native leaks) with a
-  minimal repro + fix for each; detection in `15-v8-memory`.
 - Streams vs `async` iteration for large payloads.
 
 ### Per-process metrics to track (observability)
@@ -227,6 +223,28 @@ The numbers that actually tell you if a Node service is healthy. Track them **pe
 - [ ] **Event loop** — lag (`monitorEventLoopDelay`) + utilization (`eventLoopUtilization`).
 - [ ] **GC** — pause/activity (`PerformanceObserver` GC entries, `--trace-gc`).
 - [ ] **App** — latency p50/p99, throughput, error rate, in-flight requests.
+
+### Common memory leak patterns to cover (examples later)
+
+One minimal repro + fix per pattern. Detection in `15-v8-memory`: a rising **post-GC
+`heapUsed`** floor = JS-heap leak; a rising **`rss` / `external` / `arrayBuffers`** floor with
+flat `heapUsed` = off-heap leak.
+
+- [x] **Unbounded caches / collections** — module-level `Map`/array/object growing per request;
+  memoization keyed by user input; nothing ever evicted (`16-memory-leak-cache`; production-like
+  repro of community #196856 in `17-ratelimiter-leak`).
+- [ ] **Listener / subscription leaks** — `.on()` added per request on a long-lived emitter;
+  RxJS/observable subscriptions never unsubscribed; `process.on` inside handlers.
+- [ ] **Closures & timers retaining scope** — `setInterval` never cleared; recursive timers; a
+  closure capturing a large object and held by a long-lived callback.
+- [ ] **Request-scoped state on module/global objects** — per-request data stored on globals,
+  leaking across requests.
+- [ ] **Streams not consumed/destroyed & ignored backpressure** — readable never read → buffers
+  retained; response/socket not destroyed; write buffer grows unbounded.
+- [ ] **Off-heap leaks** — `Buffer`/`ArrayBuffer` caches, native addons, unresolved async
+  holding native handles (show in `rss`/`external`, not `heapUsed`).
+- [ ] **Promise / async retention** — unsettled promises holding scope; `.then` chains
+  capturing large objects; `AbortSignal`/listeners never removed.
 
 ### Binary data to cover (examples later)
 
@@ -298,7 +316,9 @@ Candidate failure modes to hunt for:
 
 - [ ] Event loop blocked by sync work (`JSON.parse`, sync `fs`/crypto) → latency spike
 - [ ] libuv threadpool starvation (`fs`/`dns`/`zlib`/`crypto`, `UV_THREADPOOL_SIZE`)
-- [ ] Unbounded in-memory cache / listener leak → OOM or growing RSS
+- [x] Unbounded in-memory cache → OOM or growing RSS (`17-ratelimiter-leak`,
+  production-like repro of community #196856; minimal pattern in `16-memory-leak-cache`)
+- [ ] Listener / subscription leak → OOM or growing RSS
 - [ ] Unhandled promise rejection / uncaught exception crashing the process
 - [ ] File-descriptor / socket leak (missing `close`/destroy)
 - [ ] DB / connection-pool exhaustion under load
