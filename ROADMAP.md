@@ -316,8 +316,9 @@ Candidate failure modes to hunt for:
 
 - [ ] Event loop blocked by sync work (`JSON.parse`, sync `fs`/crypto) → latency spike
 - [ ] libuv threadpool starvation (`fs`/`dns`/`zlib`/`crypto`, `UV_THREADPOOL_SIZE`)
-- [x] Unbounded in-memory cache / listener leak → OOM or growing RSS (`17-ratelimiter-leak`,
+- [x] Unbounded in-memory cache → OOM or growing RSS (`17-ratelimiter-leak`,
   production-like repro of community #196856; minimal pattern in `16-memory-leak-cache`)
+- [ ] Listener / subscription leak → OOM or growing RSS
 - [ ] Unhandled promise rejection / uncaught exception crashing the process
 - [ ] File-descriptor / socket leak (missing `close`/destroy)
 - [ ] DB / connection-pool exhaustion under load
