@@ -231,7 +231,8 @@ One minimal repro + fix per pattern. Detection in `15-v8-memory`: a rising **pos
 flat `heapUsed` = off-heap leak.
 
 - [x] **Unbounded caches / collections** — module-level `Map`/array/object growing per request;
-  memoization keyed by user input; nothing ever evicted (`16-memory-leak-cache`).
+  memoization keyed by user input; nothing ever evicted (`16-memory-leak-cache`; production-like
+  repro of community #196856 in `17-ratelimiter-leak`).
 - [ ] **Listener / subscription leaks** — `.on()` added per request on a long-lived emitter;
   RxJS/observable subscriptions never unsubscribed; `process.on` inside handlers.
 - [ ] **Closures & timers retaining scope** — `setInterval` never cleared; recursive timers; a
@@ -315,7 +316,8 @@ Candidate failure modes to hunt for:
 
 - [ ] Event loop blocked by sync work (`JSON.parse`, sync `fs`/crypto) → latency spike
 - [ ] libuv threadpool starvation (`fs`/`dns`/`zlib`/`crypto`, `UV_THREADPOOL_SIZE`)
-- [ ] Unbounded in-memory cache / listener leak → OOM or growing RSS
+- [x] Unbounded in-memory cache / listener leak → OOM or growing RSS (`17-ratelimiter-leak`,
+  production-like repro of community #196856; minimal pattern in `16-memory-leak-cache`)
 - [ ] Unhandled promise rejection / uncaught exception crashing the process
 - [ ] File-descriptor / socket leak (missing `close`/destroy)
 - [ ] DB / connection-pool exhaustion under load

@@ -47,40 +47,56 @@ Under real traffic the keys are effectively unbounded (unique users/sessions/req
 
 ## Reproduce it
 
-`16-memory-leak-cache/index.ts` simulates 20,000 unique keys (≈8 KB per record) through a
-**leaky** cache and a **bounded** cache, forcing a GC between runs:
+`16-memory-leak-cache/index.ts` runs a workload of 60,000 unique keys (≈8 KB per record) in a
+**natural** setting — **no forced GC**; V8 collects on its own, as in production. Run each mode:
 
 ```sh
-node --expose-gc index.ts
+node index.ts leaky      # the leak
+node index.ts bounded    # the fix
 ```
 
-Output (Node v24):
+**Leaky** — `heapUsed` climbs linearly and never plateaus:
 
 ```
-start                    rss=   69.6 MB heapUsed=    7.1 MB heapTotal=    8.7 MB used/total= 82.4%
-leaky: 20000 unique keys rss=  275.9 MB heapUsed=  166.0 MB heapTotal=  234.6 MB used/total= 70.8%
-leaky: post-GC           rss=  276.0 MB heapUsed=  166.0 MB heapTotal=  234.3 MB used/total= 70.9%
-after clear + GC         rss=  275.1 MB heapUsed=    7.2 MB heapTotal=   73.4 MB used/total=  9.8%
-bounded: 20000 unique keys rss=  307.0 MB heapUsed=   92.1 MB heapTotal=  222.4 MB used/total= 41.4%
-bounded: post-GC         rss=  307.0 MB heapUsed=   15.7 MB heapTotal=  145.7 MB used/total= 10.8%
+mode=leaky  (no forced GC — V8 collects on its own)
+start            rss=   69.1 MB heapUsed=    7.7 MB heapTotal=    8.9 MB used/total= 86.1%
+after 10,000     rss=  196.6 MB heapUsed=   87.4 MB heapTotal=  152.4 MB used/total= 57.3%
+after 20,000     rss=  280.2 MB heapUsed=  166.5 MB heapTotal=  235.0 MB used/total= 70.8%
+after 30,000     rss=  362.8 MB heapUsed=  245.5 MB heapTotal=  315.8 MB used/total= 77.7%
+after 40,000     rss=  447.2 MB heapUsed=  326.2 MB heapTotal=  398.0 MB used/total= 82.0%
+after 50,000     rss=  529.8 MB heapUsed=  405.2 MB heapTotal=  478.8 MB used/total= 84.6%
+after 60,000     rss=  612.4 MB heapUsed=  484.1 MB heapTotal=  559.3 MB used/total= 86.6%
 
-retained entries — leaky=0  bounded=1000
+retained entries = 60000
+```
+
+**Bounded** — `heapUsed` rises, then **plateaus** as V8 reclaims evicted entries on its own:
+
+```
+mode=bounded  (no forced GC — V8 collects on its own)
+start            rss=   68.9 MB heapUsed=    7.7 MB heapTotal=    8.9 MB used/total= 86.1%
+after 10,000     rss=  195.8 MB heapUsed=   86.7 MB heapTotal=  151.9 MB used/total= 57.1%
+after 20,000     rss=  218.7 MB heapUsed=   75.0 MB heapTotal=  141.4 MB used/total= 53.0%
+after 30,000     rss=  218.8 MB heapUsed=   68.5 MB heapTotal=  134.9 MB used/total= 50.8%
+after 40,000     rss=  218.8 MB heapUsed=   59.8 MB heapTotal=  125.9 MB used/total= 47.5%
+after 50,000     rss=  218.8 MB heapUsed=   54.5 MB heapTotal=  120.7 MB used/total= 45.2%
+after 60,000     rss=  218.8 MB heapUsed=   50.4 MB heapTotal=  116.4 MB used/total= 43.3%
+
+retained entries = 1000
 ```
 
 Read it:
 
-- **Leaky post-GC `heapUsed` = 166 MB and does not drop** — every record is still reachable, so
-  the GC can't free any of it. That's the leak. The **`used/total` ratio stays ~71%** even after
-  GC: the committed heap is genuinely full of live data, not slack.
-- **`after clear + GC` → 7.2 MB, ratio 9.8%** — proving those 166 MB *were* the cache; once
-  cleared, the heap is mostly free space again. (And `rss` stayed at ~275 MB: V8 keeps the pages
-  — see [`../15-v8-memory/rss.md`](../15-v8-memory/rss.md).)
-- **Bounded post-GC = 15 MB, ratio 10.8%** — only the capped 1,000 entries survive. The mid-run
-  92 MB (ratio 41%) is just uncollected garbage from evictions, gone after GC.
+- **Leaky:** `heapUsed` rises ~80 MB per 10k keys and **never comes down** — each record is
+  reachable for the life of the process, so no GC can free it. The **trend is the leak.**
+- **Bounded:** `heapUsed` rises to a peak, then **plateaus and declines** (87 → 50 MB) as V8
+  naturally collects evicted entries. Only the capped 1,000 stay live.
+- `rss` tells the same story: 69 → 612 MB (leaky) vs a plateau at ~219 MB (bounded). And RSS
+  doesn't shrink in the bounded run — V8 keeps pages (see [`../15-v8-memory/rss.md`](../15-v8-memory/rss.md)).
 
-> Note: both caches are kept **reachable** at the end (a real module-level cache would be). If
-> nothing read them after the GC, V8's liveness analysis would collect them regardless — the
-> "dead variable is not a live root" gotcha from `15-v8-memory`.
+> Without a forced GC the `used/total` ratio is noisier (it includes uncollected garbage), so
+> read the **`heapUsed` trend** here: a floor that keeps climbing = leak; one that plateaus =
+> healthy. For clean post-GC numbers, see [`../15-v8-memory`](../15-v8-memory).
 
 ## The fix
 
