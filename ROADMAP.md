@@ -241,8 +241,10 @@ flat `heapUsed` = off-heap leak.
   leaking across requests.
 - [ ] **Streams not consumed/destroyed & ignored backpressure** — readable never read → buffers
   retained; response/socket not destroyed; write buffer grows unbounded.
-- [ ] **Off-heap leaks** — `Buffer`/`ArrayBuffer` caches, native addons, unresolved async
-  holding native handles (show in `rss`/`external`, not `heapUsed`).
+- [ ] **Off-heap leaks — heap stable, `rss` grows** — `Buffer`/`ArrayBuffer` caches, native
+  addons, unresolved async holding native handles. Signature: **flat `heapUsed`** (a heap-only
+  observer sees nothing) while the **`rss` / `external` / `arrayBuffers` floor rises**. Needs a
+  dedicated leaky repro that proves the heap is stable but RSS climbs.
 - [ ] **Promise / async retention** — unsettled promises holding scope; `.then` chains
   capturing large objects; `AbortSignal`/listeners never removed.
 
