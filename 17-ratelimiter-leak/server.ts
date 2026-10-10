@@ -108,6 +108,7 @@ server.listen(PORT, () => {
   console.log(`rate-limiter service  MODE=${MODE}  http://localhost:${PORT}`);
   console.log(`  GET /        -> per-client bucket (limit ${LIMIT}/${WINDOW_MS}ms)`);
   console.log(`  GET /metrics -> memory + cache size`);
+  console.log(`  note: cache grows with DISTINCT client IPs, not request count`);
   if (MODE === "bounded") console.log(`  bounded: MAX=${MAX} entries, TTL=${TTL_MS}ms`);
 });
 

@@ -55,6 +55,24 @@ DURATION=20 CONNECTIONS=200 node load.mjs
 node monitor.ts
 ```
 
+### Quick check without autocannon
+
+The leak is driven by **key cardinality** — the number of *distinct clients* — **not** request
+volume. Hammering the service from one IP adds exactly **one** entry:
+
+```sh
+# same client IP every time -> cache stays at 1 (NO leak, even after 1M requests)
+for i in $(seq 5); do curl -s localhost:3000 >/dev/null; done
+curl -s localhost:3000/metrics          # {"cacheSize":1,...}
+
+# a different client IP each time -> cache grows
+for i in $(seq 5); do curl -s -H "x-forwarded-for: 10.0.0.$i" localhost:3000 >/dev/null; done
+curl -s localhost:3000/metrics          # {"cacheSize":6,...}
+```
+
+That is exactly why the incident needed **many unique client IPs** (a proxy / bot traffic), and why
+`load.mjs` spoofs a new `X-Forwarded-For` on every request.
+
 ## Real output (Node v24, this machine)
 
 **Leaky** — cache and heap climb monotonically; they never come back down:
