@@ -5,11 +5,11 @@
 // rate-limiter's key cardinality explodes — the exact trigger from the incident.
 //
 // Run:  node load.mjs
-//   URL=http://localhost:3000 CONNECTIONS=200 DURATION=30 node load.mjs
+//   URL=http://localhost:4100 CONNECTIONS=200 DURATION=30 node load.mjs
 
 import autocannon from "autocannon";
 
-const url = process.env.URL ?? "http://localhost:3000";
+const url = process.env.URL ?? "http://localhost:4100";
 const connections = Number(process.env.CONNECTIONS ?? 200);
 const duration = Number(process.env.DURATION ?? 30);
 

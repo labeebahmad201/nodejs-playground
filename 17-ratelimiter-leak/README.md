@@ -47,6 +47,7 @@ Three terminals (or background them):
 ```sh
 # 1) the service
 MODE=leaky node server.ts            # leaky (default); or MODE=bounded node server.ts
+                                     # default port 4100 — override with PORT=...
 
 # 2) the load (unique IP per request)
 DURATION=20 CONNECTIONS=200 node load.mjs
@@ -55,6 +56,11 @@ DURATION=20 CONNECTIONS=200 node load.mjs
 node monitor.ts
 ```
 
+> **Port:** the service defaults to **4100**, not 3000 — 3000 is almost always taken by another
+> dev server, and then `load.mjs` would hit *that* server while our service fails to start. If
+> 4100 is busy too, pass the same `PORT` to the server and `URL` to the tools, e.g.
+> `PORT=5555 node server.ts` + `URL=http://localhost:5555 node load.mjs`.
+
 ### Quick check without autocannon
 
 The leak is driven by **key cardinality** — the number of *distinct clients* — **not** request
@@ -62,12 +68,12 @@ volume. Hammering the service from one IP adds exactly **one** entry:
 
 ```sh
 # same client IP every time -> cache stays at 1 (NO leak, even after 1M requests)
-for i in $(seq 5); do curl -s localhost:3000 >/dev/null; done
-curl -s localhost:3000/metrics          # {"cacheSize":1,...}
+for i in $(seq 5); do curl -s localhost:4100 >/dev/null; done
+curl -s localhost:4100/metrics          # {"cacheSize":1,...}
 
 # a different client IP each time -> cache grows
-for i in $(seq 5); do curl -s -H "x-forwarded-for: 10.0.0.$i" localhost:3000 >/dev/null; done
-curl -s localhost:3000/metrics          # {"cacheSize":6,...}
+for i in $(seq 5); do curl -s -H "x-forwarded-for: 10.0.0.$i" localhost:4100 >/dev/null; done
+curl -s localhost:4100/metrics          # {"cacheSize":6,...}
 ```
 
 That is exactly why the incident needed **many unique client IPs** (a proxy / bot traffic), and why

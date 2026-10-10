@@ -10,7 +10,7 @@
 // Run:
 //   MODE=leaky   node server.ts     # the leak (default)
 //   MODE=bounded node server.ts     # the fix (capped + TTL)
-//   PORT=3000 MODE=leaky node server.ts
+//   PORT=4100 MODE=leaky node server.ts
 //
 // Then, in another terminal:  node load.mjs   (unique client IPs via autocannon)
 // and:                        node monitor.ts (poll /metrics)
@@ -18,7 +18,8 @@
 import http from "node:http";
 
 const MODE = process.env.MODE === "bounded" ? "bounded" : "leaky";
-const PORT = Number(process.env.PORT ?? 3000);
+// 4100 (not 3000 — 3000 is usually taken by other dev servers; see README)
+const PORT = Number(process.env.PORT ?? 4100);
 const MAX = Number(process.env.MAX ?? 10_000); // bounded: max entries
 const TTL_MS = Number(process.env.TTL_MS ?? 60_000); // bounded: idle expiry
 const WINDOW_MS = 1_000; // rate-limit window
@@ -102,6 +103,17 @@ const server = http.createServer((req, res) => {
   }
   res.writeHead(200, { "content-type": "text/plain" });
   res.end("ok\n");
+});
+
+server.on("error", (err: NodeJS.ErrnoException) => {
+  if (err.code === "EADDRINUSE") {
+    console.error(
+      `\nport ${PORT} is already in use — another process is listening there.` +
+        `\nSet a free port, e.g.:  PORT=4100 MODE=${MODE} node server.ts\n`
+    );
+    process.exit(1);
+  }
+  throw err;
 });
 
 server.listen(PORT, () => {

@@ -5,9 +5,9 @@
 // that would page you when the heap starts climbing and never comes back.
 //
 // Run:  node monitor.ts
-//   URL=http://localhost:3000/metrics INTERVAL_MS=1000 node monitor.ts
+//   URL=http://localhost:4100/metrics INTERVAL_MS=1000 node monitor.ts
 
-const URL = process.env.URL ?? "http://localhost:3000/metrics";
+const URL = process.env.URL ?? "http://localhost:4100/metrics";
 const INTERVAL_MS = Number(process.env.INTERVAL_MS ?? 1000);
 
 const MB = (n: number) => (n / 1048576).toFixed(1).padStart(7) + " MB";
