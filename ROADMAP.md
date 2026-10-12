@@ -125,7 +125,7 @@ event-loop lag.**
 | 4  | TypeScript setup             | `3-type-checking`, `4-tsc-noemit` | [x] | `tsc --noEmit`, type stripping limits · book ch2 |
 | 5  | Async patterns               | `5-async-patterns`           | [ ]    | promises, AbortController, concurrency limits |
 | 6  | Error handling               | `6-error-handling`           | [ ]    | placeholder · book ch2 (meaningful errors/logs) |
-| 7  | Streams & backpressure       | `7-streams`                  | [ ]    | placeholder |
+| 7  | Streams & backpressure       | `19-streams`                 | [~]    | Readable/Writable/Duplex/Transform; flowing vs paused; backpressure (`write()`→`'drain'`); `pipeline()` vs `.pipe()`; async iterators; object mode; Web Streams · Collina masterclass |
 | 8  | Caching                      | `8-caching`                  | [ ]    | lru, stale-while-revalidate, HTTP caching · book ch3 |
 | 9  | Graceful shutdown            | `9-graceful-shutdown`        | [ ]    | signals, drain, close connections · book ch2 (close-with-grace) |
 | 10 | Environment & secrets        | `10-environment`             | [ ]    | 12-factor, config anti-patterns · book ch4 |
@@ -152,6 +152,8 @@ event-loop lag.**
 | 31 | I/O fundamentals             | `7-io`, `10-request-lifecycle`, `13-sockets` | [x] | input/output, blocking vs non-blocking; live fd/socket trace; sockets (listener vs connection, 5-tuple, UDP) · cited refs |
 | 32 | Package tooling (npm / npx)  | `14-npx`                     | [x]    | npx = the runner half of npm (`npm exec`); local `node_modules/.bin` vs just-in-time fetch; why not global installs |
 | 33 | V8 memory & GC tuning        | `15-v8-memory`               | [x]    | generational GC (scavenger, promotion, mark-sweep); RSS vs `heapUsed`; don't kill at 80%; `--max-semi-space-size` · Collina dotJS 2025 |
+| 34 | Private class fields (`#`)   | `20-private-fields`          | [x]    | truly-private `#` fields/methods/statics/getters (ES2022); vs `_` convention & TS `private`; brand check `#x in obj`; not enumerable/serialized |
+| 35 | Standard streams & `console` | `21-stdout-vs-console`       | [x]    | `stdin`/`stdout`/`stderr` (fd 0/1/2); `console.log` = `stdout.write(util.format(...) + "\n")`; return value vs backpressure; pipeable vs not; custom `Console` |
 
 ## Sources / references
 
@@ -276,7 +278,7 @@ One small example per `node:` module that performs I/O — tick off as built.
 - [ ] `node:tls` — TLS sockets
 - [ ] `node:stream`, `node:readline`, `readline/promises` — streaming I/O
 - [x] `node:worker_threads` — message passing (`8-worker-threads`)
-- [ ] `process` — stdin / stdout / stderr
+- [x] `process` — stdin / stdout / stderr (`21-stdout-vs-console`)
 
 (Which use the OS event queue vs libuv's threadpool: see `7-io/README.md`.)
 
