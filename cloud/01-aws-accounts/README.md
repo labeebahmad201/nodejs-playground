@@ -13,6 +13,8 @@ it gives the abstract concepts something concrete to attach to.
 |---|---|
 | [`01-accounts-vs-identities`](./01-accounts-vs-identities/) | Account as a container vs IAM identity; account attributes; root user; pay-as-you-go; the Animals4Life scenario |
 | [`02-boundary-and-blast-radius`](./02-boundary-and-blast-radius/) | The account boundary, isolation, containment, multi-account structure |
+| [`03-iam-users`](./03-iam-users/) | Creating identities inside the account; console vs programmatic toggles; MFA; `AdministratorAccess` |
+| [`04-iam-access-keys`](./04-iam-access-keys/) | Access key pairs, the 0–2 rule, long-term credentials, and why IAM roles replace them |
 | [`03-iam-users`](./03-iam-users/) | Creating IAM users: sign-in URL/alias, console vs programmatic access, the three permission paths, `AdministratorAccess`, MFA, and the "no email" gotcha |
 
 ## Why this is topic 01
@@ -28,7 +30,9 @@ concrete and more useful:
 
 - **The SDK credential chain** (`@aws-sdk/credential-provider-node`) resolves credentials in
   order — env vars, shared config, container/instance metadata, web identity — and it is the
-  reason long-lived access keys in `.env` files are an anti-pattern. See `03-aws-roles`.
+  reason long-lived access keys in `.env` files are an anti-pattern. Covered in
+  [`04-iam-access-keys`](./04-iam-access-keys/README.md), with the full resolution order and
+  why setting env vars *shadows* the safe path.
 - **Task roles vs instance roles** — on ECS/Fargate the task role is scoped to the workload,
   not the box, so one compromised task can't read another task's credentials.
 - **Least privilege at the process level** — if the app can call `iam:PassRole`, it can
@@ -39,5 +43,6 @@ concrete and more useful:
 - [x] `01-accounts-vs-identities`
 - [x] `02-boundary-and-blast-radius`
 - [x] `03-iam-users`
+- [x] `04-iam-access-keys`
 
 Next up: `02-aws-iam-policies` (policy structure, explicit deny, permission boundaries, SCPs).
