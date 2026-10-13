@@ -12,6 +12,8 @@ course (running example: the **Animals4Life** rescue org).
 
 - So far, access has been through the **console UI**. The command line — and any application
   you write — authenticates with **access keys**, not a username and password.
+- The CLI stores them in profiles: `aws configure` (default) or
+  `aws configure --profile NAME` (named), selected per command with `--profile`.
 - An access key is a pair: **`accessKeyId`** + **`secretAccessKey`**.
 - They are **long-term** credentials: they don't change on their own. *You* have to change
   them.
@@ -146,6 +148,148 @@ Where the credential lives:
 Every one of these ends in the same place: **the SDK gets temporary credentials at runtime and
 never sees a static key.**
 
+## The AWS CLI and profiles
+
+The console is only one of three ways into an account. The same credentials story applies to
+all of them:
+
+| Surface | Authenticates with | Typical user |
+|---|---|---|
+| **Console UI** | Password (+ MFA) | Humans, in a browser |
+| **Command line** (`aws` CLI) | **Access keys** | Humans, scripts, one-off ops |
+| **In an application** (SDK / IaC) | **Access keys, or role creds** | Services, automation |
+
+On the command line there is **no username and password**. The CLI authenticates with an
+access key pair, full stop. That's the same programmatic credential from the rest of this
+page — the CLI is just a client that reads it from a file.
+
+### `aws configure`
+
+Run it once and it walks you through four prompts, writing the result to two files under
+`~/.aws/`:
+
+```
+$ aws configure
+AWS Access Key ID [None]: AKIA...
+AWS Secret Access Key [None]: ****************
+Default region name [None]: ap-southeast-2
+Default output format [None]: json
+```
+
+That produces:
+
+| File | Holds |
+|---|---|
+| `~/.aws/credentials` | `accessKeyId` + `secretAccessKey`, in **plaintext** |
+| `~/.aws/config` | region, output format, per-profile settings |
+
+Because it's plaintext on disk, `~/.aws/credentials` is itself a secret. Treat it like one.
+(That's the residual risk roles eliminate — covered above.)
+
+### Default profile vs named profiles
+
+The four prompts above **without** `--profile` write to the **default profile** — the one used
+when you run a bare `aws` command.
+
+To keep more than one identity on the same machine, use a **named profile**:
+
+```
+$ aws configure --profile iamadmin-general
+```
+
+This keys the same four values under `[iamadmin-general]`. Then you select it per command:
+
+```
+$ aws s3 ls --profile iamadmin-general
+```
+
+| | Default profile | Named profile |
+|---|---|---|
+| Written by | `aws configure` | `aws configure --profile NAME` |
+| Used when | No `--profile` given | `--profile NAME` on the command |
+| Good for | One identity on the machine | Many identities side by side |
+
+`--profile` is the AWS CLI equivalent of `--env` on a Node script: it picks which set of
+credentials the command runs under. The SDK resolves the same setting from `AWS_PROFILE`.
+
+> **The value of named profiles:** you can keep a personal identity, an Animals4Life work
+> identity, and a CI identity on one laptop, and switch per terminal command instead of
+> editing files. It also makes "which identity am I?" an explicit part of every command.
+
+## Reading the two errors
+
+The CLI fails in two distinct ways, and the error message tells you **which layer** is broken.
+Learning to read them is the practical skill here.
+
+### No credentials at all
+
+```
+$ aws s3 ls
+aws: [ERROR]: An error occurred (NoCredentials) when calling the ListBuckets operation:
+Unable to locate credentials. You can configure credentials by running "aws login".
+```
+
+**Meaning:** no credentials were found. The bare command looked at the **default profile**,
+found nothing (you only configured a named one), and gave up.
+
+**Fix:** pass `--profile`, or configure a default profile.
+
+```
+$ aws s3 ls --profile iamadmin-general
+2026-10-13 18:06:38 platformic-bucket
+```
+
+The lesson: `NoCredentials` is a **configuration** problem. The request never got far enough to
+be rejected — the CLI didn't know *who* it was.
+
+### Credentials present but invalid
+
+```
+$ aws s3 ls --profile iamadmin-general
+aws: [ERROR]: An error occurred (InvalidAccessKeyId) when calling the ListBuckets operation:
+The AWS Access Key Id you provided does not exist in our records.
+```
+
+**Meaning:** a profile was found and its key was sent — but the key **no longer exists in AWS**.
+This happens when you delete the access key in the console while the client still holds it
+locally.
+
+**Fix:** delete the stale profile (or re-run `aws configure --profile ...` with a live key).
+
+The lesson: `InvalidAccessKeyId` is an **identity** problem. The CLI knew who it was, told AWS,
+and AWS said "that key is gone."
+
+| Error | Which layer | Feels like |
+|---|---|---|
+| `NoCredentials` | **Config** — no key on this machine | "I don't know who I am" |
+| `InvalidAccessKeyId` | **Identity** — key exists locally, deleted in AWS | "I claimed an identity AWS doesn't recognise" |
+
+> **Interview-worthy distinction.** `NoCredentials` means the client couldn't *find* a
+> credential. `InvalidAccessKeyId` means it found one and AWS *rejected* it. Same symptom
+> (command fails), completely different cause and fix. Being able to name which is which is
+> the difference between a guess and a diagnosis.
+
+This is also the concrete demonstration of "long-term credentials don't change on their own":
+delete the key in AWS and the local copy stops working immediately, with **no expiry event**
+and **no notification** — nothing tells you it happened until something breaks.
+
+## Clean up after configuring
+
+Once the CLI is configured and working, **delete the downloaded key file**.
+
+When you create an access key in the console, AWS offers to download a `.csv` containing the
+`accessKeyId` and `secretAccessKey`. That file is a plaintext secret sitting in `~/Downloads`.
+
+- The CLI now holds the credential in `~/.aws/credentials`.
+- The downloaded `.csv` is a **second, unnecessary copy** of the same secret.
+- A second copy is a second place to leak it from.
+
+So: configure, verify, then delete the `.csv`. It served its one purpose.
+
+> Generalise it: **secrets should exist in exactly one place.** Every extra copy — a download,
+> a screenshot, a paste into a note, a commit — is an independent chance to leak, and none of
+> them expire.
+
 ## Node tie-in
 
 This topic maps directly onto how a Node app should authenticate — and it's where most real
@@ -221,6 +365,16 @@ Lost secret?   = delete the pair, create a new one
 
 Root keys      = possible, DON'T. Unrestrictable, no MFA.
 Roles          = NO access keys, ever. Temporary creds at assume-time.
+
+CLI auth       = access keys, NOT user/password
+                 aws configure                      → default profile
+                 aws configure --profile NAME       → named profile
+                 aws <cmd> --profile NAME           → pick per command
+
+Errors         = NoCredentials      → config problem (no key found)
+                 InvalidAccessKeyId  → identity problem (key deleted in AWS)
+
+After config   = delete the downloaded .csv. One secret, one place.
 ```
 
 ## Related
