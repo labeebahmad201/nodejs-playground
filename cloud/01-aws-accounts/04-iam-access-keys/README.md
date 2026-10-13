@@ -148,6 +148,101 @@ Where the credential lives:
 Every one of these ends in the same place: **the SDK gets temporary credentials at runtime and
 never sees a static key.**
 
+The next section digs into *how* AWS decides to trust the machine and hand those credentials
+over in the first place.
+
+## Long-lived vs short-lived: where the trust actually comes from
+
+The table above says roles use "temporary creds at assume-time" and leaves it there. The real
+question is: **why would AWS hand credentials to a machine at all, and how does it decide to
+trust it?**
+
+### Two different trust models
+
+**Long-lived (IAM user keys)** — AWS trusted you **once**, at creation. An authorized admin
+minted those keys. After that, every request just *presents* the key. AWS does not re-validate
+who is holding it, and nothing forces it to change. The key **is** the trust.
+
+**Short-lived (roles)** — there is **no permanent secret**. The machine asks AWS for credentials
+**each time it needs them**. So every retrieval has to re-establish trust: *"is this machine
+allowed to act as this role?"* The answer comes from the **role attached to the machine** — a
+decision the control plane made earlier — not from a secret sitting on disk.
+
+> The one-liner: long-lived keys are **trust baked in at creation**. Short-lived keys are
+> **trust re-issued on request**, and re-issued only because an admin already bound a role to
+> that machine.
+
+### The credential itself
+
+| | Long-lived (IAM user) | Short-lived (role) |
+|---|---|---|
+| Contains | `accessKeyId` + `secretAccessKey` | `accessKeyId` + `secretAccessKey` + **`sessionToken`** |
+| Expires? | **Never**, until deleted | In minutes to hours |
+| Re-issued? | Never — you rotate manually | Automatically, on expiry |
+| Stored | Disk / env / `~/.aws/credentials` | Fetched at runtime, held in memory |
+
+**The `sessionToken` is the tell.** If a credential has one, it's temporary — it's bound to the
+assumed role and to an expiry. No session token means a long-lived key.
+
+### How AWS decides to trust an EC2 instance
+
+This is the exact mechanism behind "assign the role to your EC2 and it can get short-lived
+keys." Walk the chain:
+
+1. **An authorized admin attaches the role to the instance.** This is a control-plane action
+   (`iam:PassRole` + associating an instance profile), authenticated and logged in CloudTrail.
+   **This is the trust decision.** Everything after it is just delivery.
+2. **The instance boots, and the instance metadata service (IMDS) exposes the credentials.**
+   It lives at the link-local address `169.254.169.254`.
+3. **Link-local is not routable.** `169.254.0.0/16` stays on the instance's own interface —
+   nothing outside the instance can reach IMDS. Reachability *is* the enforcement.
+4. **The SDK's credential chain falls through to IMDS.** With no keys configured,
+   `credential-provider-node` hits IMDS and receives temporary credentials plus a session
+   token.
+5. **They expire and refresh automatically.** Instance-role credentials default to roughly six
+   hours; the SDK re-fetches before expiry, with no application code involved.
+
+Notice what never happened: the instance never presented a password or a secret. AWS already
+knew the mapping *"this role → this instance"* from step 1. IMDS just delivers the consequence
+of that decision.
+
+### The role's trust policy is the other half
+
+A role has two documents, and beginners conflate them:
+
+| Document | Answers | Example |
+|---|---|---|
+| **Permissions policy** | What the role **can do** | `s3:GetObject` on one bucket |
+| **Trust policy** (`Principal`) | **Who may assume it** | `ec2.amazonaws.com` |
+
+So "how does AWS trust your machine" has a two-part answer: the **trust policy** says the
+*service* may assume the role, and the **role-to-resource attachment** (made by an admin
+through the control plane) says *which* machine's requests get satisfied.
+
+| Where the creds are used | Role type | Trusts |
+|---|---|---|
+| EC2 instance | Instance profile | `ec2.amazonaws.com` |
+| ECS / Fargate task | Task role | `ecs-tasks.amazonaws.com` |
+| Lambda function | Execution role | `lambda.amazonaws.com` |
+| GitHub Actions | OIDC role | the GitHub OIDC provider + a condition on repo/ref |
+
+### The catch: the instance is trusted as a whole
+
+IMDS is readable by **any process on the instance**, with no further authentication by default.
+That is the SSRF risk — a web app with a server-side request forgery bug can fetch
+`http://169.254.169.254/...` and walk off with the role's credentials.
+
+Hardening:
+
+- **IMDSv2** requires a `PUT` first to obtain a session token, which defeats naive SSRF.
+- **Hop limit of 1** stops credentials being pulled through a container or host-side proxy.
+- In containers, prefer **task roles**, whose delivery goes through the ECS/EKS agent with a
+  scoped audience rather than raw IMDS.
+
+> **Interview framing:** long-lived keys put the burden on a human to rotate and detect leaks.
+> Roles move that burden to AWS: credentials expire on their own, and the *only* thing that
+> authorizes them is a role binding an admin made and CloudTrail recorded.
+
 ## The AWS CLI and profiles
 
 The console is only one of three ways into an account. The same credentials story applies to
@@ -365,6 +460,17 @@ Lost secret?   = delete the pair, create a new one
 
 Root keys      = possible, DON'T. Unrestrictable, no MFA.
 Roles          = NO access keys, ever. Temporary creds at assume-time.
+
+Trust model    = long-lived: trusted ONCE at creation, key IS the trust
+                 short-lived: trust RE-ISSUED per request, because an admin
+                              bound a role to the machine
+                 sessionToken present? → temporary.
+
+EC2 mechanism  = admin attaches role (the trust decision, in CloudTrail)
+                 → IMDS at 169.254.169.254 (link-local, not routable)
+                 → SDK chain fetches creds + sessionToken
+                 → expire (~6h), auto-refresh
+                 role has 2 docs: permissions (can do) + trust (who assumes)
 
 CLI auth       = access keys, NOT user/password
                  aws configure                      → default profile
