@@ -13,7 +13,9 @@ course (running example: the **Animals4Life** rescue org).
 - You create IAM users in the **IAM** service. Each one is a login **inside one account**.
 - A new user starts with **zero permissions** — access is granted explicitly.
 - There are **two independent** kinds of access: **Console** (password) and **Programmatic**
-  (access keys). Console access is **opt-in**.
+  (access keys). Console access is **opt-in**. The programmatic half — key pairs, the 0–2 rule,
+  why they're long-term, and why roles replace them — is in
+  [`../04-iam-access-keys`](../04-iam-access-keys/README.md).
 - Secure it with **MFA**, exactly like the root user.
 - IAM users have **no email** → no self-service password reset; an admin must help.
 - **Root is special; IAM users are normal.** Root cannot be restricted; IAM users can.
@@ -171,5 +173,7 @@ the static-key version:
 
 - [`../01-accounts-vs-identities`](../01-accounts-vs-identities/README.md) — account vs identity
 - [`../02-boundary-and-blast-radius`](../02-boundary-and-blast-radius/README.md) — the boundary
+- [`../04-iam-access-keys`](../04-iam-access-keys/README.md) — the programmatic half of the
+  two-toggles story: key pairs, the 0–2 rule, and why roles replace them
 - [`CLOUD.md`](../../../CLOUD.md) → Track 3 — the full AWS roadmap (policies, roles next)
 - [learn.cantrill.io](https://learn.cantrill.io) — source of the Animals4Life scenario
