@@ -12,7 +12,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done
 `worker_threads`, the event loop, I/O, performance and limits are thin JS layers over OS
 primitives. Learn these first and the rest reads as obvious. Read before (or alongside)
 topics 2 (event loop), 23 (workers) and 31 (I/O). Every claim below is sourced.
-Example dir: `0-user-kernel-space` (user vs kernel space, syscalls) and
+Example dir: `00-user-kernel-space` (user vs kernel space, syscalls) and
 `10-request-lifecycle` (watch a request allocate fds/sockets live).
 
 - **Process vs thread** — a process owns memory and at least one thread; threads in one
@@ -119,15 +119,15 @@ event-loop lag.**
 
 | #  | Topic                        | Example dirs                 | Status | Notes |
 |----|------------------------------|------------------------------|--------|-------|
-| 1  | Node.js basics               | `1-hello-world`, `2-http-server` | [x] | hello world, minimal http server · book ch1 |
-| 2  | Event loop & async model     | `5-event-loop`               | [x]    | phases, microtasks, blocking; CJS vs ESM nextTick order · book App. A (delay, utilization) |
-| 3  | Modules (ESM / CJS)          | `6-modules`, `9-import-meta` | [x]    | .mjs vs .cjs, package.json "type", interop; import.meta (url/filename/dirname/main/resolve) & CJS equivalents · book ch5 (module mgmt) |
-| 4  | TypeScript setup             | `3-type-checking`, `4-tsc-noemit` | [x] | `tsc --noEmit`, type stripping limits · book ch2 |
-| 5  | Async patterns               | `5-async-patterns`           | [ ]    | promises, AbortController, concurrency limits |
-| 6  | Error handling               | `6-error-handling`           | [ ]    | placeholder · book ch2 (meaningful errors/logs) |
+| 1  | Node.js basics               | `01-hello-world`, `02-http-server` | [x] | hello world, minimal http server · book ch1 |
+| 2  | Event loop & async model     | `05-event-loop`               | [x]    | phases, microtasks, blocking; CJS vs ESM nextTick order · book App. A (delay, utilization) |
+| 3  | Modules (ESM / CJS)          | `06-modules`, `09-import-meta` | [x]    | .mjs vs .cjs, package.json "type", interop; import.meta (url/filename/dirname/main/resolve) & CJS equivalents · book ch5 (module mgmt) |
+| 4  | TypeScript setup             | `03-type-checking`, `04-tsc-noemit` | [x] | `tsc --noEmit`, type stripping limits · book ch2 |
+| 5  | Async patterns               | `05-async-patterns`           | [ ]    | promises, AbortController, concurrency limits |
+| 6  | Error handling               | `06-error-handling`           | [ ]    | placeholder · book ch2 (meaningful errors/logs) |
 | 7  | Streams & backpressure       | `19-streams`                 | [~]    | Readable/Writable/Duplex/Transform; flowing vs paused; backpressure (`write()`→`'drain'`); `pipeline()` vs `.pipe()`; async iterators; object mode; Web Streams · Collina masterclass |
-| 8  | Caching                      | `8-caching`                  | [ ]    | lru, stale-while-revalidate, HTTP caching · book ch3 |
-| 9  | Graceful shutdown            | `9-graceful-shutdown`        | [ ]    | signals, drain, close connections · book ch2 (close-with-grace) |
+| 8  | Caching                      | `08-caching`                  | [ ]    | lru, stale-while-revalidate, HTTP caching · book ch3 |
+| 9  | Graceful shutdown            | `09-graceful-shutdown`        | [ ]    | signals, drain, close connections · book ch2 (close-with-grace) |
 | 10 | Environment & secrets        | `10-environment`             | [ ]    | 12-factor, config anti-patterns · book ch4 |
 | 11 | Logging                      | `11-logging`                 | [ ]    | structured logs, Pino · book ch2 |
 | 12 | Performance                  | `12-performance`             | [ ]    | event-loop lag/utilization, benchmarks · book App. A |
@@ -141,7 +141,7 @@ event-loop lag.**
 | 20 | HTTP clients                 | `12-http-agent`              | [~]    | http.Agent keep-alive pool, maxSockets & next-socket selection; undici/retries next · book ch2 |
 | 21 | App health & observability   | `21-app-health`              | [ ]    | metrics, health checks, OpenTelemetry; per-process metrics (fds, sockets, memory breakdown, CPU) · book ch7 |
 | 22 | Fault tolerance              | `22-fault-tolerance`         | [ ]    | retries, timeouts, circuit breakers · book ch7 |
-| 23 | Workers & scaling            | `8-worker-threads`           | [~]    | worker_threads: main vs worker, CPU-bound off the loop; cluster next · book ch7 (scaling) |
+| 23 | Workers & scaling            | `08-worker-threads`           | [~]    | worker_threads: main vs worker, CPU-bound off the loop; cluster next · book ch7 (scaling) |
 | 24 | Capstone                     | `24-capstone`                | [ ]    | placeholder |
 | 25 | SSR frontends                | `25-ssr`                     | [ ]    | server-side rendering, Next.js · book ch3 |
 | 26 | App architecture & DI        | `26-architecture`            | [ ]    | modularity, dependency injection, monolith→microservices · book ch5 |
@@ -149,7 +149,7 @@ event-loop lag.**
 | 28 | Orchestration & cloud        | `28-cloud`                   | [ ]    | Kubernetes, serverless, Node-aware scaling signals · book ch6 |
 | 29 | Runtime validation           | `29-validation`              | [ ]    | JSON Schema, Ajv, TypeBox · book ch2 |
 | 30 | Database integration         | `30-database`                | [ ]    | connections, pooling, migrations · book ch2 |
-| 31 | I/O fundamentals             | `7-io`, `10-request-lifecycle`, `13-sockets` | [x] | input/output, blocking vs non-blocking; live fd/socket trace; sockets (listener vs connection, 5-tuple, UDP) · cited refs |
+| 31 | I/O fundamentals             | `07-io`, `10-request-lifecycle`, `13-sockets` | [x] | input/output, blocking vs non-blocking; live fd/socket trace; sockets (listener vs connection, 5-tuple, UDP) · cited refs |
 | 32 | Package tooling (npm / npx)  | `14-npx`                     | [x]    | npx = the runner half of npm (`npm exec`); local `node_modules/.bin` vs just-in-time fetch; why not global installs |
 | 33 | V8 memory & GC tuning        | `15-v8-memory`               | [x]    | generational GC (scavenger, promotion, mark-sweep); RSS vs `heapUsed`; don't kill at 80%; `--max-semi-space-size` · Collina dotJS 2025 |
 | 34 | Private class fields (`#`)   | `20-private-fields`          | [x]    | truly-private `#` fields/methods/statics/getters (ES2022); vs `_` convention & TS `private`; brand check `#x in obj`; not enumerable/serialized |
@@ -174,7 +174,7 @@ Material used to shape these topics. Reference only — no content is copied int
   *Trash talk* — <https://v8.dev/blog/trash-talk>; Rob Pike *Concurrency is not Parallelism*
   — <https://go.dev/blog/waza-talk>; Node.js docs *event loop*, *Don't Block the Event Loop*,
   *worker_threads*, *os*, *process*, *cli*. (Full inline links in topic 0 above.)
-- **I/O definitions** (for `7-io`): Wikipedia *Input/output*; IBM z/OS Basic Skills
+- **I/O definitions** (for `07-io`): Wikipedia *Input/output*; IBM z/OS Basic Skills
   *Input and output*; NIST CSRC glossary *Input/Output (I/O)*; Yale CS/Aspnes
   *InputOutput*. Full links in `7-io/README.md`.
 - **Production failure modes** (for the incidents section): Node.js official *Diagnostics*
@@ -277,7 +277,7 @@ One small example per `node:` module that performs I/O — tick off as built.
 - [ ] `node:crypto` — async crypto ops (threadpool)
 - [ ] `node:tls` — TLS sockets
 - [ ] `node:stream`, `node:readline`, `readline/promises` — streaming I/O
-- [x] `node:worker_threads` — message passing (`8-worker-threads`)
+- [x] `node:worker_threads` — message passing (`08-worker-threads`)
 - [x] `process` — stdin / stdout / stderr (`21-stdout-vs-console`)
 
 (Which use the OS event queue vs libuv's threadpool: see `7-io/README.md`.)
@@ -326,6 +326,30 @@ Candidate failure modes to hunt for:
 - [ ] DB / connection-pool exhaustion under load
 - [ ] ReDoS via catastrophic regex backtracking
 - [ ] Backpressure ignored on a `stream`/socket → memory growth
+
+## Certifications & interview prep (separate track)
+
+Deliberately **not** part of the Node topic table above — this is exam/credential and
+interview prep, a different mode from the hands-on examples. It *reinforces* the cloud,
+scaling, resilience and observability topics (21, 22, 27, 28) rather than replacing them.
+
+Goal: **end-to-end delivery** — cloud-aware system design *plus* a TypeScript front end
+and back end you have actually built and deployed. The repo is the proof of depth; the
+cert is the signal that gets you past the filter.
+
+- [ ] **AWS Certified Solutions Architect – Professional (SA Pro)** — org/complex
+  architectures, migration, cost, reliability, security; deepens the Node-aware cloud and
+  scaling work. (Associate first if not already held.)
+- [ ] **DSA / LeetCode 150 (NeetCode 150)** — pattern-based and timed: arrays/two-pointers,
+  sliding window, stack, binary search, linked list, trees, tries, heap, backtracking,
+  graphs, 1-D/2-D DP, intervals, greedy, bit ops.
+- [ ] **Behavioral & system design prep** — STAR stories (ownership, conflict, failure,
+  ambiguity, impact); system design drills anchored to real work in this repo.
+- [ ] **Full-stack hands-on: React + Node + TypeScript** — build and deploy one real
+  end-to-end app; ties the Node runtime depth here to a product surface.
+
+Sequencing: run the full-stack build in parallel with the study tracks; book the exam only
+when a full-length practice is consistently passing. Track progress here, not as topic rows.
 
 ## How to add a topic
 
