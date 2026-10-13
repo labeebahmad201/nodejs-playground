@@ -91,7 +91,9 @@ Numbering under `cloud/` restarts at `01` and is independent of the root-level t
 
 - [x] **01. Accounts & identities** — AWS account as a container vs IAM identity; account root
   user and why it can't be restricted; account boundary, blast radius, and multi-account
-  structure. Running example: the Animals4Life rescue org from
+  structure; creating the first **IAM user** (sign-in alias, console vs programmatic access,
+  group/copy/attach permissions, `AdministratorAccess`, MFA, no-email gotcha). Running example:
+  the Animals4Life rescue org from
   [learn.cantrill.io](https://learn.cantrill.io). Node tie-in: why the SDK credential chain and
   task/instance roles replace long-lived root access keys.
   Example: `cloud/01-aws-accounts`.

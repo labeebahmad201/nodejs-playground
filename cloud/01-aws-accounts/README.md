@@ -13,6 +13,7 @@ it gives the abstract concepts something concrete to attach to.
 |---|---|
 | [`01-accounts-vs-identities`](./01-accounts-vs-identities/) | Account as a container vs IAM identity; account attributes; root user; pay-as-you-go; the Animals4Life scenario |
 | [`02-boundary-and-blast-radius`](./02-boundary-and-blast-radius/) | The account boundary, isolation, containment, multi-account structure |
+| [`03-iam-users`](./03-iam-users/) | Creating IAM users: sign-in URL/alias, console vs programmatic access, the three permission paths, `AdministratorAccess`, MFA, and the "no email" gotcha |
 
 ## Why this is topic 01
 
@@ -37,5 +38,6 @@ concrete and more useful:
 
 - [x] `01-accounts-vs-identities`
 - [x] `02-boundary-and-blast-radius`
+- [x] `03-iam-users`
 
 Next up: `02-aws-iam-policies` (policy structure, explicit deny, permission boundaries, SCPs).
