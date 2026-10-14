@@ -99,7 +99,7 @@ directory to the nearest `package.json` and reads its `"type"` field:
 - an explicit `.mjs` / `.cjs` extension overrides the `package.json`
 
 For `5-event-loop/index.ts` that nearest ancestor is the repo-root
-[`package.json`](../package.json), which sets `"type": "module"` — so this file is ESM.
+[`package.json`](../../package.json), which sets `"type": "module"` — so this file is ESM.
 
 ## Gotcha: `process.nextTick` vs promises is not universal
 

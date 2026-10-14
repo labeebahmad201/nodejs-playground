@@ -6,7 +6,7 @@
 //
 // ESM vs CJS — which decides step 1's ordering — is not set in this file. Node walks
 // up from this directory to the nearest package.json and reads its "type" field.
-// That file is ../package.json ("type": "module"), so this file is ESM. The .mjs/.cjs
+// That file is ../../package.json ("type": "module"), so this file is ESM. The .mjs/.cjs
 // extension, if present, would override it.
 //
 // Each step prints its expected output in the comment right above it, so you can read
