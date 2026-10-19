@@ -85,6 +85,37 @@ startAll([new BillingService()]); // compiles: billing now polls, which nobody a
 - The compiler cannot tell "is a" from "wanted the helper", so no call site can either.
 - Every function typed against `BaseService` now accepts it — including the ones that call `start`.
 
+The smallest version of the same mistake — one inherited method, two subclasses:
+
+```ts
+class FileStore {
+  save(path: string, data: string): void { /* writes to disk */ }
+}
+
+class UserRepo extends FileStore {
+  create(user: User): void {
+    this.save(`users/${user.id}.json`, JSON.stringify(user));
+  }
+}
+
+class InvoiceRepo extends FileStore {
+  create(invoice: Invoice): void {
+    this.save(`invoices/${invoice.id}.json`, JSON.stringify(invoice));
+  }
+}
+```
+
+`save` was the only thing wanted, but the declarations now say `UserRepo is a FileStore` and
+`InvoiceRepo is a FileStore`, so anything typed against `FileStore` accepts a repository:
+
+```ts
+function backup(target: FileStore): void { /* ... */ }
+backup(new UserRepo()); // compiles: the repository is a file store to every caller
+```
+
+Two subclasses sharing one inherited method is code reuse. The subtype polymorphism came free with
+it, and nobody asked for it.
+
 The fix is the previous row of the table: hold the helper (`constructor(private logger: Logger)`),
 and `BillingService` stops being a `BaseService` at all.
 
