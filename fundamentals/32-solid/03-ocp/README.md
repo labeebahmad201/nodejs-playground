@@ -104,6 +104,9 @@ shape is always expressible) and closed (nothing existing changes). An `interfac
 getArea(): number }` with `implements` is the same idea — the abstract class is just the textbook
 presentation.
 
+(This same interface-and-implementations shape is also what the Strategy pattern looks like. What
+differs is intent — see [Strategy vs subtype polymorphism](../../34-strategy-vs-subtype-polymorphism).)
+
 ## When a switch is fine
 
 The smell is not the keyword. For a branch to be an OCP problem, two conditions have to hold: it
