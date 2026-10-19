@@ -49,19 +49,9 @@ So:
 - **Tests touch the real thing.** Constructing `Checkout` is enough to reach SMTP, and there is no
   seam for a fake.
 
-### The missing seam
-
-A **seam** is "a place where you can alter behavior in your program without editing in that place"
-(Michael Feathers, *Working Effectively with Legacy Code*, ch. 4). In object code that place is a
-parameter — the constructor, a method, a setter.
-
-`Checkout` has the socket but not the seam. The field is typed `Notifier`, so a `SlackNotifier`
-would fit, but there is no way to hand one in. The only place the value can change is the source of
-`Checkout` itself.
-
-Feathers adds that every seam has an **enabling point** — "a place where you can make the decision
-to use one behavior or another." With a constructor parameter that place is the caller: `main`, a
-test, a factory. With `new` inside, no such place exists outside the class.
+`Checkout` has no seam: the field is typed `Notifier`, so a `SlackNotifier` would fit, but there is
+no way to hand one in. A seam is a place where behavior can be replaced without editing the class —
+[Seams](../40-seam) covers the concept; here it is enough that `Checkout` has none.
 
 ## Worse inside a method
 
@@ -171,8 +161,6 @@ but the implementation is already fixed, and the class is coupled to the concret
   example, the constructor-injected version, and the assembler
 - Mark Seemann — *Composition Root* (28 Jul 2011) —
   <https://blog.ploeh.dk/2011/07/28/CompositionRoot/> — the definition and the entry points
-- Michael Feathers — *Working Effectively with Legacy Code* (2004), ch. 4 "The Seam Model" — the
-  definition of a seam and of an enabling point
 - Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides — *Design Patterns* (1994) — the design
   principle "Program to an interface, not an implementation"
 - This repo — [Strategy pattern](../35-strategy-pattern) — the receiving side, where the
