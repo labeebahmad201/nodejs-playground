@@ -59,6 +59,35 @@ class Square implements Shape {
 `implements` carries the contract and **no code** — which is exactly what is wanted when the
 implementations have nothing to share.
 
+## The catch: the second half arrives anyway
+
+Inherit only for the reuse, and the polymorphism still comes with it. Your class is now accepted
+anywhere the parent is accepted — including places you never considered:
+
+```ts
+class BaseService {
+  protected log(message: string): void { /* ... */ }
+  start(): void { /* begins polling */ }
+}
+
+class BillingService extends BaseService {
+  charge(order: Order): void { this.log(`charging ${order.id}`); } // wanted log(), became a service
+}
+
+function startAll(services: BaseService[]): void {
+  for (const service of services) service.start();
+}
+
+startAll([new BillingService()]); // compiles: billing now polls, which nobody asked for
+```
+
+- `BillingService` never meant to be a `BaseService`; inheriting `log` made the claim for it.
+- The compiler cannot tell "is a" from "wanted the helper", so no call site can either.
+- Every function typed against `BaseService` now accepts it — including the ones that call `start`.
+
+The fix is the previous row of the table: hold the helper (`constructor(private logger: Logger)`),
+and `BillingService` stops being a `BaseService` at all.
+
 ## One-line summary
 
 **Inherit only when you want both hierarchical reuse and subtype polymorphism; want only the reuse
