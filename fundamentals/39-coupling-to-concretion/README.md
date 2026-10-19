@@ -1,11 +1,9 @@
 # Coupling to a concretion
 
-*A class that receives a `Notifier` can be handed any implementation. A class that writes
-`new EmailNotifier()` has already picked one — the interface in its field records what it uses, not
-what it can become. That is coupling to a concretion, and it survives every `implements` in the
-codebase.*
+*You use an interface, but you create the implementation yourself. Then the interface protects
+nothing — the choice was already made where the object was built.*
 
-## The polymorphism that works
+## Polymorphism works when the object comes from outside
 
 ```ts
 interface Notifier {
@@ -15,133 +13,100 @@ interface Notifier {
 class EmailNotifier implements Notifier { /* ... */ }
 class SlackNotifier implements Notifier { /* ... */ }
 
-async function announce(notifier: Notifier, body: string): Promise<void> {
-  await notifier.send("ops", body);
+function announce(notifier: Notifier, body: string) {
+  return notifier.send("ops", body);
 }
 
-await announce(new EmailNotifier(), "deployed");
-await announce(new SlackNotifier(), "deployed");
+announce(new EmailNotifier(), "deployed");
+announce(new SlackNotifier(), "deployed");
 ```
 
-The function names the contract and *receives* the value; both implementations reach the same
-parameter, so the substitution is real. Note where the `new` is written: in the code that decides,
-outside the function that uses.
+`announce` works with both because both are passed in. It never mentions a concrete class.
 
-## The scenario: the choice is made inside
+## The problem: the class creates its own collaborator
 
 ```ts
 class Checkout {
-  private notifier: Notifier;
-
-  constructor() {
-    this.notifier = new EmailNotifier(); // the only implementation it will ever hold
-  }
+  private notifier: Notifier = new EmailNotifier();
 
   async pay(order: Order): Promise<void> {
-    // ...
-    await this.notifier.send(order.email, `paid ${order.total}`);
+    await this.notifier.send(order.email, "paid");
   }
 }
 ```
 
-`Checkout` compiles against `Notifier`, and the field is honest about what the class needs:
-one `send` method. But the field is assigned once, to a literal constructor call, in a constructor
-that takes no arguments. No `SlackNotifier` can ever arrive. The interface narrowed the **surface**
-of the dependency; it did nothing about its **source**.
+The field says `Notifier`. The value is always `EmailNotifier`. The interface describes what
+`Checkout` calls, not what it can be given.
 
-Nothing at the call site hints at this. `new Checkout()` looks like an object with no
-dependencies, while it silently owns an SMTP client.
+Composition itself is fine — `Checkout` has-a collaborator. What is wrong is where the
+collaborator comes from: it is created here.
 
-## The scenario, one level worse: inside a method
+So:
+
+- **Changing the channel means editing `Checkout`.** There is no parameter through which another
+  implementation could arrive.
+- **Callers cannot see the dependency.** `new Checkout()` looks self-contained, but it sends email.
+- **Tests touch the real thing.** Constructing `Checkout` is enough to reach SMTP, and there is no
+  seam for a fake.
+
+## Worse inside a method
 
 ```ts
 class InvoiceReport {
   render(rows: Row[]): string {
-    const exporter = new CsvExporter(); // created, used, discarded
+    const exporter = new CsvExporter();
     return exporter.export(rows);
   }
 }
 ```
 
-Here the collaborator is not even state. It is born at the top of the call and dies at the return,
-so it cannot be replaced, configured, shared, or inspected — and the dependency does not appear in
-the class at all, only in the body. The signature `render(rows)` mentions no exporter.
+Now the collaborator is not even a field. It is created and discarded on every call, so nothing can
+replace or configure it, and any state it keeps is lost each time. `render(rows)` gives no hint that
+an exporter exists.
 
-A second symptom falls out of the same line: anything the exporter would remember between calls
-(a cache, a buffer, a connection) is thrown away on every call, because the object is rebuilt on
-every call.
+## Why the interface doesn't help
 
-## What is fixed
+An interface lets a variable hold any implementation. That only matters if more than one can reach
+the variable.
 
-`new Concrete()` inside the consumer transfers four decisions that the abstraction cannot take
-back:
+In `Checkout` there is exactly one assignment, and it is `new EmailNotifier()`. The type is
+compatible with both classes; the code only ever produces one.
 
-- **The implementation.** `EmailNotifier` is named in `Checkout`'s source. Moving to Slack is an
-  edit to `Checkout`, not a configuration change.
-- **The construction.** `new EmailNotifier()` carries its argument list — URL, credentials, retry
-  policy. The consumer now knows how to *build* the collaborator, not just how to call it.
-- **The lifetime.** The consumer creates it, so it owns initialisation and disposal, and cannot
-  share one notifier with the rest of the application or reuse a pooled one.
-- **The policy.** "Which channel do we notify on" was one decision for one place; it is now
-  repeated in every class that writes the same `new`.
+Typing the field `EmailNotifier` would change nothing. The coupling is the `new` and the import, not
+the annotation. `Notifier` is necessary for substitution, but it does not create it.
 
-These are one dependency. None of it passes through the field, so none of it is visible to the
-interface.
+## Every form of the same mistake
 
-## Why the interface does not help
+| Where you write `new` | What is fixed |
+| --- | --- |
+| field initializer | the implementation, before the object is used |
+| constructor body | the implementation and its arguments |
+| method body | the implementation, again on every call |
+| private factory or static helper | the implementation, behind one more name |
+| imported singleton | the implementation, at module load |
 
-Substitutability requires that two implementations can *arrive at the same variable*. In `Checkout`
-there is one assignment, to a `new`, and no parameter, setter, or factory result. The type accepts
-both classes; the code path admits one.
+In all five, the class that uses the object is also the class that names it.
 
-Typing the field as `EmailNotifier` instead would change nothing — the coupling is the constructor
-call and the import, not the annotation. Typing it as `Notifier` is necessary for substitution and
-does not produce it. The interface is a label on the choice, not a seam in it.
+## Where it is fine
 
-## Every shape it takes
+`new` has to happen somewhere. At the edge — the entry point, a factory, a test — someone creates
+the object once and passes it in. That is not this problem.
 
-| Where the `new` is written | What is fixed | Can anything vary it? |
-| --- | --- | --- |
-| field initializer | implementation, before the constructor body runs | no |
-| constructor body | implementation and its arguments | no |
-| method body | implementation, rebuilt on every call | no — not even state to replace |
-| private factory in the same class | implementation, behind one more name | no |
-| imported singleton (`import { notifier }`) | implementation, at module load | no |
-| a parameter, supplied by the caller | nothing | yes |
-
-The first five differ in spelling, not in coupling: the code that uses the collaborator is also the
-code that names the concrete class. The last row is the other side of the line — see below.
-
-## Where the line is
-
-`new` is not the smell; a program must construct something. The distinction is **who writes it**:
-
-- **Inside the consumer** — `Checkout` writes `new EmailNotifier()`. The consumer fixes the choice.
-  This note.
-- **At the edge** — the entry point, a factory, a test, or a container writes it and passes the
-  object in. The consumer only receives; the choice is made once, where it belongs.
-
-A default parameter (`constructor(private n: Notifier = new EmailNotifier())`) sits between them:
-a caller can override it, so it is not a lock — but everyone who omits the argument gets the same
-hard-coded implementation.
-
-Moving the `new` to the edge is the fix, and it is its own note.
+A default parameter sits in between: `constructor(private n: Notifier = new EmailNotifier())`. A
+caller can override it, but everyone who does not gets the same hard-coded class.
 
 ## How to spot it
 
-- A constructor with an empty parameter list and a body that constructs things.
-- A field typed as an interface whose only assignment is `new`.
-- A method whose first statement builds the collaborator the rest of the method calls.
-- An `import` of a concrete class sitting next to a field typed as its interface.
-- A test that performs I/O just by constructing the class under test — the dependency was chosen
-  inside, and the interface offered no seam.
+- An empty constructor whose body constructs things.
+- An interface field assigned once, with `new`.
+- A method whose first line builds what the rest of it calls.
+- A test that does I/O just by constructing the object.
 
 ## One-line summary
 
-**An interface creates substitutability only where implementations arrive from outside; writing
-`new Concrete()` inside the consumer's field, constructor, or method picks the implementation at the
-point of use, so the field type documents what the class uses but never becomes a seam — the
-consumer is coupled to the concretion whatever the field declares.**
+**An interface lets you swap implementations only when the object arrives from outside; if the
+class that uses the collaborator also writes `new Concrete()`, the field type records what it calls
+but the implementation is already fixed, and the class is coupled to the concretion.**
 
 ## References
 
