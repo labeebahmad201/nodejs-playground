@@ -15,7 +15,7 @@ about the same thing — managing the cost of change.*
 | Letter | Principle | One-line version | Notes |
 | --- | --- | --- | --- |
 | S | **Single Responsibility** | one class, one reason to change | → [01-srp/](./01-srp) |
-| O | **Open/Closed** | open for extension, closed for modification | todo |
+| O | **Open/Closed** | open for extension, closed for modification | → [03-ocp/](./03-ocp) |
 | L | **Liskov Substitution** | subtypes must be usable as their base type | todo |
 | I | **Interface Segregation** | many small interfaces beat one fat one | todo |
 | D | **Dependency Inversion** | depend on abstractions, not concretions | see `02-inversion-of-control` |
@@ -48,3 +48,5 @@ tell you how to stitch the pieces back together without re-creating the coupling
   what splitting it buys you.
 - [The Uncle Bob Test](./02-uncle-bob-test) — SRP as a blame question: ask who will get paged when
   the code breaks; two different accountable people is a clear violation.
+- [Open/Closed Principle (OCP)](./03-ocp) — Meyer's principle, Martin's Shape/Circle/Square
+  example, and why adding a variant should be a new class, not another `if/else` branch.
