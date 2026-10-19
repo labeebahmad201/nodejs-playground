@@ -133,6 +133,8 @@ classes.**
   Strategy pattern
 - This repo — [Strategy pattern](../35-strategy-pattern) — the pattern itself: structure,
   trade-offs and its neighbours
+- This repo — [When to use subtype polymorphism](../42-when-to-use-subtype-polymorphism) — the
+  prior question: whether a subtype hierarchy is warranted at all
 - This repo — [Open/Closed Principle](../32-solid/03-ocp) — the principle both approaches satisfy
 - Martin Fowler — *Refactoring* (2nd ed.) — *Replace Conditional with Polymorphism* (the
   refactoring that introduces either form)
