@@ -123,8 +123,22 @@ exporter.export("q3", after);  // "A,1" again — the inherited cache answered
 - Concrete parent methods run on your behalf: they cache, log, retry, validate, and allocate.
 - Declining them means overriding them one at a time — more coupling, not less.
 
-The fix is the table's last row: `class CsvExporter implements Exporter` — the contract only, no
-state and no inherited behavior.
+The fix is the table's last row — the interface carries the contract and nothing else:
+
+```ts
+interface Exporter { render(rows: Row[]): string }
+
+class CsvExporter implements Exporter {
+  render(rows: Row[]): string { return rows.map(toCsv).join("\n"); }
+}
+
+class JsonExporter implements Exporter {
+  render(rows: Row[]): string { return JSON.stringify(rows); }
+}
+```
+
+Callers still hold `Exporter` and get the same polymorphism — with no parent body, no cache, and no
+state the class did not ask for.
 
 ## One-line summary
 
