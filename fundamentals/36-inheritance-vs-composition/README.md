@@ -142,5 +142,6 @@ where the reusable code lives.**
   (1989)
 - Barbara Liskov — *Data Abstraction and Hierarchy* (1987); Barbara Liskov, Jeannette Wing —
   *A Behavioral Notion of Subtyping* (1994)
-- This repo — [Strategy pattern](../35-strategy-pattern), [Strategy vs subtype
+- This repo — [Two reasons for inheritance](../38-two-reasons-for-inheritance), [Strategy
+  pattern](../35-strategy-pattern), [Strategy vs subtype
   polymorphism](../34-strategy-vs-subtype-polymorphism), and the [SOLID overview](../32-solid)
