@@ -89,8 +89,48 @@ In all five, the class that uses the object is also the class that names it.
 
 ## Where it is fine
 
-`new` has to happen somewhere. At the edge — the entry point, a factory, a test — someone creates
-the object once and passes it in. That is not this problem.
+`new` has to happen somewhere. The difference is where: not inside the class that uses the object,
+but at the edge of the application, in code whose job is assembly.
+
+Martin Fowler's `MovieLister` is the canonical before/after. The naive version builds its finder
+itself — and note that the field is *already* the `MovieFinder` interface, while the constructor
+picks the class. That is this note's scenario, written in 2004:
+
+```java
+class MovieLister {
+  private MovieFinder finder;
+
+  public MovieLister() {
+    finder = new ColonDelimitedMovieFinder("movies1.txt");
+  }
+}
+```
+
+The injected version takes the interface and lets someone else decide:
+
+```java
+class MovieLister {
+  private MovieFinder finder;
+
+  public MovieLister(MovieFinder finder) {
+    this.finder = finder;
+  }
+}
+```
+
+The decision moves to an assembler — Fowler's word:
+
+> The basic idea of the Dependency Injection is to have a separate object, an assembler, that
+> populates a field in the lister class with an appropriate implementation for the finder interface.
+
+Mark Seemann names that place the **composition root**:
+
+> A Composition Root is a (preferably) unique location in an application where modules are composed
+> together.
+
+He puts it as close as possible to the application's entry point — `Main` in a console app,
+`global.asax` in ASP.NET MVC, `OnStartup` in WPF. That is where the concrete class is named; every
+class below it only receives.
 
 A default parameter sits in between: `constructor(private n: Notifier = new EmailNotifier())`. A
 caller can override it, but everyone who does not gets the same hard-coded class.
@@ -112,6 +152,11 @@ but the implementation is already fixed, and the class is coupled to the concret
 
 - Christopher Okhravi — *Only Use Inheritance If You Want Both of These* (30 Apr 2024), chapter
   *Couple to Abstractions* (7:13) — <https://www.youtube.com/watch?v=C3B5IIlt4-0>
+- Martin Fowler — *Inversion of Control Containers and the Dependency Injection pattern*
+  (23 Jan 2004) — <https://martinfowler.com/articles/injection.html> — the `MovieLister` naive
+  example, the constructor-injected version, and the assembler
+- Mark Seemann — *Composition Root* (28 Jul 2011) —
+  <https://blog.ploeh.dk/2011/07/28/CompositionRoot/> — the definition and the entry points
 - Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides — *Design Patterns* (1994) — the design
   principle "Program to an interface, not an implementation"
 - This repo — [Strategy pattern](../35-strategy-pattern) — the receiving side, where the
