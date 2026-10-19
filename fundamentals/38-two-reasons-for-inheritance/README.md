@@ -88,6 +88,44 @@ startAll([new BillingService()]); // compiles: billing now polls, which nobody a
 The fix is the previous row of the table: hold the helper (`constructor(private logger: Logger)`),
 and `BillingService` stops being a `BaseService` at all.
 
+## The other catch: the reuse arrives anyway
+
+Need polymorphism and inherit anyway, and the parent's implementation comes with the contract. That
+implementation is not inert — it can do work on your behalf that you never chose:
+
+```ts
+class BaseExporter {
+  private cache = new Map<string, string>();
+
+  export(id: string, rows: Row[]): string {
+    const hit = this.cache.get(id);
+    if (hit !== undefined) return hit; // behavior nobody asked for
+    const out = this.render(rows);
+    this.cache.set(id, out);
+    return out;
+  }
+
+  protected render(rows: Row[]): string { /* ... */ }
+}
+
+class CsvExporter extends BaseExporter {
+  protected render(rows: Row[]): string { return rows.map(toCsv).join("\n"); }
+}
+```
+
+```ts
+const exporter = new CsvExporter();
+exporter.export("q3", before); // "A,1"
+exporter.export("q3", after);  // "A,1" again — the inherited cache answered
+```
+
+- `CsvExporter` only wanted the `Exporter` contract (`render`); it is now also a cache with state.
+- Concrete parent methods run on your behalf: they cache, log, retry, validate, and allocate.
+- Declining them means overriding them one at a time — more coupling, not less.
+
+The fix is the table's last row: `class CsvExporter implements Exporter` — the contract only, no
+state and no inherited behavior.
+
 ## One-line summary
 
 **Inherit only when you want both hierarchical reuse and subtype polymorphism; want only the reuse
