@@ -16,7 +16,7 @@ about the same thing — managing the cost of change.*
 | --- | --- | --- | --- |
 | S | **Single Responsibility** | one class, one reason to change | → [01-srp/](./01-srp) |
 | O | **Open/Closed** | open for extension, closed for modification | → [03-ocp/](./03-ocp) |
-| L | **Liskov Substitution** | subtypes must be usable as their base type | todo |
+| L | **Liskov Substitution** | subtypes must be usable as their base type | → [04-lsp/](./04-lsp) |
 | I | **Interface Segregation** | many small interfaces beat one fat one | todo |
 | D | **Dependency Inversion** | depend on abstractions, not concretions | see `02-inversion-of-control` |
 
@@ -50,3 +50,5 @@ tell you how to stitch the pieces back together without re-creating the coupling
   the code breaks; two different accountable people is a clear violation.
 - [Open/Closed Principle (OCP)](./03-ocp) — Meyer's principle, Martin's Shape/Circle/Square
   example, and why adding a variant should be a new class, not another `if/else` branch.
+- [Liskov Substitution Principle (LSP)](./04-lsp) — the Square/Rectangle substitution failure:
+  why a subtype must honor the base class's behavior, not just its signatures.
