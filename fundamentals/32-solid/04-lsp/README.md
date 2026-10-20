@@ -1,73 +1,179 @@
 # Liskov Substitution Principle (LSP)
 
-*An object of a subtype must be usable anywhere the base type is expected, without changing the
-behavior clients rely on. The compiler checks the method signatures; LSP checks the promises behind
-them. `Square extends Rectangle` is the canonical failure: the geometry is right, but the
-`Rectangle` API promises that `setWidth` leaves the height alone — and a square cannot keep that
-promise.*
+*Wherever your code uses a supertype, every subtype must be usable in its place without the client
+breaking. Read alone, that is a definition with no motive — which is why it gets repeated as dogma,
+a rule about squares and rectangles. The motive lives one step earlier: object-oriented design is
+change management, subtype polymorphism exists so that adding a type does not mean editing a
+function, and LSP is what decides whether a new subtype is still an extension or a modification of
+every client that used the base.*
 
-## The promise in the base class
+## The definition
 
-`Rectangle` has two independent dimensions:
+Take a supertype `T` and its subtypes `S1 ... Sn`. Any code written against `T` — a parameter, a
+field, an array element, a variable — must keep working when it is handed any `Si` instead. Same
+result, same promises, no edits on the client side.
+
+If one substitution makes a client misbehave, `Si` violates the principle and `T`'s hierarchy is
+broken — even though every class compiles and every subtype is a correct implementation of its own
+idea. The test is not "is the subtype well written?" It is "does a client that only knows the base
+type notice the difference?"
+
+The rest of this note is the reasoning behind that test. If you start from the definition, it reads
+as a rule to memorize. Start from the problem it solves, and it is the only sensible answer.
+
+## Why we care: OOP is change management
+
+Object-oriented design is not a way to draw class diagrams. It is a way to keep the cost of change
+low: when the next feature arrives, how much working code has to be edited, and how much confidence
+has to be re-established before the change can be trusted?
+
+That is the [Open/Closed Principle](../03-ocp): extend by adding code, don't modify code that
+already works. Bug fixes are the exception — fixing a bug *is* editing code, and no principle
+changes that. Feature growth is where the rule applies: a new feature should be a new class, not an
+edit to a function that is already tested and working.
+
+The cost being avoided is concrete. Every edit to a working function re-opens everything that guards
+it:
+
+- its **unit tests**, because the branch that changed is the one they assert;
+- its **integration tests**, because its collaborators now see a slightly different module;
+- its **end-to-end paths**, because behavior the system exposes may have moved.
+
+So "just add an `if`" is not a local change. It transfers the verification burden for that function
+to whoever added the branch — for a function they did not need to touch. Adding a subtype instead
+leaves the function and its tests exactly as they were, and the new subtype arrives with its own
+tests. The **blast radius** of adding a type is the new file.
+
+## The scenario: the conditional that grows
+
+This is the shape the principle exists for. One function, deciding what to do from the type of the
+object it received:
+
+```ts
+type Shape =
+  | { kind: "circle"; radius: number }
+  | { kind: "square"; side: number };
+
+function areaOf(shape: Shape): number {
+  if (shape.kind === "circle") return Math.PI * shape.radius ** 2;
+  return shape.side ** 2;
+}
+```
+
+Every new variant edits `areaOf`. And `areaOf` is rarely alone: `render`, `export`, `hitTest` all
+ask the same "what kind is this?" question, so adding `triangle` means editing all of them and
+re-verifying all of them. That repetition is the real cost, not the keypress — one new concept
+spread across every function that dispatches on it.
+
+## The polymorphic version: one call, dispatch at runtime
+
+Replace the branch with a method on the supertype:
+
+```ts
+abstract class Shape {
+  abstract area(): number;
+}
+
+class Circle extends Shape {
+  constructor(private readonly radius: number) { super(); }
+  area(): number { return Math.PI * this.radius ** 2; }
+}
+
+class Square extends Shape {
+  constructor(private readonly side: number) { super(); }
+  area(): number { return this.side ** 2; }
+}
+
+function totalArea(shapes: Shape[]): number {
+  let total = 0;
+  for (const shape of shapes) total += shape.area(); // one call for every variant
+  return total;
+}
+```
+
+The conditional is gone. `totalArea` accepts the supertype, so any subtype can be passed in, and at
+runtime each object runs its own `area()`. Adding `Triangle` is one new class: `Shape`,
+`totalArea`, and every other client are untouched, and their existing tests still assert exactly
+what they asserted before. X branches became one call, and the function stopped being a place where
+change accumulates.
+
+| | `if`/`switch` on type | Subtype polymorphism |
+| --- | --- | --- |
+| Add a subtype | edit every function that dispatches | add one class |
+| Client functions touched | yes | no |
+| Tests to re-establish | for each edited function | none — the new subtype brings its own |
+| The function's source | grows with every variant | fixed |
+
+## The part that makes it work: the client cannot see the subtype
+
+`totalArea` has no idea what it received. It holds a `Shape`, calls `area()`, and trusts that the
+call means what `Shape` says it means. That is the whole benefit — and the whole risk.
+
+If a subtype redefines what `area()` means, `totalArea` silently returns a different number. The
+signature did not change, so the compiler is satisfied. The function's tests still pass for the
+shapes they instantiate. The break appears only in production, in a client that was never edited.
+
+Subtype polymorphism is therefore safe under exactly one condition: **every subtype must honor the
+contract of the base type as a client observes it.** That condition is the Liskov Substitution
+Principle.
+
+This is also the sense in which LSP is tied to OCP: if adding a subtype can break an existing
+client, then adding that subtype *was* a modification, and the code was never closed. OCP asks for
+the seam; LSP is what keeps the seam sound.
+
+## Overriding changes the implementation, not the contract
+
+A subtype is allowed to override a method — that is the mechanism. What it may change is **how** the
+answer is produced: the algorithm, the data structures, the collaborators, the private state, the
+performance. What it may not change is **what the client observes**:
+
+- if the method is supposed to return something, it returns that thing — same meaning, not merely
+  the same type;
+- the same state transitions, the same errors where the base promises errors, the same side effects
+  where the base promises them.
+
+The implementation is the subtype's business. The contract is the client's. An override that
+renegotiates the contract is not polymorphism; it is a different abstraction sharing a name.
+
+That is why the payoff compounds. With a contract in place, you can keep adding subtypes and the
+client code keeps working — that is the property the whole refactor is for. Without it, every new
+subtype is a new chance to break the clients that were supposed to be closed.
+
+## Square extends Rectangle, through the client's eyes
+
+The canonical failure, because both classes are individually correct:
 
 ```ts
 class Rectangle {
   constructor(protected width: number, protected height: number) {}
 
-  // setWidth changes width only; height is untouched.
-  setWidth(width: number): void { this.width = width; }
-
-  // setHeight changes height only; width is untouched.
-  setHeight(height: number): void { this.height = height; }
+  setWidth(width: number): void { this.width = width; }     // height is untouched
+  setHeight(height: number): void { this.height = height; } // width is untouched
 
   area(): number { return this.width * this.height; }
 }
-```
 
-The signatures say `setWidth(width: number): void`; they do not say what happens to `height`. The
-contract does:
-
-- after `setWidth(w)`: `width === w`, and `height` is unchanged;
-- after `setHeight(h)`: `height === h`, and `width` is unchanged;
-- `area()` is `width × height`.
-
-A client uses only that contract:
-
-```ts
-// Make the rectangle 5 × 4.
+// A client, written once, against the base type.
 function resize(rect: Rectangle): number {
   rect.setWidth(5);
   rect.setHeight(4);
-  return rect.area();
+  return rect.area(); // 20 for every Rectangle
 }
-
-resize(new Rectangle(3, 4)); // 20
 ```
-
-The function is correct for every `Rectangle`. It does not know whether the object is also a square,
-and the base type says it does not need to.
-
-## The Square that cannot keep it
 
 ```ts
 class Square extends Rectangle {
   constructor(side: number) { super(side, side); }
 
-  // A square keeps both sides equal, so setting one sets both.
-  override setWidth(width: number): void {
-    this.width = width;
-    this.height = width;
-  }
-
-  override setHeight(height: number): void {
-    this.width = height;
-    this.height = height;
-  }
+  override setWidth(width: number): void { this.width = width; this.height = width; }
+  override setHeight(height: number): void { this.width = height; this.height = height; }
 }
 ```
 
-The override is correct for a square: the sides stay equal. But it changes the behavior the base
-class promised. Step through `resize(new Square(3))`:
+```ts
+resize(new Rectangle(3, 4)); // 20
+resize(new Square(3));       // 16 — same function, same signature, different answer
+```
 
 | Step | `Rectangle(3, 4)` | `Square(3)` |
 | --- | --- | --- |
@@ -76,186 +182,219 @@ class promised. Step through `resize(new Square(3))`:
 | `setHeight(4)` | 5 × 4 | 4 × 4 |
 | `area()` | **20** | **16** |
 
-The divergence is at `setWidth(5)`: the rectangle keeps its height; the square changes it. By the
-time `setHeight(4)` runs, the rectangle is 5 × 4 and the square is 4 × 4.
+At `setWidth(5)`, `Rectangle` keeps its height; `Square` drags the height along, which is correct
+for a square. By `setHeight(4)`, the rectangle is 5 × 4 and the square is 4 × 4. The client changed
+nothing, the signature changed nothing, the compiler is happy — and the answer changed. That is a
+substitution the client noticed.
 
-`resize` returns 20 for the rectangle and 16 for the square. Nothing is wrong with either class in
-isolation: `Rectangle` keeps its dimensions independent; `Square` keeps its sides equal. The wrong
-part is the `extends` — a `Square` is being used as a `Rectangle`, and it cannot honor the
-`Rectangle` contract.
+Neither class is wrong on its own. `Square` keeps its sides equal; `Rectangle` keeps its dimensions
+independent. The lie is in the `extends`: it claims a `Square` can stand in wherever the base
+promises two independent dimensions, and it cannot. Geometry says a square is a rectangle; this API
+says a `Rectangle` is "two independent dimensions", which is not what a square is. The base type is
+the contract, not the shape.
 
-Martin: "The function works just fine for a Rectangle, but declares an assertion error if passed a
-Square." In his version the function ends with an assertion; here it returns the area, which makes
-the same difference visible.
+What to do instead:
 
-## The substitution test
+- **Drop the inheritance.** `Square` and `Rectangle` both implement a `Shape` with `area()`. A
+  client that needs independent dimensions takes the type that promises them.
+- **Remove the mutation.** An immutable `Rectangle` makes no promise about its dimensions after a
+  setter, so `Square extends Rectangle` is safe — there is no contract left to break.
+- **Name the client's requirement.** If resizing is a real need, put `setWidth`/`setHeight` on an
+  interface implemented only by types that can honor it. `Square` never claims to be one.
 
-LSP is the rule that this example breaks. Barbara Liskov's original formulation:
+## Signatures follow the same logic
 
-> If for each object o1 of type S there is an object o2 of type T such that for all programs P
-> defined in terms of T, the behavior of P is unchanged when o1 is substituted for o2 then S is a
-> subtype of T.
+Overriding also changes the method's type, and the same client-first reasoning applies there. This
+is where the rule becomes concrete enough to check in code.
 
-Read it as a test: take any program written against the base type, swap in the subtype, and see
-whether the program still behaves the same. `resize` is such a program. Put a `Square` where the
-`Rectangle` is expected, and the result changes from 20 to 16. That is the violation.
+### Parameters may only stay the same or get more general
 
-The compiler cannot catch it. `Square` has every method `Rectangle` has, with compatible
-signatures, so the assignment is legal. The broken part is the behavior, not the type.
-
-Martin puts the distinction bluntly: "No! A square might be a rectangle, but a Square object is
-definitely not a Rectangle object. Why? Because the behavior of a Square object is not consistent
-with the behavior of a Rectangle object. Behaviorally, a Square is not a Rectangle!"
-
-## "But a square is a rectangle"
-
-In geometry, yes. In this mutable API, no. The base type is not the mathematical idea of a
-rectangle; it is a set of promises to clients. `Rectangle` promises independent dimensions. A square
-cannot promise that and remain a square.
-
-The client's assumption is not a mistake. The client has a `Rectangle` reference, cannot see the
-`Square` behind it, and the base type invites the assumption that the dimensions are independent.
-Martin:
-
-> The validity of a model can only be expressed in terms of its clients.
-
-A `Square` that keeps its sides equal is a valid `Square`; it is not a valid `Rectangle` *for this
-client*.
-
-## The contract, precisely
-
-The promise behind `setWidth` is a **postcondition**:
+The parameter belongs to its own hierarchy, and it is not the class's hierarchy. In this example,
+renderers draw *onto* something: that something is the parameter. `Canvas` is not a subtype of
+`Renderer` — it is a subtype of `Surface`, the type the base method accepts. That is exactly the
+narrowing this section is about.
 
 ```ts
-// Rectangle.setWidth(w):
-// width === w && height === old.height
+// The parameter's hierarchy — independent of the receiver's.
+abstract class DrawTarget {
+  abstract paint(color: string): void;
+}
+
+class Surface extends DrawTarget {
+  paint(color: string): void { /* ... */ }
+}
+
+class Canvas extends Surface {
+  paint(color: string): void { /* ... */ }
+}
+
+class Wall extends Surface {
+  paint(color: string): void { /* ... */ }
+}
+
+// The receiver's hierarchy.
+class Renderer {
+  render(surface: Surface): void { /* ... */ }
+}
+
+// A client, written once, against the base type.
+function renderAll(renderers: Renderer[], surface: Surface): void {
+  for (const renderer of renderers) renderer.render(surface);
+}
+
+renderAll([new Renderer()], new Wall()); // valid: a Wall is a Surface
 ```
 
-`Square.setWidth` guarantees `width === w && height === w`. It does not guarantee
-`height === old.height`; whenever `old.height !== w`, the base postcondition is false. The subtype
-has weakened a postcondition, which is exactly what LSP forbids.
+Now a subtype narrows the parameter:
 
-Bertrand Meyer's rule, quoted by Martin:
+```ts
+class ChartRenderer extends Renderer {
+  override render(canvas: Canvas): void { /* ... */ } // only a Canvas will do
+}
 
-> ...when redefining a routine [in a derivative], you may only replace its precondition by a weaker
-> one, and its postcondition by a stronger one.
+// Still compiles: ChartRenderer is a Renderer, and a Wall is a Surface.
+renderAll([new ChartRenderer()], new Wall()); // at runtime, ChartRenderer gets a Wall
+```
 
-In table form:
+`Canvas` is a type the base method never mentioned. Every call site written against `Renderer` may
+pass any `Surface`; this override accepts only one branch of that hierarchy. The new type does not
+stay inside the subtype — it leaks out. To keep `renderAll` working, someone has to learn about
+`Canvas` and thread it through the call sites, which is precisely the client edit this design was
+supposed to prevent. Depending on the language, the client either stops compiling or fails at
+runtime; either way, the client is where the damage shows.
 
-| | Rule | Why |
+The rule: **an override's parameter type must be the same as the base's, or more general.** More
+general means it accepts everything the base accepted, plus more. The base takes a `Surface`; taking
+a `DrawTarget` is legal, because every `Surface` is a `DrawTarget`. The same subtype, widened:
+
+```ts
+class ChartRenderer extends Renderer {
+  override render(target: DrawTarget): void { /* ... */ } // every Surface, and more
+}
+```
+
+Every call site written against `Renderer` still compiles, and it never needs to know the subtype's
+type. Note what "more general" is measured against: the **base method's parameter type**, not the
+class that declares the method. Accepting a `Renderer` here would not be more general — renderers
+are a different hierarchy, and accepting only renderers would be another narrowing.
+
+### Return types may only stay the same or get more specific
+
+The same argument on the way out: a client typed against the base's return value must still be able
+to use what it receives. Narrowing the return (returning a `Circle` where the base promised a
+`Shape`) is safe; widening it (returning `number | string` where the base promised `number`) forces
+every caller to handle a case the base never promised.
+
+| Position | Allowed in the override | What the client sees |
 | --- | --- | --- |
-| precondition | may weaken | accept everything the base accepted, and more |
-| postcondition | may strengthen | promise everything the base promised, and more |
-| invariant | must preserve | clients rely on it in every state |
-| history | must not add observable state changes | clients see the base's methods only |
+| parameter | same, or more general (contravariant) | call sites keep passing what they already pass |
+| return | same, or more specific (covariant) | call sites keep using the value they already get |
+| behavior | the same observable results | the client does not know a subtype is there |
 
-The last row is the part Liskov and Wing added: a subtype cannot introduce observable state changes
-that the base type forbids. A mutable point cannot be a subtype of an immutable point, because the
-mutable one has histories the base does not allow. It is the same substitution rule applied to
-state, not just to method results.
+The shorthand: a subtype may **require less** and **promise more**, never the reverse.
 
-## Fix 1: remove the mutation
+### Where the rule comes from
 
-The violation is in the mutable setters, not in the geometry. Make the rectangle immutable, and the
-same is-a relationship works:
+- **Liskov & Wing, *A Behavioral Notion of Subtyping* (1994)** — a subtype may *weaken* a
+  precondition and must *strengthen* a postcondition; strengthening the precondition or weakening
+  the postcondition is forbidden. The parameter type is the precondition: widening it accepts
+  every input the base accepted, and more; narrowing it strengthens the precondition, which is the
+  direction the rule forbids.
+- **Bertrand Meyer, *Object-Oriented Software Construction* (1988)** — Design by Contract, quoted
+  by Martin in the LSP article: "when redefining a routine [in a derivative], you may only replace
+  its precondition by a weaker one, and its postcondition by a stronger one."
+- **Function subtyping** — in type theory, function types are contravariant in their parameters and
+  covariant in their result: `S2 → T1` is a subtype of `S1 → T2` when `S1 <: S2` and `T1 <: T2`
+  (Pierce, *Types and Programming Languages*, ch. 15). "Contravariant parameter" is the formal name
+  for "same or more general"; "covariant return" is "same or more specific".
 
-```ts
-class Rectangle {
-  constructor(readonly width: number, readonly height: number) {}
-  area(): number { return this.width * this.height; }
-}
+### What the compiler checks
 
-class Square extends Rectangle {
-  constructor(side: number) { super(side, side); }
-}
-```
+TypeScript enforces the return half. In `strict` mode, widening an override's return type is a build
+error. It does not enforce the parameter half for methods: method overrides are compared
+bivariantly, so `render(canvas: Canvas)` over `render(surface: Surface)` compiles — and the call
+above compiles with it, failing only at runtime, inside the client that passed a `Wall`.
+`strictFunctionTypes` closes the hole for plain function values (a property or callback typed
+`(surface: Surface) => void` cannot be assigned `(canvas: Canvas) => void`), but method declarations
+stay bivariant even under `strict`.
 
-`Square` is now a valid `Rectangle`: it has the same read-only properties, and `area()` is correct.
-There is no `setWidth` to break the contract. The old `resize` function no longer compiles, which is
-the right outcome: "resize two independent dimensions" was never a `Rectangle` operation in this
-design. A client that needs it must ask for a type that promises it.
+That asymmetry is the everyday shape of LSP: some of it lives in the signature, where a checker can
+see it, and the rest is a promise. The types tell you which promises exist; tests are how you find
+out whether a subtype kept them.
 
-## Fix 2: make the client's contract explicit
+## Where it came from
 
-If the application really needs resizing, keep the mutable rectangle but stop claiming that a square
-is one. Name the contract the client needs:
+Barbara Liskov formulated the principle in her 1987 OOPSLA keynote, *Data Abstraction and
+Hierarchy*, while working through inheritance as a reuse mechanism. The insight is not about
+squares. It is about what inheritance has to guarantee before the reuse is real: code written
+against a supertype is reusable with a subtype only if the subtype can stand in without the code
+noticing. If it cannot, the subtype is not an extension of the abstraction — it is a different
+abstraction sharing a name, and the polymorphism that promised to isolate the client leaks the
+client's assumptions back into view. In her framing, the substitution property is what a subtype
+*is*; without it, the hierarchy is a naming convention.
 
-```ts
-interface Shape {
-  area(): number;
-}
+Liskov and Jeannette Wing made that precise in 1994 (*A Behavioral Notion of Subtyping*): a subtype
+may weaken preconditions, strengthen postconditions, preserve invariants, and may not add observable
+state changes the base forbids — the formal versions of the rules above, plus the behavioral rule
+that no signature can express.
 
-interface ResizableRectangle extends Shape {
-  setWidth(width: number): void;
-  setHeight(height: number): void;
-}
-
-class Rectangle implements ResizableRectangle {
-  constructor(private width: number, private height: number) {}
-  setWidth(width: number): void { this.width = width; }
-  setHeight(height: number): void { this.height = height; }
-  area(): number { return this.width * this.height; }
-}
-
-class Square implements Shape {
-  constructor(private side: number) {}
-  area(): number { return this.side ** 2; }
-}
-```
-
-`resize` now takes a `ResizableRectangle`:
-
-```ts
-function resize(rect: ResizableRectangle): number {
-  rect.setWidth(5);
-  rect.setHeight(4);
-  return rect.area();
-}
-```
-
-`Square` is a `Shape`, not a `ResizableRectangle`, so the compiler rejects the call that used to
-break at runtime. The base contract is now explicit, and only the types that can honor it implement
-it.
+Robert C. Martin named it the **Liskov Substitution Principle** in his 1996 C++ Report column, from
+the same series as the [Open/Closed Principle](../03-ocp), and drew the connection this note is
+built on: a subtype that breaks its clients turns an extension into a modification.
 
 ## Why it matters
 
-LSP is what makes subtype polymorphism safe. Without it, a caller cannot trust the base type: any
-subtype might change the behavior behind the same signature, and every call becomes a guess. That is
-why Martin ties LSP directly to the [Open/Closed Principle](../03-ocp): if adding a subtype can
-break existing clients, the code is not closed for modification.
+- **The benefit of subtype polymorphism is stable client code, and LSP is what makes that true.**
+  The conditional does not disappear for elegance; it disappears so the function stops being edited
+  when types are added. A subtype that breaks the contract reinstates the edit — not in the source,
+  but in the verification and the assumptions, which is where the cost was all along.
+- **It is the test for whether an `extends` is honest.** When you write a subclass, the question is
+  not "does it compile?" but "would a client that only knows the base notice?" If yes, the is-a is
+  false: compose instead of inheriting, or narrow the base contract until the promise is true.
+- **It bounds the blast radius of adding a type.** With the contract held, a new subtype is a new
+  file plus its tests, and the clients stay closed. Without it, every subtype is a potential edit to
+  every client that used the base.
 
-- [When to use subtype polymorphism](../../42-when-to-use-subtype-polymorphism) — a hierarchy is
-  justified when the subtypes behave differently; LSP is the test that the difference is still
-  compatible with the base.
-- [Two reasons for inheritance](../../38-two-reasons-for-inheritance) — inheritance is for reuse
-  *and* substitutability. If you only want the reuse, compose instead.
+Related:
+
+- [Open/Closed Principle](../03-ocp) — the seam LSP keeps sound
+- [Two reasons for inheritance](../../38-two-reasons-for-inheritance) — reuse *and* substitutability;
+  if you only want the reuse, compose
 - [Strategy vs subtype polymorphism](../../34-strategy-vs-subtype-polymorphism) — once behavior
-  varies, this is how to choose between a subtype and an injected strategy.
+  varies, subtype or injected strategy?
+- [When to use subtype polymorphism](../../42-when-to-use-subtype-polymorphism) — a hierarchy is
+  justified when the variants do different things; a conditional over a closed set may be cheaper
 
 ## One-line summary
 
-**LSP is behavioral subtyping: a subtype must honor every promise the base type makes to its
-clients — `Square extends Rectangle` fails because `Rectangle.setWidth` promises to leave the
-height alone, and `Square.setWidth` cannot.**
+**Wherever code uses a supertype, any subtype must fit without the client noticing — parameters may
+only widen, returns may only narrow, and observable behavior must not change — because the whole
+payoff of subtype polymorphism is that adding a type never edits the client, and an override that
+breaks the base's promise turns that extension back into a modification.**
 
 ## References
 
 - Barbara Liskov — *Data Abstraction and Hierarchy* (OOPSLA '87 keynote; SIGPLAN Notices 23(5),
   1988) — the substitution property —
   <https://web.archive.org/web/20200621040810/https://klevas.mif.vu.lt/~plukas/resources/OODPrinciples/Liskov1987.pdf>
-- Barbara Liskov and Jeannette Wing — *A Behavioral Notion of Subtyping*, ACM TOPLAS 16(6),
-  1994 — preconditions, postconditions, invariants, and the history rule —
+- Barbara Liskov, Jeannette Wing — *A Behavioral Notion of Subtyping*, ACM TOPLAS 16(6), 1994 —
+  preconditions, postconditions, invariants, and the history rule —
   <https://doi.org/10.1145/197320.197383>
-- Robert C. Martin — *The Liskov Substitution Principle*, C++ Report (March 1996) — the
-  Square/Rectangle example, the client assumption, and the Design by Contract rule —
+- Bertrand Meyer — *Object-Oriented Software Construction* (1988) — Design by Contract: the
+  precondition/postcondition rule for redefinitions
+- Robert C. Martin — *The Liskov Substitution Principle*, C++ Report (March 1996) — the name, the
+  Square/Rectangle example, the link to OCP, and the Design by Contract rule quoted from Meyer —
   <https://www.cs.utexas.edu/~downing/papers/LSP-1996.pdf>
-- Bertrand Meyer — *Object-Oriented Software Construction* (1988) — Design by Contract:
-  preconditions, postconditions, invariants
+- Benjamin C. Pierce — *Types and Programming Languages* (2002), ch. 15 — function subtyping is
+  contravariant in its parameters and covariant in its result
+- TypeScript 2.6 release notes — "Strict function types": the check applies to function types, not
+  to method declarations, which is why a narrowing method override still compiles —
+  <https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-6.html>
+- Martin Fowler — *Refactoring* (2nd ed.) — the **Repeated Switches** smell and *Replace
+  Conditional with Polymorphism*
 - Wikipedia — *Liskov substitution principle* — the concise statement and the Square/Rectangle
-  code —
-  <https://en.wikipedia.org/wiki/Liskov_substitution_principle>
-- This repo — [Open/Closed Principle](../03-ocp) — why a subtype that breaks clients is not an
-  extension
-- This repo — [Strategy vs subtype polymorphism](../../34-strategy-vs-subtype-polymorphism)
-- This repo — [Two reasons for inheritance](../../38-two-reasons-for-inheritance)
-- This repo — [When to use subtype polymorphism](../../42-when-to-use-subtype-polymorphism)
+  code — <https://en.wikipedia.org/wiki/Liskov_substitution_principle>
+- This repo — [Open/Closed Principle](../03-ocp), [Strategy vs subtype
+  polymorphism](../../34-strategy-vs-subtype-polymorphism), [Two reasons for
+  inheritance](../../38-two-reasons-for-inheritance), [When to use subtype
+  polymorphism](../../42-when-to-use-subtype-polymorphism)

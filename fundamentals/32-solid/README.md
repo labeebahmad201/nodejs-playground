@@ -50,5 +50,6 @@ tell you how to stitch the pieces back together without re-creating the coupling
   the code breaks; two different accountable people is a clear violation.
 - [Open/Closed Principle (OCP)](./03-ocp) — Meyer's principle, Martin's Shape/Circle/Square
   example, and why adding a variant should be a new class, not another `if/else` branch.
-- [Liskov Substitution Principle (LSP)](./04-lsp) — the Square/Rectangle substitution failure:
-  why a subtype must honor the base class's behavior, not just its signatures.
+- [Liskov Substitution Principle (LSP)](./04-lsp) — why substituting a subtype must leave every
+  client of the base untouched: the growing type switch, the contract an override may not
+  renegotiate, and the parameter/return rules that keep call sites compiling.
