@@ -1,0 +1,185 @@
+# Two reasons for inheritance
+
+*Inheritance gives you two things at once: **hierarchical reuse of code** and **subtype
+polymorphism**. It is reasonable only when you want both. Want just one, and a cheaper construct
+gives you that one without dragging the other along.*
+
+| You want | Use |
+| --- | --- |
+| both reuse and polymorphism | inheritance |
+| only reuse of code | composition |
+| only subtype polymorphism | an interface |
+
+## Both → inheritance
+
+```ts
+abstract class Importer {
+  run(file: File): void {
+    for (const row of this.parse(file)) this.save(row); // shared
+  }
+
+  protected abstract parse(file: File): Row[];
+  protected abstract save(row: Row): void;
+}
+```
+
+Callers hold an `Importer` (polymorphism); subclasses share `run` (reuse). Both halves are used.
+
+## Only reuse → composition
+
+```ts
+class Csv {
+  toCsv(rows: Row[]): string { /* ... */ }
+}
+
+class SalesReport {
+  constructor(private csv: Csv) {}
+  render(rows: Row[]): string { return this.csv.toCsv(rows); }
+}
+```
+
+`SalesReport` gets the CSV code and claims to be nothing. No parent type, no all-or-nothing API.
+
+## Only polymorphism → interface
+
+```ts
+interface Shape { area(): number }
+
+class Circle implements Shape {
+  constructor(private radius: number) {}
+  area(): number { return Math.PI * this.radius ** 2; }
+}
+
+class Square implements Shape {
+  constructor(private side: number) {}
+  area(): number { return this.side ** 2; }
+}
+```
+
+`implements` carries the contract and **no code** — which is exactly what is wanted when the
+implementations have nothing to share.
+
+## The catch: the second half arrives anyway
+
+Inherit only for the reuse, and the polymorphism still comes with it. Your class is now accepted
+anywhere the parent is accepted — including places you never considered:
+
+```ts
+class BaseService {
+  protected log(message: string): void { /* ... */ }
+  start(): void { /* begins polling */ }
+}
+
+class BillingService extends BaseService {
+  charge(order: Order): void { this.log(`charging ${order.id}`); } // wanted log(), became a service
+}
+
+function startAll(services: BaseService[]): void {
+  for (const service of services) service.start();
+}
+
+startAll([new BillingService()]); // compiles: billing now polls, which nobody asked for
+```
+
+- `BillingService` never meant to be a `BaseService`; inheriting `log` made the claim for it.
+- The compiler cannot tell "is a" from "wanted the helper", so no call site can either.
+- Every function typed against `BaseService` now accepts it — including the ones that call `start`.
+
+The smallest version of the same mistake — one inherited method, two subclasses:
+
+```ts
+class FileStore {
+  save(path: string, data: string): void { /* writes to disk */ }
+}
+
+class UserRepo extends FileStore {
+  create(user: User): void {
+    this.save(`users/${user.id}.json`, JSON.stringify(user));
+  }
+}
+
+class InvoiceRepo extends FileStore {
+  create(invoice: Invoice): void {
+    this.save(`invoices/${invoice.id}.json`, JSON.stringify(invoice));
+  }
+}
+```
+
+`save` was the only thing wanted, but the declarations now say `UserRepo is a FileStore` and
+`InvoiceRepo is a FileStore`, so anything typed against `FileStore` accepts a repository:
+
+```ts
+function backup(target: FileStore): void { /* ... */ }
+backup(new UserRepo()); // compiles: the repository is a file store to every caller
+```
+
+Two subclasses sharing one inherited method is code reuse. The subtype polymorphism came free with
+it, and nobody asked for it.
+
+The fix is the previous row of the table: hold the helper (`constructor(private logger: Logger)`),
+and `BillingService` stops being a `BaseService` at all.
+
+## The other catch: the reuse arrives anyway
+
+Need polymorphism and inherit anyway, and the parent's implementation comes with the contract. That
+implementation is not inert — it can do work on your behalf that you never chose:
+
+```ts
+class BaseExporter {
+  private cache = new Map<string, string>();
+
+  export(id: string, rows: Row[]): string {
+    const hit = this.cache.get(id);
+    if (hit !== undefined) return hit; // behavior nobody asked for
+    const out = this.render(rows);
+    this.cache.set(id, out);
+    return out;
+  }
+
+  protected render(rows: Row[]): string { /* ... */ }
+}
+
+class CsvExporter extends BaseExporter {
+  protected render(rows: Row[]): string { return rows.map(toCsv).join("\n"); }
+}
+```
+
+```ts
+const exporter = new CsvExporter();
+exporter.export("q3", before); // "A,1"
+exporter.export("q3", after);  // "A,1" again — the inherited cache answered
+```
+
+- `CsvExporter` only wanted the `Exporter` contract (`render`); it is now also a cache with state.
+- Concrete parent methods run on your behalf: they cache, log, retry, validate, and allocate.
+- Declining them means overriding them one at a time — more coupling, not less.
+
+The fix is the table's last row — the interface carries the contract and nothing else:
+
+```ts
+interface Exporter { render(rows: Row[]): string }
+
+class CsvExporter implements Exporter {
+  render(rows: Row[]): string { return rows.map(toCsv).join("\n"); }
+}
+
+class JsonExporter implements Exporter {
+  render(rows: Row[]): string { return JSON.stringify(rows); }
+}
+```
+
+Callers still hold `Exporter` and get the same polymorphism — with no parent body, no cache, and no
+state the class did not ask for.
+
+## One-line summary
+
+**Inherit only when you want both hierarchical reuse and subtype polymorphism; want only the reuse
+and compose, want only the polymorphism and implement an interface — neither of those needs the
+other half, and inheritance gives you no way to decline it.**
+
+## References
+
+- Christopher Okhravi — *Only Use Inheritance If You Want Both of These* (30 Apr 2024),
+  <https://www.youtube.com/watch?v=C3B5IIlt4-0>
+- This repo — [Inheritance vs composition](36-inheritance-vs-composition.md) — the is-a test and
+  the full cost list; this note is the "do I want both?" half.
