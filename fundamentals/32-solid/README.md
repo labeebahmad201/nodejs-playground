@@ -17,8 +17,8 @@ about the same thing — managing the cost of change.*
 | S | **Single Responsibility** | one class, one reason to change | → [01-srp/](./01-srp) |
 | O | **Open/Closed** | open for extension, closed for modification | → [03-ocp/](./03-ocp) |
 | L | **Liskov Substitution** | subtypes must be usable as their base type | → [04-lsp/](./04-lsp) |
-| I | **Interface Segregation** | many small interfaces beat one fat one | todo |
-| D | **Dependency Inversion** | depend on abstractions, not concretions | see `02-inversion-of-control` |
+| I | **Interface Segregation** | many small interfaces beat one fat one | → [05-isp/](./05-isp) |
+| D | **Dependency Inversion** | depend on abstractions, not concretions | → [06-dip/](./06-dip) |
 
 ## How they fit together
 
@@ -53,3 +53,8 @@ tell you how to stitch the pieces back together without re-creating the coupling
 - [Liskov Substitution Principle (LSP)](./04-lsp) — why substituting a subtype must leave every
   client of the base untouched: the growing type switch, the contract an override may not
   renegotiate, and the parameter/return rules that keep call sites compiling.
+- [Interface Segregation Principle (ISP)](./05-isp) — why many small role interfaces beat one large
+  one: the animal/plant example, cohesion vs fragmentation, and "too many is better than too few."
+- [Dependency Inversion Principle (DIP)](./06-dip) — inversion vs injection vs where you inject,
+  the two-hierarchies example, injecting instead of `new`ing, and why the injected design often
+  removes the subtype hierarchy entirely.
