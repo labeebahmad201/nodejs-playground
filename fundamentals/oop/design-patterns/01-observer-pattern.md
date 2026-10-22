@@ -51,7 +51,12 @@ Both directions appear below.
 
 ## The observable
 
-The **observable** is the object whose state other objects care about. It owns two things:
+The **observable** is the object whose state other objects care about. **Subject** and **observable**
+mean the same thing: the GoF book calls this role the *subject*, while this note uses *observable*
+because it pairs more clearly with *observer*. A `Subject` interface in a codebase plays the same
+role as `Observable` below.
+
+It owns two things:
 
 1. its actual state (the temperature, the chat messages, the feed articles);
 2. a collection of observers that want to know when that state changes.
