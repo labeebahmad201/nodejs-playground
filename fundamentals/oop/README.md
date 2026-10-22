@@ -15,3 +15,6 @@
 - [strategy-polymorphism/40-seam.md](./strategy-polymorphism/40-seam.md)
 - [strategy-polymorphism/41-testability-and-anti-patterns.md](./strategy-polymorphism/41-testability-and-anti-patterns.md)
 - [strategy-polymorphism/42-when-to-use-subtype-polymorphism.md](./strategy-polymorphism/42-when-to-use-subtype-polymorphism.md)
+
+## Design patterns
+- [design-patterns/01-observer-pattern.md](./design-patterns/01-observer-pattern.md) — Observer: one-to-many change notification instead of polling
