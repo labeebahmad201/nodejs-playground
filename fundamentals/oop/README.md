@@ -3,6 +3,12 @@
 *Mechanics vs philosophy. The "how" vs the "why".*
 
 ## Core
+- [00-what-is-coupling.md](./00-what-is-coupling.md) — what coupling is, measured by change; tight coupling through `new`; testability; and coupling to an abstraction by constructor or parameter injection
+  - [00a-hidden-coupling.md](./00a-hidden-coupling.md) — dependencies with no import or type reference, visible only at runtime or in change history
+  - [00b-temporal-sequential-coupling.md](./00b-temporal-sequential-coupling.md) — required call order that the API does not enforce, and the constructor-injection fix
+  - [00c-implicit-global-state.md](./00c-implicit-global-state.md) — why shared mutable state is a hidden input, and the DI plus composition-root fix
+  - [00d-event-bus-topic-coupling.md](./00d-event-bus-topic-coupling.md) — why a topic-string typo fails silently, and the runtime-schema plus versioned-contract fix
+  - [00e-shared-database-schema-coupling.md](./00e-shared-database-schema-coupling.md) — why multiple services on one schema are coupled, and database per service
 - [01-four-fundamentals.md](./01-four-fundamentals.md) — Encapsulation, Abstraction, Inheritance, Polymorphism
 - [02-history-of-oop.md](./02-history-of-oop.md) — Simula vs Smalltalk, why we lost the "why", and why history repeats
 
@@ -18,3 +24,4 @@
 
 ## Design patterns
 - [design-patterns/01-observer-pattern.md](./design-patterns/01-observer-pattern.md) — Observer: one-to-many change notification instead of polling
+- [design-patterns/05d-global-access-and-coupling.md](./design-patterns/05d-global-access-and-coupling.md) — global access as common coupling, and the injection refactor
