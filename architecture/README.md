@@ -2,9 +2,11 @@
 
 *Notes for the [8-day architecture roadmap](../roadmap.md). The goal is judgment about trade-offs, not memorized style names.*
 
+> There is no perfect architecture. There is only fit for the problem, the forces, and the change you expect next.
+
 ## Day 1
 
-- [01 — Trade-off vocabulary](01-tradeoff-vocabulary.md) — architecture vs design, quality attributes, coupling and cohesion, the 12 trade-off questions, ADRs, and C4.
+- [01 — Trade-off vocabulary](01-tradeoff-vocabulary.md) — architecture vs design, quality attributes, coupling and cohesion, the 12 trade-off questions, contextual fit, ADRs, and C4.
 - [ADR-0001 — Use a composition root](adr/0001-composition-root.md) — a worked one-page decision record from the existing order example.
 
 ## Trade-offs

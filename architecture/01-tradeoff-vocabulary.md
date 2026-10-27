@@ -181,6 +181,44 @@ Order example:
 
 That is the Day 1 skill: not memorizing the answer, but making the reasoning explicit.
 
+## There is no perfect architecture
+
+There is no architecture that is best in every context. A design is good or bad only relative to the problem, the forces, and the change you expect next.
+
+A choice that fits one situation can be a liability in another:
+
+| Choice | Fits when | Does not fit when |
+| --- | --- | --- |
+| **Modular monolith** | A small or medium team, unclear boundaries, strong local consistency, and one deployable is acceptable | Independent deployment, scaling, ownership, or compliance isolation is mandatory |
+| **Microservices** | Teams need independent ownership, scaling, and failure isolation, and the platform can operate them | The team is small, boundaries are unclear, or there is no operational capability |
+| **Transactional outbox** | A business fact must survive a crash, and eventual consistency is acceptable | A query needs the answer now, or the side effect is truly best-effort |
+| **CQRS** | Read and write shapes diverge, or reporting load needs isolation | The domain is simple CRUD, and one model is clearer |
+
+The point is not “anything goes.” It is that the argument must name the context:
+
+> For **this problem**, given **these forces**, this is the best fit I can defend. It is not the best architecture in general.
+
+### Optimize for the change you expect next
+
+Architecture is a bet about the future. If a change is likely and expensive to retrofit, it is reasonable to optimize for it now. But distinguish:
+
+- **Evidenced change** — a roadmap item, a measured bottleneck, a compliance deadline, or a team split that is already happening.
+- **Speculative change** — “we might need microservices someday,” with no date, owner, or force.
+
+Optimize for the first. Keep the second reversible. Premature distribution and speculative abstraction are both ways to pay today for a future that may never arrive.
+
+Ask:
+
+- What change is likely, and what evidence supports it?
+- What would it cost to retrofit later?
+- What does optimizing for it now make worse?
+- Is the expected change near enough to justify the cost?
+- What would tell us the bet was wrong?
+
+The goal is not a perfect architecture. It is a **defensible fit**: explicit forces, accepted costs, and a revisit trigger. When the context changes, the fit can change.
+
+This is the practical version of Brooks’s “no silver bullet”: no single technique is best for every problem. See [Sources](#sources) for Brooks and Fowler.
+
 ## ADR: record the decision
 
 An Architecture Decision Record (ADR) is a short, immutable record of one architecturally significant decision. It is not a design document and not a meeting note. It captures the context, the decision, the consequences, and the alternatives.
@@ -312,6 +350,8 @@ A failure mode is not the root cause and not the business impact. It sits betwee
 
 - Bass, Clements & Kazman, [*Software Architecture in Practice*](https://www.sei.cmu.edu/library/software-architecture-in-practice-fourth-edition/), 4th ed. (2021), ch. 1.
 - Fowler, [*Who Needs an Architect?*](https://martinfowler.com/ieeeSoftware/whoNeedsArchitect.pdf) (2003).
+- Fowler, [*Microservice Trade-Offs*](https://martinfowler.com/articles/microservice-trade-offs.html) (2015), for context-dependent fit.
+- Brooks, [*No Silver Bullet — Essence and Accident in Software Engineering*](https://www.cs.unc.edu/techreports/86-020.pdf) (1986).
 - Richards & Ford, [*Fundamentals of Software Architecture*](https://www.oreilly.com/library/view/fundamentals-of-software/9781492043447/ch01.html) (2020), Part I.
 - Parnas, [*On the Criteria To Be Used in Decomposing Systems into Modules*](https://www.cs.colostate.edu/~france/CS314/Readings/Parnas-decomposition.pdf) (1972).
 - Conway, [*How Do Committees Invent?*](http://www.melconway.com/Home/Committees_Paper.html) (1968).

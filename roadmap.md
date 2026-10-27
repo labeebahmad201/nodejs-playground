@@ -76,13 +76,13 @@ If a day slips, write the output from memory and move on. Do not read more to co
 
 ### Day 1 — Foundations and trade-off vocabulary
 
-- [ ] **Learn:** architecture vs. design; quality attributes; coupling and cohesion at module scale; unit of deployment, ownership, change, consistency, and failure; ADRs; C4 diagrams.
+- [ ] **Learn:** architecture vs. design; quality attributes; coupling and cohesion at module scale; unit of deployment, ownership, change, consistency, and failure; context-dependent fit and the change you expect next; ADRs; C4 diagrams.
 - [ ] **Read:** *Fundamentals of Software Architecture*, Part I. Skim the [ADR](https://adr.github.io/) and [C4](https://c4model.com/) docs, then the [C4 reference note](architecture/01b-c4-model.md).
 - [ ] **Output:** `architecture/01-tradeoff-vocabulary.md`
   - the 12 trade-off questions;
   - a one-page ADR for a decision in the current project;
   - a blank trade-off matrix with columns: **Optimizes / Costs / Use when / Avoid when / Failure mode**.
-- [ ] **Done when:** you can explain why "it depends" is a real answer, not a dodge.
+- [ ] **Done when:** you can explain why "it depends" is a real answer, not a dodge, and why no architecture is universally best.
 
 ---
 

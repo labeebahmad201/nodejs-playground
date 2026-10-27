@@ -59,6 +59,8 @@ Fill these in as the later days are worked:
 
 ## How to use this file
 
+No row is universally good. The same choice can be right in one context and wrong in another; this matrix is a set of questions, not a ranking.
+
 For any architecture proposal, ask:
 
 1. Which row are we choosing?
