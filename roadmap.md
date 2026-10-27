@@ -255,6 +255,7 @@ architecture/
   01g-idempotency.md
   01h-practice-provenance.md
   02-layered-architecture.md
+  02a-big-ball-of-mud.md
   tradeoffs.md
   03-modular-monolith.md
   04-microservices.md

@@ -39,6 +39,7 @@ These are not styles to choose. They are recurring bad solutions to keep out of 
 | Anti-pattern | What it seems to optimize | Costs | Use when | Avoid when | Failure mode |
 | --- | --- | --- | --- | --- | --- |
 | [**External call inside a transaction**](01e-external-calls-inside-transactions.md) | Short-term code simplicity; the illusion of atomicity | Long-held locks and connections; pool exhaustion; timeouts; duplicate side effects; false atomicity; cascading failure | Almost never for network I/O | Any external HTTP, email, broker, cache, file, or third-party call | Provider succeeds but DB rolls back; DB commits but provider fails; pool saturation; retries duplicate the side effect; ambiguous state |
+| [**Big ball of mud**](02a-big-ball-of-mud.md) | Short-term speed; local freedom; no coordination cost | Hidden coupling; change amplification; extraction cost; onboarding drag; no safe deletion | Never deliberately; it emerges under deadline, turnover, and drift | Any system expected to live longer than the patch that created it | Everything talks to everything; shared models and tables; no boundary survives; rewrite or strangler only |
 
 ## Still to add
 
@@ -85,4 +86,5 @@ The answer should be a sentence, not a shrug:
 - [01g — Idempotency](01g-idempotency.md) — safe retries and duplicate processing.
 - [01h — Practice provenance and context](01h-practice-provenance.md) — why a practice’s popularity is not evidence of fit.
 - [02 — Layered architecture](02-layered-architecture.md) — technical layering, dependency direction, the sinkhole, and when layered is the right default.
+- [02a — Big ball of mud](02a-big-ball-of-mud.md) — the anti-pattern behind boundary erosion, and how to get out without a rewrite.
 - [Roadmap](../roadmap.md) — the 8-day plan that fills this matrix.
