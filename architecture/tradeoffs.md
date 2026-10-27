@@ -20,6 +20,7 @@ The matrix is not the goal. **Customer value is the goal.** A quality attribute 
 
 | Style or decision | Optimizes | Costs | Use when | Avoid when | Failure mode |
 | --- | --- | --- | --- | --- | --- |
+| [**Layered architecture**](02-layered-architecture.md) | Familiarity; framework fit; technical separation of concerns; cheap start; easy onboarding; replaceable layers in principle | Feature scattering; database-coupled domain; pass-through layers; mock-based tests; fat service layer | Thin domain; CRUD and admin systems; framework-imposed MVC; small team; short horizon | Domain logic is the product; multiple delivery mechanisms; business rules must be testable without I/O; expected schema or framework churn | Sinkhole; layered monolith; invisible business boundaries; logic pooling in controllers or services |
 | [**Modular monolith**](01a-modular-monolith.md) | Simple deployment; local transactions; fast change; easy debugging; low operational overhead | Shared runtime; coarse scaling; one deploy train; boundaries erode without discipline | Small or medium teams; unclear boundaries; strong consistency; early product; you want to learn the seams before distributing | Independent scaling or deployment is mandatory; teams already block each other on releases; a module needs a separate compliance or failure boundary | Big ball of mud; boundary erosion; shared schema; transaction creep; one deploy blocks everyone |
 | [**C4 model**](01b-c4-model.md) | Shared understanding; onboarding; scope control; communication across audiences; a vocabulary for module and container boundaries | Maintenance; staleness; oversimplification; false confidence; time spent drawing instead of deciding | Multiple audiences; architecture reviews; onboarding; distributed systems; decisions that need a shared map | A whiteboard sketch is enough; nobody will maintain it; you need detailed behavior or data modeling; the diagram is for compliance theater | Beautiful stale diagrams; mixed abstraction levels; boxes without meaning; "diagram theater" |
 | [**Transactional outbox**](01c-outbox-pattern.md) | Reliable publication; local atomicity of state and event; failure isolation; audit/replay; extraction seam | Extra table and relay; eventual consistency; duplicate handling; monitoring; cleanup | Events must survive crashes; side effects must not fail the primary operation; you need reliable integration; eventual consistency is acceptable | Best-effort side effects; immediate queries; same-boundary commands; huge payloads; no idempotent consumer | Relay lag; outbox bloat; duplicate processing; marking published too early; missing idempotency; poison messages |
@@ -43,7 +44,6 @@ These are not styles to choose. They are recurring bad solutions to keep out of 
 
 Fill these in as the later days are worked:
 
-- [ ] Layered architecture
 - [ ] Hexagonal / ports and adapters
 - [ ] Clean / onion architecture
 - [ ] Vertical slice
@@ -84,4 +84,5 @@ The answer should be a sentence, not a shrug:
 - [01f — Customer value is the measure of progress](01f-customer-value-and-progress.md) — the filter for why any of this matters.
 - [01g — Idempotency](01g-idempotency.md) — safe retries and duplicate processing.
 - [01h — Practice provenance and context](01h-practice-provenance.md) — why a practice’s popularity is not evidence of fit.
+- [02 — Layered architecture](02-layered-architecture.md) — technical layering, dependency direction, the sinkhole, and when layered is the right default.
 - [Roadmap](../roadmap.md) — the 8-day plan that fills this matrix.

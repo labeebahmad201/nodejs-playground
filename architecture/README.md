@@ -9,6 +9,10 @@
 - [01 — Trade-off vocabulary](01-tradeoff-vocabulary.md) — architecture vs design, quality attributes, coupling and cohesion, the 12 trade-off questions, contextual fit, ADRs, and C4.
 - [ADR-0001 — Use a composition root](adr/0001-composition-root.md) — a worked one-page decision record from the existing order example.
 
+## Day 2
+
+- [02 — Layered architecture](02-layered-architecture.md) — technical layering, closed versus open layers, dependency direction, the sinkhole, and when layered is the right default.
+
 ## Trade-offs
 
 - [Consolidated trade-off matrix](tradeoffs.md) — one row per style or decision: optimizes, costs, use when, avoid when, failure mode.
