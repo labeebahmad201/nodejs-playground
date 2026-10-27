@@ -20,6 +20,41 @@ Three properties do the work:
 
 The paper's image is a shantytown: cheap materials, unskilled labor, no infrastructure, no overall plan, but it satisfies an immediate local need. That is why it persists. **The mud works** — for a while, at the scale it was built for.
 
+### Boundaries are membranes, not walls
+
+A boundary is not the absence of calls. It is a rule about **which calls are allowed, in which direction, and what they may carry**.
+
+Think of it as a membrane with a small number of deliberate holes:
+
+- the **membrane** is the private inside: domain model, persistence, adapters, helpers;
+- the **holes** are the public contracts: commands, queries, events, DTOs;
+- the **shape of the hole** is the contract: who may call, what they may ask, what crosses, and what is guaranteed;
+- the **enforcement** is what makes it a boundary rather than a convention.
+
+A boundary with no holes is useless: nothing can compose. A boundary with holes everywhere is not a boundary: the membrane is gone. The goal is **calibrated permeability**, not maximum sealing.
+
+A hole is more than a method. It has a shape:
+
+| Property | Question |
+| --- | --- |
+| **Direction** | Who may call whom? Is the dependency one-way? |
+| **Surface** | Which operations are public, and which are private? |
+| **Payload** | Do domain entities or database rows cross, or only DTOs? |
+| **Semantics** | What may the caller assume about errors, retries, and consistency? |
+| **Ownership** | Who can change the contract, and who must agree? |
+| **Enforcement** | What fails when someone reaches around it? |
+
+The common failure is not a missing wall. It is **a hole that is wider than its name**:
+
+- `getOrder()` returns the ORM entity, so the hole carries the schema;
+- the repository interface has `findByStatusAndOwner`, so the hole is shaped by a screen;
+- `index.ts` re-exports everything, so the hole is the whole building;
+- a shared table is read directly, so the hole is the database.
+
+And a boundary has a **data side**, not just a call side. Two capabilities can be coupled with no call at all — through a shared table, a shared model, or a coordinated release. The membrane has to cover both.
+
+A boundary is real when a change can stay inside it, and a violation fails fast. "Any part can call any part" is just the call-shaped version of no boundary at all.
+
 ### One call is not a mud
 
 Every system has coupling. The mud is not the presence of a dependency; it is the absence of a boundary that survives it.
