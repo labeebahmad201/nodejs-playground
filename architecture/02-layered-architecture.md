@@ -132,6 +132,14 @@ One feature change touches the controller, the service, the repository, the mode
 
 This is the cost that vertical slice attacks directly. Clean architecture does not fix it: its rings are still technical rings.
 
+### Layer-first layout hides the capability boundary
+
+When every controller lives in `controllers/`, every service in `services/`, and every model in `models/`, the top-level view tells you **what kind of code a file is**, not **what capability it serves**. To understand one feature you open five folders and reconstruct the story yourself. There is no place that says "this is Orders," and no folder to make private when you want to enforce that boundary.
+
+That is a **risk factor** for a big ball of mud, not the definition of one. The mud is created by unmanaged dependencies and shared state — a shared `models/` that every capability imports, tables several features write, a transaction that spans unrelated concerns. The layer layout removes the visible boundary cue and makes erosion cheap; it does not, by itself, create the coupling.
+
+Extraction is where the bill arrives. Pulling one capability out means finding its pieces across every folder, untangling the shared models, separating its tables, and deciding what happens to transactions that were never meant to be together. The file hunt is the visible cost; the hidden coupling is the real one. See [02a — Big ball of mud](02a-big-ball-of-mud.md).
+
 ### The sinkhole
 
 The **sinkhole anti-pattern** is a request that passes through every layer doing nothing but forwarding. Controller calls service calls repository. No rule is applied, no policy is enforced, no translation happens.
@@ -170,6 +178,7 @@ When the domain is expressed in the framework's language, the framework is no lo
 | **Feature scattering** | One feature change touches five folders | Reorganize by capability or vertical slice; keep layers inside the slice |
 | **Database-coupled domain** | ORM entities and SQL-shaped interfaces in the model; tests need a DB | Ports owned by the domain; map at the persistence edge |
 | **Layered monolith** | Shared models and tables across the whole app; business boundaries invisible | Introduce modules with public contracts and owned schemas ([01a](01a-modular-monolith.md)) |
+| **Big ball of mud** | Everything imports everything; shared models and tables; no capability boundary survives | Draw the capability map; make the boundary executable; see [02a](02a-big-ball-of-mud.md) |
 | **Framework-shaped core** | Business rules expressed with framework decorators and base classes | Plain domain objects; framework at the composition root |
 | **Mock-shaped tests** | Tests assert repository calls, not business outcomes | Test the domain directly; use fakes at an owned boundary |
 | **Layer-as-team** | One team per layer; every feature crosses three teams | Organize around capabilities; see [Layers are not teams](#layers-are-not-teams) |
@@ -363,6 +372,7 @@ This row is also collected in the [consolidated trade-off matrix](tradeoffs.md).
 ## Next
 
 - [Day 2 — application structure](../roadmap.md) — the rest of the four-way comparison, the ports-and-adapters refactor, and the questions to ask before choosing each style.
+- [Big ball of mud](02a-big-ball-of-mud.md) — what happens when the capability boundary is never enforced, and how to get out without a rewrite.
 - [Modular monolith](01a-modular-monolith.md) — why the top-level axis should be business capability, with layers inside.
 - [External calls inside a transaction](01e-external-calls-inside-transactions.md) — the anti-pattern that layering makes easy: network I/O inside a transaction.
 - [Trade-offs](tradeoffs.md) — the consolidated matrix.
