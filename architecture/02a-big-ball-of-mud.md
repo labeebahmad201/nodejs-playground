@@ -20,6 +20,30 @@ Three properties do the work:
 
 The paper's image is a shantytown: cheap materials, unskilled labor, no infrastructure, no overall plan, but it satisfies an immediate local need. That is why it persists. **The mud works** — for a while, at the scale it was built for.
 
+### One call is not a mud
+
+Every system has coupling. The mud is not the presence of a dependency; it is the absence of a boundary that survives it.
+
+Three levels are worth separating:
+
+| Level | What it looks like | What it costs |
+| --- | --- | --- |
+| **Coupling** | A calls B through a public contract. The dependency is visible and intended. | The normal cost of coordination, bounded by the contract. |
+| **Boundary violation** | A reaches into B's internals, table, or private model because it is convenient. | A debt: the next change to B can break A, and extraction needs untangling. |
+| **Big ball of mud** | Violations are the default. Every part can reach every part; no capability can change or leave alone. | Change amplification, archaeology, and a rewrite-or-strangle choice. |
+
+A direct call between Notifications and Payments is not, by itself, a mud. It becomes one when:
+
+- the call reaches past the public contract into internals or tables;
+- it is the normal way to get data, not an exception;
+- the dependency graph grows cycles and hubs;
+- the same shortcut is copied by the next feature;
+- extraction would require a coordinated release or a rewrite.
+
+The mechanism is always the same: **local convenience, deferred cost.** "This service already has the data" is true at the moment of estimation and false at the moment of change. The bill arrives when the two capabilities need to move at different speeds.
+
+So the question is not "is there a dependency?" It is "is there a boundary left, and who can enforce it?"
+
 ## What it is not
 
 | It is not | Why |
