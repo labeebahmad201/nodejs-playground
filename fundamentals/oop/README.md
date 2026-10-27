@@ -25,3 +25,6 @@
 ## Design patterns
 - [design-patterns/01-observer-pattern.md](./design-patterns/01-observer-pattern.md) — Observer: one-to-many change notification instead of polling
 - [design-patterns/05d-global-access-and-coupling.md](./design-patterns/05d-global-access-and-coupling.md) — global access as common coupling, and the injection refactor
+- [design-patterns/06-composition-root/composition-root.md](./design-patterns/06-composition-root/composition-root.md) — compose the object graph once at the application's entry point; runnable example in the same folder
+- [design-patterns/07-dependency-injection-container/dependency-injection-container.md](./design-patterns/07-dependency-injection-container/dependency-injection-container.md) — what a DI container adds, when it helps, and why it belongs only at the composition root; runnable example in the same folder
+- [design-patterns/08-testing-composition-root/testing-composition-root.md](./design-patterns/08-testing-composition-root/testing-composition-root.md) — how to test the root without mocking every `new`; runnable tests in the same folder
