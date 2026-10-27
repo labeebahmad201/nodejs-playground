@@ -89,9 +89,10 @@ If a day slips, write the output from memory and move on. Do not read more to co
 ### Day 2 — Layered vs. hexagonal vs. clean/onion vs. vertical slice
 
 - [ ] **Learn:** where dependencies point; where `new` lives; what is testable without I/O; why layered architecture leaks; how vertical slice differs.
-- [ ] **Read:** the relevant style chapters in *Fundamentals of Software Architecture*; Cockburn's ports and adapters; Fowler on layering.
-- [ ] **Output:** `architecture/02-application-structure.md`
-  - comparison table for the four styles;
+- [ ] **Read:** the relevant style chapters in *Fundamentals of Software Architecture*; Cockburn's ports and adapters; Fowler on layering; the [layered architecture note](architecture/02-layered-architecture.md).
+- [ ] **Output:** `architecture/02-layered-architecture.md`
+  - the layered style, its failure modes, and the team-topology trade-off;
+  - a comparison table for the four styles (hexagonal, clean/onion, and vertical slice still to add);
   - a sketch refactoring the existing order example into ports and adapters;
   - three questions to ask before choosing each style.
 - [ ] **Done when:** you can explain the difference between layered, hexagonal, and clean without hand-waving.
@@ -245,15 +246,16 @@ architecture/
   01a-modular-monolith.md
   01b-c4-model.md
   01c-outbox-pattern.md
+  01c-outbox-example/
+    README.md
+    main.ts
   01d-outbox-implementation.md
   01e-external-calls-inside-transactions.md
   01f-customer-value-and-progress.md
   01g-idempotency.md
-  01c-outbox-example/
-    README.md
-    main.ts
+  01h-practice-provenance.md
+  02-layered-architecture.md
   tradeoffs.md
-  02-application-structure.md
   03-modular-monolith.md
   04-microservices.md
   05-events-cqrs.md
