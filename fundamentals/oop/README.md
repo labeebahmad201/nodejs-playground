@@ -18,3 +18,5 @@
 
 ## Design patterns
 - [design-patterns/01-observer-pattern.md](./design-patterns/01-observer-pattern.md) — Observer: one-to-many change notification instead of polling
+- [design-patterns/06-composition-root/composition-root.md](./design-patterns/06-composition-root/composition-root.md) — compose the object graph once at the application's entry point; runnable example in the same folder
+- [design-patterns/07-dependency-injection-container/dependency-injection-container.md](./design-patterns/07-dependency-injection-container/dependency-injection-container.md) — what a DI container adds, when it helps, and why it belongs only at the composition root; runnable example in the same folder
