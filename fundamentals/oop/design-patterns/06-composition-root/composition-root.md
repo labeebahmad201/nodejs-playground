@@ -299,6 +299,8 @@ The test is its own composition root. It chooses fakes and passes them in. It do
 
 Integration tests can use a **test composition root** that wires real infrastructure against a test database or a local mail catcher. The root stays the same shape; only the concrete choices change.
 
+See [Testing the composition root](../08-testing-composition-root/testing-composition-root.md) for the two tests that matter and a runnable example.
+
 If a business rule is hard to test without booting the composition root, the root is probably doing too much or the dependency is still hidden.
 
 ## Common mistakes
@@ -336,3 +338,4 @@ Related notes:
 - [Seams](../../strategy-polymorphism/40-seam.md) — the composition root is the application's largest seam.
 - [Global access and coupling](../05d-global-access-and-coupling.md) — why one instance is fine but global reachability is not.
 - [Dependency injection container](../07-dependency-injection-container/dependency-injection-container.md) — the container as a tool used by the root.
+- [Testing the composition root](../08-testing-composition-root/testing-composition-root.md) — composition smoke test vs. test composition root.

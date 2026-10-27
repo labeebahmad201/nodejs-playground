@@ -268,6 +268,9 @@ fix a graph that is already tangled.
 - **Lifetime tests** should check that a singleton does not capture a scoped dependency and that a
   scope does not leak into the next one.
 
+The composition-root side of this is covered in [Testing the composition
+root](../08-testing-composition-root/testing-composition-root.md).
+
 If a test needs the whole container to exercise one business rule, the rule is probably coupled to
 infrastructure that should have been injected.
 
