@@ -24,6 +24,7 @@ These expand topics that came up during Day 1 and are reference material for the
 - [01e — External calls inside a transaction](01e-external-calls-inside-transactions.md) — the anti-pattern that outbox and state machines are designed to avoid.
 - [01f — Customer value is the measure of progress](01f-customer-value-and-progress.md) — working software as a leading indicator, customer value as the outcome, and seven rules for keeping architecture decisions honest.
 - [01g — Idempotency](01g-idempotency.md) — safe retries, idempotency keys, consumer inboxes, and why at-least-once delivery makes it mandatory.
+- [01h — Practice provenance and context](01h-practice-provenance.md) — why a practice’s popularity is not evidence of fit, and how to read methodical versus speed-oriented advice without turning it into a stereotype.
 
 ## Examples
 

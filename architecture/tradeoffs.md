@@ -83,4 +83,5 @@ The answer should be a sentence, not a shrug:
 - [01e — External calls inside a transaction](01e-external-calls-inside-transactions.md) — the anti-pattern to avoid.
 - [01f — Customer value is the measure of progress](01f-customer-value-and-progress.md) — the filter for why any of this matters.
 - [01g — Idempotency](01g-idempotency.md) — safe retries and duplicate processing.
+- [01h — Practice provenance and context](01h-practice-provenance.md) — why a practice’s popularity is not evidence of fit.
 - [Roadmap](../roadmap.md) — the 8-day plan that fills this matrix.

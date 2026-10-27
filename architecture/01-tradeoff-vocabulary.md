@@ -219,6 +219,8 @@ The goal is not a perfect architecture. It is a **defensible fit**: explicit for
 
 This is the practical version of Brooks’s “no silver bullet”: no single technique is best for every problem. See [Sources](#sources) for Brooks and Fowler.
 
+Practice itself carries context. For the cultural and conference side of that — why methodical advice and speed-oriented advice can both be right, and why neither is a national trait — see [01h — Practice provenance and context](01h-practice-provenance.md).
+
 ## ADR: record the decision
 
 An Architecture Decision Record (ADR) is a short, immutable record of one architecturally significant decision. It is not a design document and not a meeting note. It captures the context, the decision, the consequences, and the alternatives.
