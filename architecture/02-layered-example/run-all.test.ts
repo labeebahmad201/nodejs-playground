@@ -1,0 +1,46 @@
+// Run every nuance with:
+//   node --test architecture/02-layered-example/run-all.test.ts
+// Each file registers its own node:test cases.
+import "./nuances/01-four-canonical-layers.ts";
+import "./nuances/02-downward-dependency.ts";
+import "./nuances/03-strict-vs-relaxed-layers.ts";
+import "./nuances/04-layer-skipping.ts";
+import "./nuances/05-fat-controller.ts";
+import "./nuances/06-sinkhole.ts";
+import "./nuances/07-anemic-vs-rich.ts";
+import "./nuances/08-application-vs-domain-service.ts";
+import "./nuances/09-validation-placement.ts";
+import "./nuances/10-error-handling.ts";
+import "./nuances/11-model-shapes.ts";
+import "./nuances/12-mapping.ts";
+import "./nuances/13-read-models.ts";
+import "./nuances/14-repository-interface.ts";
+import "./nuances/15-pagination-filtering-sorting.ts";
+import "./nuances/16-n-plus-one.ts";
+import "./nuances/17-batch-operations.ts";
+import "./nuances/18-transaction-boundary.ts";
+import "./nuances/19-transaction-agnostic-repository.ts";
+import "./nuances/20-unit-of-work.ts";
+import "./nuances/21-passing-tx-handle.ts";
+import "./nuances/22-nested-transactions.ts";
+import "./nuances/23-isolation-levels.ts";
+import "./nuances/24-locking.ts";
+import "./nuances/25-idempotency.ts";
+import "./nuances/26-distributed-boundaries.ts";
+import "./nuances/27-eventual-consistency.ts";
+import "./nuances/28-logging-placement.ts";
+import "./nuances/29-authorization-placement.ts";
+import "./nuances/30-caching.ts";
+import "./nuances/31-configuration.ts";
+import "./nuances/32-dependency-injection.ts";
+import "./nuances/33-shared-utilities.ts";
+import "./nuances/34-domain-events.ts";
+import "./nuances/35-unit-testing-per-layer.ts";
+import "./nuances/36-integration-testing.ts";
+import "./nuances/37-contract-testing.ts";
+import "./nuances/38-logical-vs-physical-tiers.ts";
+import "./nuances/39-modular-monolith.ts";
+import "./nuances/40-migrating-to-hexagonal.ts";
+import "./nuances/41-cqrs.ts";
+import "./nuances/42-multi-tenancy.ts";
+import "./nuances/appendix-vocabulary.ts";

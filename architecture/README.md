@@ -12,6 +12,8 @@
 ## Day 2
 
 - [02 — Layered architecture](02-layered-architecture.md) — technical layering, closed versus open layers, dependency direction, the sinkhole, and when layered is the right default.
+- [02 — Layered nuances](02-layered-nuances.md) — the 42-nuance catalog: rule, correct snippet, anti-pattern, and proof for each.
+- [Layered architecture lab](02-layered-example/README.md) — 42 runnable TypeScript nuances, each with the correct code, the anti-pattern, and a `node:test` proof.
 - [02a — Big ball of mud](02a-big-ball-of-mud.md) — the anti-pattern behind boundary erosion, why layer-first layout hides the capability boundary, and how to get out without a rewrite.
 
 ## Trade-offs
