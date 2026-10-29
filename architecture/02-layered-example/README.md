@@ -1,23 +1,24 @@
-# Layered architecture — 42 runnable nuances
+# Layered architecture — 42 nuances, plus an end-to-end slice
 
-*One file per nuance from the layered-architecture inventory. Each file contains the correct code, the anti-pattern it avoids, and a short `node:test` proof.*
+*One file per nuance from the layered-architecture inventory. Each file contains the correct code, the anti-pattern it avoids, and a short `node:test` proof. Start with [`00-end-to-end.ts`](nuances/00-end-to-end.ts) to see the whole chain before the individual rules.*
 
 This is the runnable companion to [02 — Layered architecture](../02-layered-architecture.md). The goal is to make the nuances concrete: every file is small enough to read in one sitting and runnable without a framework, a container, or a database server.
 
 ## Run
 
 ```bash
-# All 42 nuances (one process)
+# Everything (the slice + 42 nuances, one process)
 node --test architecture/02-layered-example/run-all.test.ts
 
-# Or one nuance at a time
+# Or one file at a time
+node --test architecture/02-layered-example/nuances/00-end-to-end.ts
 node --test architecture/02-layered-example/nuances/18-transaction-boundary.ts
 
 # Or the whole directory through your shell's glob
 node --test architecture/02-layered-example/nuances/*.ts
 ```
 
-Each nuance file also runs on its own with `node path/to/file.ts`; the tests execute and print their results.
+Each file also runs on its own with `node path/to/file.ts`; the tests execute and print their results.
 
 Type-check the lab without the rest of the repository:
 
@@ -43,6 +44,12 @@ npx tsc --noEmit \
 The anti-pattern is not a strawman. Each one is a shortcut a real codebase makes: a controller that computes a discount, a repository that commits, a cache that never invalidates, a shared `utils` module that imports persistence.
 
 ## Index
+
+### 0. Read this first
+
+| # | Walkthrough | File | What the test proves |
+| --- | --- | --- | --- |
+| 00 | One request, end to end | [`00-end-to-end.ts`](nuances/00-end-to-end.ts) | Controller → use case → application service → domain service → port → adapter → aggregate, plus the cost of the use-case contract. |
 
 ### A. Structure and responsibilities
 
