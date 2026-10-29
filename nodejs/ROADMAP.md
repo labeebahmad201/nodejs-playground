@@ -154,6 +154,7 @@ event-loop lag.**
 | 33 | V8 memory & GC tuning        | `15-v8-memory`               | [x]    | generational GC (scavenger, promotion, mark-sweep); RSS vs `heapUsed`; don't kill at 80%; `--max-semi-space-size` · Collina dotJS 2025 |
 | 34 | Private class fields (`#`)   | `20-private-fields`          | [x]    | truly-private `#` fields/methods/statics/getters (ES2022); vs `_` convention & TS `private`; brand check `#x in obj`; not enumerable/serialized |
 | 35 | Standard streams & `console` | `21-stdout-vs-console`       | [x]    | `stdin`/`stdout`/`stderr` (fd 0/1/2); `console.log` = `stdout.write(util.format(...) + "\n")`; return value vs backpressure; pipeable vs not; custom `Console` |
+| 36 | Immutability                 | `27-immutability`            | [x]    | primitives vs references; mutable arrays/objects; spread and non-mutating array methods; shallow vs deep copy; `Object.freeze`; `structuredClone`; when to copy · Deborah Kurata video |
 
 ## Sources / references
 
