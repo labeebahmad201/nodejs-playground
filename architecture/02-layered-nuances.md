@@ -1,6 +1,6 @@
 # Layered architecture — 42 nuances in code
 
-*Companion to [02 — Layered architecture](02-layered-architecture.md). Each section has the rule, the correct code, the anti-pattern, and a short proof. The runnable versions live in [02-layered-example](02-layered-example/README.md).*
+*Companion to [02 — Layered architecture](02-layered-architecture.md). Each section has the rule, the correct code, the anti-pattern, and a short proof. The runnable versions live in [02-layered-example](02-layered-example/README.md); for one request through every role, start with [02c — One request, end to end](02c-end-to-end-slice.md).*
 
 > This is a catalog, not a complete application. Read one section at a time. The snippets are deliberately small; the runnable lab has the full types, wiring, and tests.
 
@@ -4390,5 +4390,6 @@ assert.equal(order.total.cents, 0);
 2. Copy the correct pattern into the actual project.
 3. Change one line to the anti-pattern and watch the proof fail.
 4. For the full runnable versions, see [02-layered-example](02-layered-example/README.md).
+5. To see every role in one request, read [02c — One request, end to end](02c-end-to-end-slice.md).
 
 The catalog is deliberately repetitive: the same `Order`, `OrderRepository`, and `OrderService` appear in different forms so the contrast is visible. In a real project, these types are shared once.

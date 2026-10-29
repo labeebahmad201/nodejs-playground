@@ -1,6 +1,7 @@
 // Run every nuance with:
 //   node --test architecture/02-layered-example/run-all.test.ts
 // Each file registers its own node:test cases.
+import "./nuances/00-end-to-end.ts";
 import "./nuances/01-four-canonical-layers.ts";
 import "./nuances/02-downward-dependency.ts";
 import "./nuances/03-strict-vs-relaxed-layers.ts";
