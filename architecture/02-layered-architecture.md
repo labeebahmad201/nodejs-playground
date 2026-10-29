@@ -223,10 +223,12 @@ The short version, because the Day 2 comparison goes deeper:
 |  | Dependency direction | Database | Ports owned by | Boundary payload |
 | --- | --- | --- | --- | --- |
 | **Layered** | Downward | Foundation | Whoever finds it convenient | ORM entities, framework types |
-| **Hexagonal** | Inward | An adapter at the edge | The domain / application | Domain types and DTOs |
+| [**Hexagonal**](02b-hexagonal-architecture.md) | Inward | An adapter at the edge | The domain / application | Domain types and DTOs |
 | **Clean / onion** | Inward | An outer-ring detail | The inner ring | DTOs only; entities never cross |
 
 All three are layering. Hexagonal and clean are the same topology with different vocabulary: ports and adapters, domain at the core, dependencies pointing inward. Clean adds a prescribed set of boundary objects — input ports, use-case interactors, output ports, presenters — that most teams implement only partially.
+
+The [hexagonal note](02b-hexagonal-architecture.md) takes the middle column apart.
 
 ## The dependency leak in code
 
@@ -372,6 +374,7 @@ This row is also collected in the [consolidated trade-off matrix](tradeoffs.md).
 ## Next
 
 - [Day 2 — application structure](../roadmap.md) — the rest of the four-way comparison, the ports-and-adapters refactor, and the questions to ask before choosing each style.
+- [Hexagonal architecture](02b-hexagonal-architecture.md) — driving versus driven ports, the dependency rule, what crosses a port, and the mapping tax.
 - [Big ball of mud](02a-big-ball-of-mud.md) — what happens when the capability boundary is never enforced, and how to get out without a rewrite.
 - [Modular monolith](01a-modular-monolith.md) — why the top-level axis should be business capability, with layers inside.
 - [External calls inside a transaction](01e-external-calls-inside-transactions.md) — the anti-pattern that layering makes easy: network I/O inside a transaction.

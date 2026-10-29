@@ -196,5 +196,6 @@ If the last answer is "a guide," the mud is already shaping the org.
 ## Next
 
 - [02 — Layered architecture](02-layered-architecture.md) — the layout that hides the capability boundary, and what it costs.
+- [02b — Hexagonal architecture](02b-hexagonal-architecture.md) — the boundary pattern that makes the inside/outside seam explicit, and why it still needs modules inside.
 - [01a — Modular monolith](01a-modular-monolith.md) — the shape that gives the boundary a home.
 - [Trade-offs](tradeoffs.md#anti-patterns) — the consolidated matrix, including this anti-pattern.
