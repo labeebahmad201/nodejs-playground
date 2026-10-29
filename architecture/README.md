@@ -17,6 +17,8 @@
 - [02b — Hexagonal architecture](02b-hexagonal-architecture.md) — the goal it serves, driving versus driven ports, the dependency rule, two-way mapping, adapter testing, module enforcement, and why a hexagon is not a microservice.
 - [02b — Hexagonal nuances](02b-hexagonal-nuances.md) — the 31-nuance catalog: rule, correct snippet, anti-pattern, and proof for each.
 - [02c — One request, end to end](02c-end-to-end-slice.md) — controller, use case, application service, domain service, repository port, adapter, and aggregate in one runnable slice, plus when the use-case contract is worth its cost.
+- [02d — Coupling and testability](02d-coupling-and-testability.md) — why coupling decides what can be tested, how to put seams at volatile edges, and when interaction tests become implementation tests.
+- [Coupling and testability lab](02d-coupling-and-testability/order-service.test.ts) — the same order workflow with fakes and a charge-failure test.
 - [Layered architecture lab](02-layered-example/README.md) — 42 runnable TypeScript nuances, an end-to-end slice, and a `node:test` proof for each.
 - [Hexagonal architecture lab](02b-hexagonal-example/README.md) — 31 runnable TypeScript nuances, a registration walkthrough, and a `node:test` proof for each.
 
