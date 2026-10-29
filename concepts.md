@@ -29,7 +29,7 @@ Add new architecture choices there first. Individual notes may repeat a row for 
 
 ### Application structure
 
-*The Day 2 questions: which axis decomposes the system, which way the dependencies point, and what the seam is allowed to know.*
+*The Day 2 questions: which axis decomposes the system, which way the dependencies point, and what the seam is allowed to know. The inline catalog is [02-layered-nuances](architecture/02-layered-nuances.md); runnable examples live in [02-layered-example](architecture/02-layered-example/README.md). The decision probes are below.*
 
 | Concept | Definition | Source | Questions to ask | Doc |
 | --- | --- | --- | --- | --- |
@@ -44,7 +44,7 @@ Add new architecture choices there first. Individual notes may repeat a row for 
 | **Closed vs open layers** | Closed layers allow calls only to the next layer down; open layers allow skipping. | [Richards & Ford (2020)](https://www.oreilly.com/library/view/fundamentals-of-software/9781492043447/) | Is the goal isolation or encapsulation? Do pass-through methods appear? Is the rule enforced in CI or only in review? Which layer is skipped in practice, and why? | [02 — Closed, open, and isolation](architecture/02-layered-architecture.md#closed-open-and-isolation) |
 | **Sinkhole anti-pattern** | A request traverses every layer doing nothing but forwarding. | [Richards & Ford (2020)](https://www.oreilly.com/library/view/fundamentals-of-software/9781492043447/) | What share of requests are pass-throughs? Which layer would disappear without losing behavior? Is the structure earning its keep or performing it? | [02 — The sinkhole](architecture/02-layered-architecture.md#the-sinkhole) |
 | **Feature scattering** | One feature change touches the controller, service, repository, model, DTO, and mapper. | This repository | Is the unit of change the layer or the capability? Would a vertical slice shrink the diff? What merge conflicts does the layout create? | [02 — Feature scattering](architecture/02-layered-architecture.md#feature-scattering) |
-| **Fat service layer** | The transaction boundary attracts orchestration and policy until one service class owns everything. | This repository | Where is the transaction boundary? Is the service deciding or forwarding? Which rules belong on the model? Who is afraid to change it, and why? | [02 — The fat service layer](architecture/02-layered-architecture.md#the-fat-service-layer) |
+| **Fat service layer** | In the common service-layer variant, the service owns the unit of work, so atomic orchestration and policy accrete there until one class owns everything. | [Fowler, *Service Layer* (2002)](https://martinfowler.com/eaaCatalog/serviceLayer.html); [Spring, *Using @Transactional*](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html); this repository | Is the service the unit-of-work owner by convention or by necessity? Where is the transaction boundary? Is the service deciding or forwarding? Which rules belong on the model? Who is afraid to change it, and why? | [02 — The fat service layer](architecture/02-layered-architecture.md#the-fat-service-layer) |
 | **Database-coupled domain** | The domain entity is the persistence shape, so schema and rules change together. | [Fowler, *PoEAA*](https://martinfowler.com/eaaCatalog/); [Evans (2003)](https://www.domainlanguage.com/ddd/) | Does the entity carry ORM annotations? Can the rule run without a connection? Does a migration change a business rule? What would a mapper cost? | [02 — The dependency leak in code](architecture/02-layered-architecture.md#the-dependency-leak-in-code) |
 | **Active Record** | A domain object that owns its own persistence, queries, and lifecycle. | [Fowler, *Active Record*](https://martinfowler.com/eaaCatalog/activeRecord.html) | Is this a domain object or a table gateway? Does it own queries, saves, and serialization? When is the coupling cheap enough? When does the rule set outgrow the row? | [02 — The dependency leak in code](architecture/02-layered-architecture.md#the-dependency-leak-in-code) |
 | **Port shaped by queries** | A repository interface accretes methods from screens and reports until it describes the database rather than the domain. | This repository; [Martin, *Clean Architecture* (2017)](https://www.oreilly.com/library/view/clean-architecture-a/9780134494272/) | Who added the last method, and for whom? Does it change when the UI changes or when the rule changes? Does the name still describe the contract? What would you call it if you renamed it honestly? | [02 — The tell is cohesion, not method count](architecture/02-layered-architecture.md#the-tell-is-cohesion-not-method-count) |
@@ -54,9 +54,64 @@ Add new architecture choices there first. Individual notes may repeat a row for 
 | **Injected concretion** | A constructor-injected dependency whose declared type is a concrete class or driver. | This repository; [Seemann, *Composition Root* (2011)](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) | Is the parameter a class or an interface? Does the consumer know the driver? Would swapping the implementation change the consumer? Did DI move the `new` but not the dependency? | [02 — The dependency arrow ends at the database](architecture/02-layered-architecture.md#the-dependency-arrow-ends-at-the-database) |
 | **Testing seam vs inversion** | A seam lets you replace a dependency; inversion decides whether the replacement is a domain-owned abstraction or a persistence-shaped one. | [Feathers, *Working Effectively with Legacy Code* (2004)](https://www.oreilly.com/library/view/working-effectively-with/0131177052/); [Fowler, *Legacy Seam*](https://martinfowler.com/bliki/LegacySeam.html) | Does the test need a database? Does it assert a call or an outcome? Does the test survive an adapter refactor? Is the seam owned by the inside? | [02 — Testability is a seam, not an inversion](architecture/02-layered-architecture.md#testability-is-a-seam-not-an-inversion) |
 | **Fake at an owned boundary** | A working in-memory implementation of a port the inner layer defines; the test asserts outcomes, not collaborations. | [Fowler, *Test Double*](https://martinfowler.com/bliki/TestDouble.html); [Meszaros, *xUnit Test Patterns* (2007)](http://xunitpatterns.com/Test%20Double.html) | Is the port owned by the domain? Does the fake implement behavior or expectations? Does the test break when the schema changes? Would a mock have asserted the plumbing instead? | [02 — Testability is a seam, not an inversion](architecture/02-layered-architecture.md#testability-is-a-seam-not-an-inversion) |
-| **Ports and adapters (hexagonal)** | The domain owns ports; infrastructure implements them; dependencies point inward. | [Cockburn (2005)](https://alistair.cockburn.us/hexagonal-architecture/) | Which side owns the port? Do the arrows point inward? Can the domain run with no database? Is the adapter at the edge or in the middle? | [02 — Layered vs. hexagonal vs. clean](architecture/02-layered-architecture.md#layered-vs-hexagonal-vs-clean) |
+| **Ports and adapters (hexagonal)** | The application owns the ports it offers and needs; adapters implement them at the edge; source dependencies point inward. | [Cockburn (2005)](https://alistair.cockburn.us/hexagonal-architecture/) | Which side owns the port? Do the arrows point inward? Can the domain run with no database? Is the input side treated with the same rule as the output side? What crosses the port? | [02b — The definition](architecture/02b-hexagonal-architecture.md#the-definition) |
+| **Driving vs driven port** | A driving port is what the application offers; a driven port is what it needs. Both are defined by the inside; the adapter sits outside. | [Cockburn (2005)](https://alistair.cockburn.us/hexagonal-architecture/) | Is this an input or an output? Who calls whom at runtime? Who depends on whom in source? Does the input side get the same treatment as the output side? | [02b — The two ports](architecture/02b-hexagonal-architecture.md#the-two-ports) |
+| **Port vs interface** | A port is a boundary contract; an interface is one way to express it, not the definition. | [Cockburn (2005)](https://alistair.cockburn.us/hexagonal-architecture/); this repository | Does the inside need to substitute the outside? Is the abstraction owned by the inside? Would a concrete use case on the driving side still point inward? Is the interface earning its keep? | [02b — Port is not an interface](architecture/02b-hexagonal-architecture.md#port-is-not-an-interface) |
+| **Port payload** | What crosses a port is part of its contract: domain objects and DTOs can; ORM rows, vendor types, and unmapped errors cannot. | [Parnas (1972)](https://www.cs.colostate.edu/~france/CS314/Readings/Parnas-decomposition.pdf); [Cockburn (2005)](https://alistair.cockburn.us/hexagonal-architecture/) | Does an ORM row or vendor type cross? Where is the mapper? Do adapter errors become the port's error contract? Does the payload expose the schema? | [02b — What crosses the port](architecture/02b-hexagonal-architecture.md#what-crosses-the-port) |
+| **Hexagonal vs. clean/onion** | Same inward dependency topology; hexagonal is the minimal symmetric version, clean adds four rings and boundary objects, onion centers the domain model. | [Cockburn (2005)](https://alistair.cockburn.us/hexagonal-architecture/); [Martin (2012)](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html); [Palermo (2008)](https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/) | Which prescription is actually implemented? Are the rings technical layers again? Does the team need interactors and presenters, or just ports and adapters? What does each version decompose? | [02b — Hexagonal vs. clean and onion](architecture/02b-hexagonal-architecture.md#hexagonal-vs-clean-and-onion) |
+| **Anemic hexagon** | Ports and adapters around a CRUD record; the structure is present but the domain has no behavior or invariants. | [Fowler, *AnemicDomainModel* (2003)](https://martinfowler.com/bliki/AnemicDomainModel.html); this repository | Is the use case more than load-set-save? Where do the invariants live? Would deleting the ports lose any behavior? Is the domain testing anything? | [02b — The anemic hexagon](architecture/02b-hexagonal-architecture.md#the-anemic-hexagon) |
+| **One giant hexagon** | A single core with no internal capability boundaries; ports protect the edge, not the inside. | [Foote & Yoder (1997)](http://www.laputan.org/mud/); this repository | Does the hexagon have modules? Can one capability change alone? Is the inside a mud with a nice diagram? Who owns the data? | [02b — One giant hexagon](architecture/02b-hexagonal-architecture.md#one-giant-hexagon) |
+| **Transaction boundary at a port** | A port hides I/O, not atomicity; the application or a unit-of-work port must own the transaction. | This repository; [01e — External calls inside a transaction](architecture/01e-external-calls-inside-transactions.md) | Who commits? Can a multi-step use case partially write? Is an external call inside the transaction? Does each repository call commit on its own? | [02b — Transaction ambiguity](architecture/02b-hexagonal-architecture.md#transaction-ambiguity) |
+| **Test-double drift** | A fake that does not model the adapter's constraints, concurrency, or failure modes, so green tests hide production failures. | [Meszaros (2007)](http://xunitpatterns.com/Test%20Double.html); [Fowler, *Test Double*](https://martinfowler.com/bliki/TestDouble.html) | Does the fake enforce uniqueness, foreign keys, concurrency? Does it reproduce the error contract? Do contract tests run against the real adapter? | [02b — Test-double drift](architecture/02b-hexagonal-architecture.md#test-double-drift) |
 | **Clean / onion vs layered** | The same inward topology with different vocabulary; the database is an outer-ring detail and only DTOs cross boundaries. | [Martin, *The Clean Architecture* (2012)](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html); [Palermo, *Onion* (2008)](https://jeffreypalermo.com/2008/07/the-onion-architecture-part-1/) | Where does the database sit? What may cross a boundary? Are the rings still technical? Is the mapping cost worth it for this domain? Does it fix feature scattering? | [02 — Layered vs. hexagonal vs. clean](architecture/02-layered-architecture.md#layered-vs-hexagonal-vs-clean) |
 | **Vertical slice** | Decompose by feature or capability; each slice owns its handler, logic, and persistence call. | [Fowler, *PresentationDomainDataLayering*](https://martinfowler.com/bliki/PresentationDomainDataLayering.html); this repository | Is the top-level axis the capability? Can one change stay in one slice? What duplication and consistency cost does it add? Is it a deployment boundary or an internal shape? | [02 — Layered vs. hexagonal vs. clean](architecture/02-layered-architecture.md#layered-vs-hexagonal-vs-clean) |
+
+### Layered and hexagonal — the decision questions
+
+*The concept rows above define the vocabulary. These are the probes that decide whether the style is earning its keep. Answer each in one sentence; if the answer is "it depends," name the force and the revisit trigger.*
+
+**Layered architecture** — [definition](architecture/02-layered-architecture.md#the-definition) · [costs](architecture/02-layered-architecture.md#what-it-costs) · [decision checklist](architecture/02-layered-architecture.md#decision-checklist)
+
+- What is the top-level axis: technical role or business capability?
+- Are the layers private inside a capability, or is the whole application organized by technical role?
+- Does one feature change touch one folder or five?
+- Which shortcut is currently cheapest, and does the structure charge anything for it?
+- Does the domain depend on the database, the ORM, or the framework — and can the rules run without them?
+- Are most requests sinkholes, or is each layer doing real work?
+- Is the service layer a coordinator or a dumping ground?
+- Would a new team member find the capability, or only the technical role?
+- Is the domain thin enough that layered is the cheap, honest choice?
+- What would make you move to ports and adapters?
+
+**Hexagonal architecture** — [definition](architecture/02b-hexagonal-architecture.md#the-definition) · [ports](architecture/02b-hexagonal-architecture.md#the-two-ports) · [mapping](architecture/02b-hexagonal-architecture.md#two-way-mapping) · [inside](architecture/02b-hexagonal-architecture.md#protecting-the-inside) · [costs](architecture/02b-hexagonal-architecture.md#what-it-costs) · [decision checklist](architecture/02b-hexagonal-architecture.md#decision-checklist)
+
+- Which of the three goals are you buying: multiple drivers, isolation from infrastructure, or replaceable infrastructure?
+- Do you have more than one driver, more than one real outbound implementation, or a test double you actually need?
+- Is the domain worth testing without I/O, and does it change independently of the infrastructure?
+- Can you enforce the dependency rule — imports, CI, module boundaries — and does the team understand what the ports are for?
+- Which side owns each port, and do source dependencies point inward while runtime calls go outward?
+- Is each port named in the domain's language, not the vendor's or the table's?
+- What crosses the port: domain types, DTOs, ORM rows, vendor types, or unmapped errors?
+- Does using the core type require importing an adapter? If yes, it is a row, not a core type.
+- Does the mapper preserve decisions or just copy fields?
+- What does the service need to be constructed: domain objects, domain types plus ports/clock/unit of work, or a vendor/connection/request?
+- Is the model rich enough that the ports protect something, or is it an anemic hexagon?
+- Does the hexagon have capability modules, with one owner per model and table, small public contracts, and no transaction crossing a module boundary?
+- Is the framework confined to adapters and the composition root, or has it shaped the core?
+- Who owns the transaction, and does any repository commit on its own?
+- Are the fakes faithful to the contract — errors, constraints, concurrency — and do the tests cover the core, each adapter, and a shared contract suite?
+- Is the composition root a wiring edge or a second application?
+- Does every port earn its keep, and what would make you remove one?
+
+**Across the styles** — [comparison](architecture/02-layered-architecture.md#layered-vs-hexagonal-vs-clean) · [trade-offs](architecture/tradeoffs.md#the-matrix)
+
+- Is the database the foundation or an adapter at the edge?
+- Does the style decompose the inside, or only the I/O boundary?
+- Is the top-level axis technical role, inside/outside, or business capability?
+- What does the style optimize, what does it cost, and what is its characteristic failure?
+- Is this a deployment boundary or an in-process shape?
+- Is a vertical slice a fix for feature scattering, and what duplication does it add?
+- When would you choose layered over hexagonal, or a vertical slice over both?
 
 ### Teams and change
 
@@ -120,6 +175,7 @@ Add new architecture choices there first. Individual notes may repeat a row for 
 
 | Concept | Definition | Source | Questions to ask | Doc |
 | --- | --- | --- | --- | --- |
+| **Collaborator** | Any object a given object *talks to* in order to do its job: a repository, a clock, a mailer, another service. Data is what an object holds or returns; a collaborator is what it calls. Clients receive their collaborators; they do not construct them. | [Beck & Cunningham, *A Laboratory for Teaching Object-Oriented Thinking* (1989)](https://doi.org/10.1145/74877.74888), CRC cards; [Wirfs-Brock & McKean, *Object Design* (2003)](https://www.oreilly.com/library/view/object-design/9780201379433/) | Is this something I hold, or something I talk to? Does it have behaviour or is it a value? Can I substitute it in a test? Who owns its lifetime? | [06 — Collaborators](fundamentals/06-collaborators/README.md#definition) · [32 — What the words mean](architecture/02-layered-nuances.md#32-dependency-injection-and-wiring) |
 | **Composition root** | The (preferably) unique place near the application entry point where the object graph is composed; it knows concrete implementations, and everything below it receives only contracts. | [Seemann, *Composition Root* (2011)](https://blog.ploeh.dk/2011/07/28/CompositionRoot/); [Fowler, *Inversion of Control* (2004)](https://martinfowler.com/articles/injection.html) | Where should `new` live? Is the root a class or a function? Should a library have one? | [Composition root](fundamentals/oop/design-patterns/06-composition-root/composition-root.md#the-definition) |
 | **Dependency injection container** | A tool that registers contract-to-implementation or factory mappings, resolves object graphs, and manages lifetimes and scopes. It is optional automation for dependency injection, not dependency injection itself. | [Seemann, *Composition Root*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/); [Fowler, *Inversion of Control*](https://martinfowler.com/articles/injection.html); [Microsoft, *Dependency injection in .NET*](https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection) | Do I need one? What does it automate? Where may it be referenced? | [Dependency injection container](fundamentals/oop/design-patterns/07-dependency-injection-container/dependency-injection-container.md#the-definition) |
 | **Service locator** | Application code asks a container or global registry for its dependencies instead of receiving them through its constructor; the dependency disappears from the signature. | [Seemann, *Service Locator is an Anti-Pattern* (2010)](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/); [Seemann, *Service Locator roles vs. mechanics* (2011)](https://blog.ploeh.dk/2011/08/25/ServiceLocatorrolesvs.mechanics/) | Is resolving at the composition root a Service Locator? When does a container become one? | [The boundary rule](fundamentals/oop/design-patterns/07-dependency-injection-container/dependency-injection-container.md#the-boundary-rule) |
@@ -131,6 +187,45 @@ Add new architecture choices there first. Individual notes may repeat a row for 
 | **Contract test** | A test that runs the same behavioral contract against multiple implementations of an interface, so the root can trust any implementation it chooses. | [Fowler, *Contract Test*](https://martinfowler.com/bliki/ContractTest.html) | How do you know the concrete adapter the root chose actually works? | [What else is worth testing](fundamentals/oop/design-patterns/08-testing-composition-root/testing-composition-root.md#what-else-is-worth-testing) |
 | **Lifetime / captive dependency** | The root or container chooses singleton, scoped, or transient; a captive dependency is a long-lived object holding a shorter-lived dependency. | Seemann & van Deursen, *Dependency Injection Principles, Practices, and Patterns* (2019); [Microsoft, *Dependency injection in .NET*](https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection) | Which lifetime should this dependency have? Why is a singleton holding a scoped dependency a bug? | [Lifetimes and scopes](fundamentals/oop/design-patterns/07-dependency-injection-container/dependency-injection-container.md#lifetimes-and-scopes) |
 | **Configuration at the edge** | Reading and validating environment or configuration at the composition root, then passing typed values down; the rest of the graph does not read `process.env`. | [Seemann, *Composition Root*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/); [The Twelve-Factor App, *Config*](https://12factor.net/config) | Where should `process.env` be read? How do you test bad config? | [What belongs in it](fundamentals/oop/design-patterns/06-composition-root/composition-root.md#what-belongs-in-it) · [What else is worth testing](fundamentals/oop/design-patterns/08-testing-composition-root/testing-composition-root.md#what-else-is-worth-testing) |
+
+## Data and mutation
+
+*Immutability is not a blanket rule. It is a way to make shared state safe and change visible. Mechanics live in [27 — Immutability](nodejs/27-immutability/README.md); these are the questions that decide where copying earns its keep.*
+
+### Immutability — the decision questions
+
+**Observation**
+
+- Is the data shared or watched by more than one consumer?
+- Does a watcher need to be notified when the data changes?
+- Does the watcher compare references, or can it use an event, version counter, or dirty flag?
+- Does the consumer need the old snapshot as well as the new one?
+- Would an explicit event or version counter be cheaper than producing a new copy?
+
+**Size and ownership**
+
+- Who owns the data: one function, one module, or many consumers?
+- Is the data large enough that copying it on every update would dominate the hot path?
+- Is it mutated in a tight loop, or only at a boundary?
+- Can a private mutable working copy publish one snapshot only when observers need it?
+- Can unchanged branches be shared instead of deep-copied?
+- Can updates be batched so watchers are notified once?
+
+**The copy**
+
+- Is this a shallow copy or a deep copy?
+- Does the copy duplicate the whole graph, or only the changed path?
+- Does `Object.freeze` or TypeScript `readonly` copy anything? (No — they constrain writes or typing.)
+- Is a spread or structural update enough, or is `structuredClone` actually needed?
+- What allocation and garbage-collection cost does the copy add?
+
+**The decision**
+
+- Is the data observed and does the observer need notification or history?
+- Is it large, single-owner, and hot enough that mutation is the better default?
+- If mutable, what keeps it from escaping or being shared?
+- If immutable, where is the boundary and who pays the copy cost?
+- What would make you revisit the decision?
 
 ## Terminology traps
 
@@ -165,6 +260,7 @@ Add new architecture choices there first. Individual notes may repeat a row for 
 - **Customer value is not a synonym for revenue.** It is the outcome the customer gets; revenue follows.
 - **Working software is a leading indicator, not the goal.** It tells you the team can learn; customer value tells you whether it mattered.
 - **Layering is not dependency inversion.** Layers give you a seam; they do not change who owns the contract or which way the arrow points.
+- **The service layer is not the only possible transaction owner.** It is the usual owner in the common service-layer variant; layered architecture itself does not mandate a service layer or place the boundary there.
 - **Dependency injection is not dependency inversion.** Injection answers who constructs the collaborator; inversion answers what the consumer may know and who owns the abstraction.
 - **An injected concretion is still a concretion.** Moving `new` to a composition root changes the wiring, not the type in the consumer's signature.
 - **A repository is not automatically a port.** A port is owned by the inside and shaped by domain needs; a repository interface shaped by screens is a query surface wearing a port's name.
@@ -176,6 +272,16 @@ Add new architecture choices there first. Individual notes may repeat a row for 
 - **AI is not the cause of vertical teams.** The shift predates AI; AI compresses the build step and makes coordination the larger share of the cycle.
 - **Clean architecture is a module-internal shape, not a system architecture.** It says nothing about deployment, data ownership, or service boundaries.
 - **A vertical slice is not a microservice.** It is an axis of decomposition that can live inside one deployable.
+- **A hexagon is not a folder layout.** `ports/` and `adapters/` prove nothing; the import graph proves the direction.
+- **A port is not an interface.** A port is a boundary contract; an inbound adapter may depend on a concrete use case.
+- **A port is not a generic read/write API.** Name it in the domain's language, not the lowest common denominator.
+- **Hexagonal is not microservices or DDD.** One hexagon is one process; bounded contexts and distribution are separate decisions.
+- **Hexagonal is not clean/onion.** Same inward topology, different prescription; hexagonal is the minimal symmetric version.
+- **The hexagon's six sides are not six ports.** The number is drawing room.
+- **Swapping the database is not the point.** Multiple drivers, isolation, and delayed decisions are; the swap is a consequence.
+- **Hexagonal does not decompose the inside.** A giant hexagon can be a mud with ports.
+- **A port does not make a transaction atomic.** It hides the database, not the consistency model.
+- **Hexagonal is not a testability guarantee.** A leaky port or an anemic domain still needs a database.
 - **A big ball of mud is not a messy folder.** It is the absence of an enforced boundary, not the presence of an ugly tree.
 - **A single boundary violation is not a big ball of mud.** It is a debt; the mud is what happens when the violation becomes the default and no boundary is left to restore.
 - **A folder is not a boundary.** A boundary is a rule the compiler or CI can enforce; a directory is a label.
