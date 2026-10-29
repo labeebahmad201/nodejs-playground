@@ -169,6 +169,37 @@ Add new architecture choices there first. Individual notes may repeat a row for 
 | **Logical / co-change coupling** | Files or modules that repeatedly change together even without a static dependency; discovered from version history. | [Gall et al., *Detection of Logical Coupling* (1998)](https://dl.acm.org/doi/10.5555/850947.853338); [CodeScene, *Temporal Coupling*](https://codescene.com/blog/software-revolution-part3) | Why do unrelated files change together? Is this the same as temporal coupling? What does it reveal? | [Hidden coupling](fundamentals/oop/00a-hidden-coupling.md#overall-definition) |
 | **When coupling is acceptable** | Coupling is a degree, not a binary; stable or necessary dependencies are acceptable when they are explicit and do not hide mutable state. | [ISO/IEC/IEEE 24765:2017, §3.919](https://www.iso.org/standard/71952.html); [Seemann, *Composition Root* (2011)](https://blog.ploeh.dk/2011/07/28/CompositionRoot/); [Hevery, *Root Cause of Singletons* (2008)](https://testing.googleblog.com/2008/08/root-cause-of-singletons.html) | Is all coupling bad? Should I inject everything? When is a global acceptable? Is a stable dependency okay? | [What coupling is](fundamentals/oop/00-what-is-coupling.md#the-definition) · [Global access and coupling](fundamentals/oop/design-patterns/05d-global-access-and-coupling.md#when-a-global-is-acceptable) |
 
+### Coupling and testability — the decision questions
+
+*The article is [02d — Coupling and testability](architecture/02d-coupling-and-testability.md). The question is not "is there coupling?" but "is there a seam where the volatile part can fail in a test?"*
+
+**The seam**
+
+- Does this code need a real database, network, clock, or filesystem to run?
+- Which dependency is volatile, and where is its seam?
+- Does the dependency arrive from outside as a contract, or is it constructed as a concretion?
+- Can I make the dependency fail without editing the code under test?
+- Is the seam owned by the code that needs it, or shaped by the vendor?
+- Can the test run the failure path, not only the happy path?
+
+**The test**
+
+- Does the test assert an outcome, or an internal call sequence?
+- Would it survive a refactor that preserves behavior?
+- Is a small fake enough, or is a mock locking in the implementation?
+- When the interaction is the contract, is that the behavior under test?
+- Does the test need a real secret, a live server, or a particular date?
+- Does the setup build half the object graph to reach one field?
+
+**The coupling**
+
+- Is the dependency stable and cheap, or volatile and expensive?
+- Am I injecting a stable value that should just be passed or computed?
+- Is the coupling hidden — a clock, a global, a schema, or call order?
+- Does an object require a ritual before it is safe to use?
+- What coupling is necessary, and what is accidental?
+- Where is the next seam likely to be needed?
+
 ## Composition and testing
 
 *The composition root is where concrete coupling is allowed to live. These concepts describe that edge and the tests around it.*
