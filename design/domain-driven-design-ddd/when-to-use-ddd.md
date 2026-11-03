@@ -48,3 +48,4 @@ DDD is not a badge. It is a tool for the part of the system where the rules are 
 
 - [Lessons from Eberhard Wolff's DDD example](lessons-from-eberhard-wolff.md)
 - [What actually fails in a layered CRUD app](what-fails-in-a-layered-crud-app.md)
+- [Subdomains and bounded contexts](subdomains-and-bounded-contexts.md)
