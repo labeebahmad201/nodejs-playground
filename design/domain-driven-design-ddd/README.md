@@ -260,3 +260,12 @@ There is a lot of misunderstanding around domain-driven design. Common claims in
 - "I never needed DDD for my software to work." That is not inherently wrong, but it is not the point.
 
 I usually attribute this confusion to two things: people learned DDD from "all you need to know about DDD" content, or from DDD live tutorials.
+
+## See also
+
+- [Lessons from Eberhard Wolff's DDD example](lessons-from-eberhard-wolff.md)
+- [When to use DDD](when-to-use-ddd.md)
+- [What actually fails in a layered CRUD app](what-fails-in-a-layered-crud-app.md)
+- [Subdomains and bounded contexts](subdomains-and-bounded-contexts.md)
+- [Bounded contexts, microservices, and teams](bounded-contexts-microservices-and-teams.md)
+- [Where DDD came from](where-ddd-came-from.md)
