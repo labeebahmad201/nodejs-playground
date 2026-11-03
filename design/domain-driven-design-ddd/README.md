@@ -268,4 +268,4 @@ I usually attribute this confusion to two things: people learned DDD from "all y
 - [What actually fails in a layered CRUD app](what-fails-in-a-layered-crud-app.md)
 - [Subdomains and bounded contexts](subdomains-and-bounded-contexts.md)
 - [Bounded contexts, microservices, and teams](bounded-contexts-microservices-and-teams.md)
-- [Design follows business reality](design-follows-business-reality.md)
+- [Where DDD came from](where-ddd-came-from.md)
