@@ -72,6 +72,28 @@ The same failure repeats in different forms:
 
 The architecture is still layered. The domain model is gone.
 
+## Rules multiply, and invariants span tables
+
+A single rule in a service is manageable. The failure comes from what happens as the domain grows:
+
+- a new customer type adds an exception;
+- a new payment method adds a branch;
+- a new region adds a tax rule;
+- a new admin flow needs the same rule and gets its own implementation.
+
+Each change adds a conditional to a service or a new service method. The rule is duplicated, the copies drift, and the model never becomes the place where the rule lives. The codebase accumulates rules instead of expressing them.
+
+An invariant that spans several tables is worse. Consider an invoice whose total must equal the sum of its line items, minus discounts, plus tax. The invoice, line items, discounts, and tax live in separate tables, each with its own repository. A service must load all of them, compute the total, and write the rows. That works in one code path, but:
+
+- another path can update a line item without recomputing the invoice total;
+- two concurrent updates can each pass the check and leave the total wrong;
+- a batch job can insert rows directly;
+- the schema allows invalid combinations because the invariant is not a constraint.
+
+The invariant is real, but it has no single owner. It is a property of the whole invoice, not of any one row. The table-per-repository design gives you many places to change data and no place that owns the condition.
+
+That is the difference between a rule that is *checked* and an invariant that is *protected*. A check is a procedure that can be skipped. An invariant is a condition the model maintains by construction. When the invariant spans tables, the aggregate boundary should match it: the invoice and its line items belong together, loaded and saved as one consistency boundary. If the invariant genuinely spans aggregates, make that explicit with a domain service or an eventual-consistency process instead of hoping every service remembers the rule.
+
 ## Layering is not the villain
 
 DDD's own reference architecture is layered: UI, application, domain, infrastructure. Hexagonal architecture is another way to protect the same domain behind ports and adapters. You can have a layered architecture with a rich domain model, and you can have a hexagonal architecture with an anemic one.
