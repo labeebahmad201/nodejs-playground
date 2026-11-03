@@ -1,41 +1,64 @@
 # Bounded contexts, microservices, and teams
 
+> **One unit of change, one owner.**
+
 A bounded context is a model boundary. A microservice is a deployment boundary. They are related, but they are not the same decision.
 
-Two bounded contexts do not have to become two microservices. They can live in one deployable unit, such as a modular monolith, as long as the model boundary stays explicit.
+Two contexts can live in one deployable unit, such as a modular monolith. They can also be separate services. The question is not "how many contexts?" It is "who needs to change what without coordinating?"
+
+## The real cost: coordination
+
+Sharing code, data, or a deployment has a price. Two teams on the same piece of work create:
+
+- merge conflicts and duplicate work;
+- unclear data ownership;
+- release coordination and sign-offs;
+- design arguments with no final decision-maker.
+
+That overhead is sometimes acceptable. Sometimes it is not. The goal is to make it a choice, not an accident.
+
+## Four ownerships to make explicit
+
+| Ownership | The question |
+| --- | --- |
+| **Code** | Who can change it, and who approves? |
+| **Data** | Who writes it, and who owns the schema? |
+| **Deployment** | Who ships it, when, and who rolls it back? |
+| **Design** | Who decides when there is a disagreement? |
+
+If these are unclear, the coordination cost is hidden. It shows up later as conflict.
 
 ## When separate services make sense
 
-There is a stronger case for separate microservices when separate teams own the contexts. Each team can then deploy independently, work in parallel, and avoid coordinating every release. The point is not the number of services; it is removing coordination overhead and letting teams move independently.
+Separate when separate teams need independent deployment cadence. Then each team can ship without waiting for the other. That is the strong case for a microservice.
 
-A separate service is a strong option in that situation, not an automatic rule. The deployment boundary should follow a real need for independent change.
+But separation is not free. It adds network calls, operations, duplication, and failure modes. Use it when the coordination cost is higher than the cost of separation.
 
-## One team can own multiple contexts
+## One team can own many contexts
 
-If a bounded context is small, one team can manage more than one. That is normal. Ownership is about the model and the language, not a one-team-per-context headcount rule.
+Small contexts can share a team. That is normal. The number of bounded contexts is not a team-count formula.
 
-The boundaries still need to be explicit. One team owning several contexts does not mean the contexts collapse into one model.
+What matters is not one team per context. It is **one owner per context**.
 
-## Do not assign two teams to one bounded context
+## Do not put two teams on one context
 
-This is where the problems start:
+Two teams on one bounded context means:
 
-- **Data ownership** — who owns the schema, and who decides when it changes?
-- **Code ownership** — both teams edit the same model and collide.
-- **Deployment** — who deploys, when, and with what sign-off?
-- **Architecture and design** — who makes the binding decisions when the teams disagree?
+- both teams can change the same model;
+- both teams can disagree on the same rule;
+- every change needs negotiation.
 
-With two teams, every change becomes a negotiation. The bounded context loses a single owner, and the model and language drift.
+The context loses a single owner. The model and the language drift.
 
-## Rule of thumb
+## Remember
 
-- One bounded context should have one owning team.
-- One team can own multiple bounded contexts.
-- A bounded context does not require its own microservice.
-- Use a separate microservice when independent teams and independent deployment cadence justify it.
-- Do not split one bounded context across teams.
+- **Bounded context:** one model, one language, one owner.
+- **Microservice:** one deployable unit, not automatically one context.
+- **One team can own many contexts.**
+- **Two teams should not own one context.**
+- **Separate only when coordination costs more than separation.**
 
-The model boundary and the deployment boundary are separate decisions. Keep the model boundary even when you keep one deployment.
+This is not DDD-specific. It applies to modules, microservices, monorepos, and open source. In open source, maintainers are the owners; shared areas need explicit maintainers and a decision process.
 
 ## See also
 
