@@ -1,6 +1,6 @@
 # What actually fails in a layered CRUD app
 
-Layered architecture does not fail by itself. A layered architecture can host a rich domain model: UI → application → domain → infrastructure. The failure mode people usually mean is the **anemic, CRUD-shaped** version of layering:
+Layered architecture does not fail by itself. In fact, the blue book recommends it: UI, application, domain, infrastructure. A layered architecture can host a rich domain model. The failure mode people usually mean is the **anemic, CRUD-shaped** version of layering:
 
 - entities are data bags with getters and setters;
 - business rules live in service methods;

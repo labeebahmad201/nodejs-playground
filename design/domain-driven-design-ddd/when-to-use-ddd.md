@@ -27,11 +27,13 @@ For less complex subdomains, the alternatives are legitimate:
 
 | Alternative | Good when | Breaks down when |
 | --- | --- | --- |
-| CRUD + service layer | Simple data entry, admin screens, reporting | Rules multiply and invariants span several tables |
+| Anemic CRUD + service layer | Simple data entry, admin screens, reporting | Rules multiply and invariants span several tables |
 | Transaction script | The workflow is simple and well understood | Scripts grow, logic gets duplicated, one change touches many scripts |
 | Table model / Active Record | The app is data-centric and follows the schema | The domain model is tied to the database and rules leak |
 | Anemic model + services | The team knows the style and the domain is simple | Behavior is scattered, invariants are not protected |
 | Simple OO model | Moderate complexity, small team | Boundaries and consistency become unclear at scale |
+
+None of this is an argument against layered architecture. The blue book recommends layering: UI, application, domain, infrastructure. The problem is an anemic domain layer with procedural rules in services, not the layers themselves.
 
 The practical rule:
 
