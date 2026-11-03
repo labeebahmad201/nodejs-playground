@@ -12,6 +12,18 @@ In parts of Europe, teams more often talk about DDD, long-lived models, and stab
 
 This is an observation, not a law. A US company can invest in DDD; a European company can optimize for speed.
 
+## Where DDD came from
+
+Eric Evans is American. He developed DDD from consulting work in the US and on international projects from the early 1990s to the 2003 book. His projects were large Java and Smalltalk systems in finance, shipping, insurance, and manufacturing automation. The cargo-shipping example in the book is loosely based on a real container-shipping project.
+
+So the problems behind DDD were large enterprise systems with many domain experts, multiple teams, legacy integration, and long-lived rules. They were not a specifically European problem.
+
+Europe became a strong DDD community later: DDD Europe, JCON, Citerus in Sweden, and Event Storming from Italy. That is adoption and visibility, not origin.
+
+This reinforces the point: **DDD came from a problem context, not a passport.**
+
+Sources: [Eric Evans bio](https://www.informit.com/authors/bio/8E421D92-285C-4C52-B8D1-604A3B3322E1), [Evans on the cargo-shipping project](https://www.informit.com/articles/article.aspx?p=102604&seqNum=5), [DDD sample app and Citerus](https://www.dddcommunity.org/examples2).
+
 ## What actually differs
 
 Geography is a proxy for things like:
