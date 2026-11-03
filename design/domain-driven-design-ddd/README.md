@@ -265,3 +265,4 @@ I usually attribute this confusion to two things: people learned DDD from "all y
 
 - [Lessons from Eberhard Wolff's DDD example](lessons-from-eberhard-wolff.md)
 - [When to use DDD](when-to-use-ddd.md)
+- [What actually fails in a layered CRUD app](what-fails-in-a-layered-crud-app.md)
