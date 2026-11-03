@@ -123,3 +123,4 @@ Only one or two things should be core. If everything is core, nothing is.
 - [When to use DDD](when-to-use-ddd.md)
 - [What actually fails in a layered CRUD app](what-fails-in-a-layered-crud-app.md)
 - [Lessons from Eberhard Wolff's DDD example](lessons-from-eberhard-wolff.md)
+- [Bounded contexts, microservices, and teams](bounded-contexts-microservices-and-teams.md)

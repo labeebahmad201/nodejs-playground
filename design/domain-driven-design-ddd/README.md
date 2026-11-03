@@ -267,3 +267,4 @@ I usually attribute this confusion to two things: people learned DDD from "all y
 - [When to use DDD](when-to-use-ddd.md)
 - [What actually fails in a layered CRUD app](what-fails-in-a-layered-crud-app.md)
 - [Subdomains and bounded contexts](subdomains-and-bounded-contexts.md)
+- [Bounded contexts, microservices, and teams](bounded-contexts-microservices-and-teams.md)
