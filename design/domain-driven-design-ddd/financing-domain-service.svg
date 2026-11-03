@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" role="img" aria-labelledby="title desc">
+  <title id="title">Financing a car with a domain service</title>
+  <desc id="desc">Two separate aggregates, Order and Customer, and a Financing terms value object feed a Financing service, which produces a Monthly payment value object.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563"/>
+    </marker>
+  </defs>
+
+  <text x="550" y="46" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="26" font-weight="600" fill="#1f2937">Financing a car</text>
+  <text x="550" y="74" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" fill="#4b5563">the monthly payment belongs to no single aggregate</text>
+
+  <!-- Order aggregate -->
+  <rect x="60" y="90" width="220" height="110" rx="10" fill="#e8f0fe" stroke="#3b6ea5" stroke-width="3"/>
+  <text x="170" y="134" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#1f2937">Order</text>
+  <text x="170" y="160" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#4b5563">aggregate</text>
+
+  <!-- Customer aggregate -->
+  <rect x="60" y="400" width="220" height="110" rx="10" fill="#e8f0fe" stroke="#3b6ea5" stroke-width="3"/>
+  <text x="170" y="444" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#1f2937">Customer</text>
+  <text x="170" y="470" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#4b5563">aggregate</text>
+
+  <!-- Financing terms value object -->
+  <rect x="380" y="90" width="240" height="110" rx="10" fill="#f9d77e" stroke="#a86b00" stroke-width="3"/>
+  <text x="500" y="134" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#1f2937">Financing terms</text>
+  <text x="500" y="160" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#6b4a00">value object</text>
+
+  <!-- Domain service -->
+  <rect x="400" y="270" width="260" height="120" rx="10" fill="#d9f2e3" stroke="#2f7d4f" stroke-width="3"/>
+  <text x="530" y="318" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#1f2937">Financing service</text>
+  <text x="530" y="344" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#2f5d3f">domain service</text>
+
+  <!-- Monthly payment value object -->
+  <rect x="820" y="270" width="220" height="120" rx="10" fill="#f9d77e" stroke="#a86b00" stroke-width="3"/>
+  <text x="930" y="318" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#1f2937">Monthly payment</text>
+  <text x="930" y="344" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#6b4a00">value object</text>
+
+  <!-- Arrows -->
+  <path d="M 280 145 C 340 145, 340 310, 400 310" fill="none" stroke="#4b5563" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M 280 455 C 340 455, 340 350, 400 350" fill="none" stroke="#4b5563" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M 500 200 L 500 270" fill="none" stroke="#4b5563" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M 660 330 L 820 330" fill="none" stroke="#4b5563" stroke-width="2.5" marker-end="url(#arrow)"/>
+</svg>
