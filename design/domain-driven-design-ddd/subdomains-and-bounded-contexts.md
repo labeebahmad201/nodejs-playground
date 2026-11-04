@@ -60,6 +60,12 @@ Subdomain candidates emerge from that material:
 - **The same word meaning different things** in different parts of the timeline. The customer who pays an invoice is not the customer who receives a delivery.
 - **Handoffs** between people, departments, or systems. Be careful here: organizational boundaries are a clue, not a rule.
 
+### Swim lanes become subdomains
+
+Once the timeline is stable, the swim lanes are the first map of the subdomains. Each lane is a coherent stream of business work with its own vocabulary, rules, and experts. That is why a lane is a subdomain candidate, not a technical module and not a team.
+
+The next step is to classify each candidate as core, supporting, or generic. That is a business decision, not a technical one. Domain experts and product people own that decision; engineers can facilitate the conversation and explain the technical consequences, but they do not decide what the business values. The same lane can be core in one company and generic in another.
+
 The result is a set of candidate subdomains and bounded contexts. It is not a mechanical partition. You validate the candidates with domain experts, look at the business strategy, and iterate.
 
 ## When do we know what is core?
@@ -113,7 +119,7 @@ Only one or two things should be core. If everything is core, nothing is.
 ## Summary
 
 - Subdomains are problem space; bounded contexts are solution space.
-- Event storming discovers candidates; domain experts and business strategy classify them.
+- Event storming swim lanes become subdomain candidates; domain experts and business strategy classify them as core, supporting, or generic.
 - Core gets the rich model and infrastructure independence.
 - Supporting gets a simpler model; generic gets bought or reused.
 - The mapping between subdomains and bounded contexts is not always one-to-one.

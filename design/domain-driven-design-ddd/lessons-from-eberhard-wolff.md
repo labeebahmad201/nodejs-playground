@@ -22,7 +22,7 @@ Event storming is low-tech, lets many people contribute in parallel, and makes i
 
 ## Bounded contexts are discovered, not mechanically cut
 
-Swim lanes and pivotal events suggest candidates for bounded contexts, but they are only indicators. A pivotal event does not automatically justify a new model. `Parcel left the warehouse` changes what matters — the products stop mattering and the parcel becomes the subject — but whether that deserves a separate context is a judgment call.
+Swim lanes suggest candidates for subdomains; pivotal events and changes in vocabulary suggest where a new bounded context may be needed. Both are indicators, not mechanical cuts. A pivotal event does not automatically justify a new model. `Parcel left the warehouse` changes what matters — the products stop mattering and the parcel becomes the subject — but whether that deserves a separate context is a judgment call.
 
 The same word can mean different things in different contexts. In the example, the customer who pays the invoice is not the customer who receives the delivery. One is a company in Hamburg; the other is a person near Ramstein. Calling both "the customer" hides the difference. Bounded contexts let you say "the customer in invoicing" and "the customer in delivery."
 

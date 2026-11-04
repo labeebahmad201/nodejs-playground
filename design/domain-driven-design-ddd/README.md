@@ -220,6 +220,8 @@ Callers do not reach into the order's payment or customization directly. They ca
 
 An aggregate does not stay in memory. It has to be persisted, and the application needs to find orders by ID or by status. That is the job of a repository. The domain depends on an abstraction — an interface written in terms of the domain type, `Order` — and the infrastructure provides the database implementation. The interface acts as a port, and any infrastructure adapter can implement it. The domain does not know about the database.
 
+Application services use repositories to load and save aggregates; the aggregate itself does not hold a repository. See [Repositories do not live in aggregates](repositories-do-not-live-in-aggregates.md).
+
 ```ts
 interface OrderRepository {
   findById(id: string): Promise<Order | null>;
@@ -269,3 +271,7 @@ I usually attribute this confusion to two things: people learned DDD from "all y
 - [Subdomains and bounded contexts](subdomains-and-bounded-contexts.md)
 - [Bounded contexts, microservices, and teams](bounded-contexts-microservices-and-teams.md)
 - [Where DDD came from](where-ddd-came-from.md)
+- [Repositories do not live in aggregates](repositories-do-not-live-in-aggregates.md)
+- [Aggregate root IDs and foreign keys](aggregate-root-ids-and-foreign-keys.md)
+- [God aggregates and transaction boundaries](god-aggregates-and-transaction-boundaries.md)
+- [Cross-aggregate transactions and rollback](cross-aggregate-transactions-and-rollback.md)
