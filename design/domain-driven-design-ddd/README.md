@@ -273,3 +273,4 @@ I usually attribute this confusion to two things: people learned DDD from "all y
 - [Where DDD came from](where-ddd-came-from.md)
 - [Repositories do not live in aggregates](repositories-do-not-live-in-aggregates.md)
 - [Aggregate root IDs and foreign keys](aggregate-root-ids-and-foreign-keys.md)
+- [God aggregates and transaction boundaries](god-aggregates-and-transaction-boundaries.md)

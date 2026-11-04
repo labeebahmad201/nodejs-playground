@@ -199,6 +199,7 @@ The internal IDs are still useful. The root uses them to find a line when applyi
 ## See also
 
 - [Repositories do not live in aggregates](repositories-do-not-live-in-aggregates.md)
+- [God aggregates and transaction boundaries](god-aggregates-and-transaction-boundaries.md)
 - [Aggregates](../../fundamentals/07-aggregates/README.md)
 - [Repositories](../../fundamentals/08-repositories/README.md)
 - [What actually fails in a layered CRUD app](what-fails-in-a-layered-crud-app.md)
