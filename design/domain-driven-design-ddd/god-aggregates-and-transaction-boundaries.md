@@ -218,6 +218,7 @@ Pick deliberately. Do not drift into a two-aggregate transaction because it was 
 ## See also
 
 - [Aggregate root IDs and foreign keys](aggregate-root-ids-and-foreign-keys.md)
+- [Cross-aggregate transactions and rollback](cross-aggregate-transactions-and-rollback.md)
 - [Repositories do not live in aggregates](repositories-do-not-live-in-aggregates.md)
 - [Aggregates](../../fundamentals/07-aggregates/README.md)
 - [What actually fails in a layered CRUD app](what-fails-in-a-layered-crud-app.md)
