@@ -1,6 +1,6 @@
-# The Min Stack: A Minimum Is a History, Not a Variable
+# The Min Stack Is Not About Stacks
 
-*`getMin()` looks like it should be a single variable. It isn't. The minimum is a fact about the whole stack at a point in time, and the moment you can undo a `push`, you need the minimum from before that push — not the minimum now. The fix is not a cleverer variable. It's storing the answer with every frame.*
+*`getMin()` looks like it should be a single variable. It isn't. The minimum is a fact about the whole collection at a point in time, and the moment you undo a push, you need the value it had before that push — not the value it has now. The stack is incidental. What you're actually learning is how to keep history for a property that is derived from data.*
 
 ---
 
@@ -20,6 +20,27 @@ getMin()  # -2
 ```
 
 The first three operations are ordinary stack operations. `getMin` is the interesting one, because it is **derived state**: its value is a function of everything currently in the stack, not of the last operation. That difference is the whole problem.
+
+## The real problem is not the stack
+
+Strip away the container and the question underneath is:
+
+> Given a collection of values, maintain a property `P(collection)` derived from all of them. Answer `P` in O(1) — including immediately after an element is removed.
+
+Here `P` is the minimum. It could just as easily be the maximum, the sum, the product, the number of distinct values, or the GCD. The stack is not the point. What makes the problem hard is that `P` is **derived**: no single element stores it. It is a function of all the elements currently present. So when an element leaves, `P` doesn't merely change — it has to become the value it had *before that element arrived*.
+
+That is a historical question: "what was `P` at time `t−1`?" A structure that only knows "what is `P` at time `t`?" cannot answer it.
+
+The stack is just the simplest arena for this. Removal is LIFO, so the history you need to restore is exactly the history you recorded. That convenience is why it's the interview question — and why it can hide the general problem.
+
+| | Stored per element | Derived from the collection |
+| --- | --- | --- |
+| Examples | the value itself | min, max, sum, size, distinct count |
+| On push | the new fact arrives with the element | recompute it, or update it |
+| On pop | the fact leaves with the element | **restore the previous answer** |
+| Recoverable from the element? | yes | no — the element never contained the aggregate |
+
+A derived property is a **summary**, and a summary is lossy. The rest of this article is about what that loss costs and how to pay for it.
 
 ## The obvious solution is O(n)
 
@@ -61,9 +82,9 @@ The minimum is a *summary* of a set. Summaries are lossy, and this one is not in
 
 there is no way to recover the minimum of `S`. Example: `min({5} ∪ {3}) = 3`. Remove `3`. Was the rest `{5}`? `{5, 7}`? `{4, 9, 12}`? All of them produce `3` before the removal. The scalar collapsed all of those possibilities into one number.
 
-The values themselves are still in the stack, so you *could* rescan them — that's the O(n) solution again. The point is that the minimum needs either **recomputation** or **history**. There is no third option.
+The values themselves are still in the stack, so you *could* rescan them — that's the O(n) solution again. The point is that the minimum needs something outside the scalar: recomputation, recorded history, or a structure that supports deletion. A scalar has none of the three.
 
-## The idea: every frame carries the minimum as of its arrival
+## The fix: record the answer at every point in time
 
 Store two things per element:
 
@@ -92,7 +113,7 @@ It holds by induction. The first frame's minimum is its own value. Each new fram
 
 Now look at what `pop` does. It removes the last frame, and the new top frame's second slot was computed *before* the removed element existed. So it is, by definition, the minimum of the remaining stack. **`pop` doesn't recompute anything. It reveals a value that was already true.** Reversing the push restores the previous minimum because the previous minimum was recorded, not derived.
 
-That is the takeaway: the tuple is a **history of the answer**, one entry per frame. `getMin()` is just `stack[-1][1]`.
+That is the mechanism: the tuple is a **history of the answer**, one entry per frame. `getMin()` is just `stack[-1][1]`.
 
 ## The implementation
 
@@ -203,19 +224,47 @@ for _ in range(1000):
 
 The naive version is obviously correct and obviously slow. The fast version is subtle. Running them against the same random operation stream is what turns "I think the invariant holds" into "the invariant held across up to 100,000 operations." It also catches the duplicate-minimum and empty-adjacent cases that hand-written examples tend to miss.
 
-## What generalizes
+## The general shape: three ways to answer a historical question
 
-The tuple is not a Min Stack trick. It is a pattern:
+Once you frame it as "restore a derived property after a removal," the Min Stack stops being a special case and becomes one point in a design space. There are only three ways to answer `P` after the data changes:
 
-- **Prefix aggregates.** A running sum, product, count, or maximum can be stored alongside each element. Query the aggregate at the top, and `pop` restores the previous one for free.
-- **Undo and versioning.** Any state you can only move forward needs a recorded prior value if you want to move back. The tuple is a one-step undo log; event sourcing is the same idea at system scale.
-- **Monotonic stacks.** For "next greater element," you pop elements that can never be the answer again. That is also history management: discard what cannot matter, keep what can.
-- **Why this doesn't work for a queue.** The trick depends on LIFO. The minimum you need after a `pop` is exactly the one recorded before that `push`, because the element leaving is the element that arrived last. In a FIFO queue the element leaving is the *oldest*, and the min-so-far stored at the tail says nothing about what happens when the head leaves. Sliding-window minimum needs a monotonic deque instead. Same question, different structure, different answer.
+1. **Recompute.** Keep the data, scan it on demand. O(n) query, O(1) extra space. Perfectly valid when queries are rare.
+2. **Record the answer.** Persist `P` at each point in time. O(1) query, O(n) history. Works when the undo is an *exact reversal* of the step that produced the state — as it is for a LIFO pop.
+3. **Keep a structure that supports deletion.** When the answer can't be snapshotted cheaply, or removal isn't LIFO, maintain something that can delete efficiently: a heap with lazy deletion, a monotonic deque, a balanced tree, a segment tree.
 
-The common thread: **derived state plus destructive updates loses information. If an operation must be reversible, store what you need to reverse it.**
+The Min Stack picks option 2. That's why the tuple works: `push` appends a new answer, `pop` removes the last one, and the previous answer is already sitting there.
+
+The same three options show up everywhere:
+
+| Situation | Recompute | Record the answer | Deletion-aware structure |
+| --- | --- | --- | --- |
+| Stack minimum | scan the stack | tuple `(value, min)` | — |
+| Sliding-window minimum | scan the window | doesn't work (FIFO) | monotonic deque |
+| Range sum | sum the range | prefix sums | Fenwick tree |
+| Median of a stream | sort on demand | — | two heaps |
+| Undo in an editor | replay from scratch | command log / snapshots | — |
+| Consistent read in a database | — | MVCC versions | — |
+
+The right column isn't better than the middle one; it's for when the middle one breaks. And the middle one breaks precisely when **the order of removal doesn't match the order of recording**. A stack is the easy case: the element leaving is the element that arrived last, so the history lines up with the frames. A queue is not: the element leaving is the *oldest*, and the min-so-far stored at the tail says nothing about what happens when the head leaves. Same question, different structure.
+
+This is also why "just cache the derived value" is not a complete strategy. A cache is option 2 without the undo path. It works until something is removed or invalidated — then you need to know what the value was before, or be able to recompute it. Event sourcing, MVCC, and version control are all the same admission: **if the current state is derived, the history is part of the state.**
+
+> Recompute it, record it, or keep a structure that can delete. Those are the only three moves. The mistake is pretending a scalar is one of them.
 
 ## The takeaway
 
-A single `minimum` variable answers "what is the smallest value right now?" It cannot answer "what was the smallest value before the last push?" Those are different questions, and `pop` asks the second one.
+The stack was never the subject. It's the simplest setting for a much more common problem:
 
-The tuple works because it stops treating the minimum as a current value and starts treating it as a **property of a prefix** — a small, per-frame historical record. `push` extends the record; `pop` truncates it; `getMin` reads the end. That is why the fix is one extra slot per element, and why no amount of cleverness with a scalar could have replaced it.
+> **A property derived from data changes when the data changes. Reversing the change means restoring the property's previous value.**
+
+The Min Stack answer is one extra slot per frame — not because tuples are clever, but because the minimum is a property of a *prefix*, and a prefix has a history. `push` extends the history, `pop` truncates it, `getMin` reads its end. The data structure didn't get smarter. It started remembering.
+
+That's the transferable move. Whenever you maintain a running aggregate — a min, a max, a sum, a count, a flag, an invariant — ask two questions:
+
+1. **Is this stored in the elements, or derived from the collection?**
+2. **Can an element leave? If so, what does this property become when it does?**
+
+If the answer to the second is "the value from before it arrived," you need history. A variable will happily hold the current answer and silently lie about the previous one.
+
+Once you see that, `MinStack` is no longer a trick to memorize. It's the smallest example of a pattern you'll meet again in undo stacks, prefix sums, event logs, caches, and versioned data.
+
