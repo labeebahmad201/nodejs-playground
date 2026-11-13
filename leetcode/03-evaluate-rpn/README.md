@@ -19,11 +19,61 @@ The expression is always valid and never divides by zero.
 The infix versions on the right are only for reading. The algorithm never needs to find
 parentheses or precedence — postfix already encodes both.
 
-## Why a stack
+## Why a stack: the example that forces it
 
-Scan left to right. An operand is a value whose operator has not arrived yet, so it has to wait.
-When an operator finally appears, it applies to the **most recent** two waiting values. That is
-LIFO, so the waiting values live on a stack.
+Start with the smallest interesting expression:
+
+```text
+2 3 +
+```
+
+A left-to-right scan handles it. Read `2`, read `3`, see `+`, compute `5`. It is tempting to conclude
+that an accumulator — or a pair of variables for the last two values — is enough. For one operator,
+it is.
+
+Add one operand and one operator:
+
+```text
+2 3 4 + *
+```
+
+The `+` does not apply to the first two values. It applies to the **last two**:
+
+```text
+3 + 4 = 7
+2 * 7 = 14
+```
+
+While `3` and `4` are being combined, `2` has to wait. It arrived first, but its operator (the `*`)
+arrives last. That is the problem. A single accumulator has nowhere to keep `2` while it moves on to
+`3` and `4`; by the time the `*` appears, the `2` is gone. Two variables (`left`, `right`) work for
+one pending operator, but the expression can have arbitrarily many pending operands:
+
+```text
+1 2 3 4 + + +
+```
+
+So the number of values that must wait is not fixed at two. What you need is a place to park every
+operand whose operator has not arrived yet, and to get them back in the reverse of the order they
+were parked. That is a stack. The problem is not asking you to use one; it is leaving you no smaller
+structure that works.
+
+| Token | Action | Stack (bottom → top) |
+| --- | --- | --- |
+| `2` | push | `[2]` |
+| `3` | push | `[2, 3]` |
+| `4` | push | `[2, 3, 4]` |
+| `+` | pop `4`, pop `3`, push `3 + 4` | `[2, 7]` |
+| `*` | pop `7`, pop `2`, push `2 * 7` | `[14]` |
+
+The stack is not a technique applied to postfix. It is the shape the data already has: operands
+wait, and the most recent ones are resolved first.
+
+Once that is clear, the algorithm is forced:
+
+- An operand is a value whose operator has not arrived yet → push it.
+- An operator applies to the most recent two waiting values → pop two, combine, push the result.
+- A valid expression ends with one completed value → return the only element left.
 
 The invariant:
 
