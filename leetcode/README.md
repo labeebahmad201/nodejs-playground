@@ -8,6 +8,7 @@ The DSA track is deliberately separate from the topic notes: this is timed pract
 
 | # | Problem | Pattern | Notes |
 | --- | --- | --- | --- |
+| 20 | [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) | LIFO matching | [02-valid-parentheses/](./02-valid-parentheses) |
 | 155 | [Min Stack](https://leetcode.com/problems/min-stack/) | Derived state + history | [01-min-stack/](./01-min-stack) |
 
 ## How to add a problem
