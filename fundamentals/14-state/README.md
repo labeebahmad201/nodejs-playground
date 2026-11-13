@@ -100,6 +100,10 @@ const count = state.items.length;
 (Derived values that are *expensive* may be cached — but the cache is an optimization of a source of
 truth, not a second one.)
 
+> This is one application of a broader rule. Constants, schemas, validation rules, config defaults,
+> and contracts all want a single owner too — see
+> [`43-single-source-of-truth`](../43-single-source-of-truth).
+
 ## State in the frontend
 
 The UI is a function of state: **`UI = f(state)`**. You don't change the DOM directly; you change

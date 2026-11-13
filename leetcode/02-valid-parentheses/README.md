@@ -239,6 +239,8 @@ This is correct for the stated input, which contains only the six bracket charac
 
 Two smaller idioms: `return not stack` reads better than `return len(stack) == 0`, and `stack[-1] != closeToOpen[c]` collapses the nested `if/else` into one condition.
 
+This is one instance of a general rule: every fact should have a single owner. The bracket alphabet is the fact here; the map and the `if` were two definitions of it. See [`fundamentals/43-single-source-of-truth`](../../fundamentals/43-single-source-of-truth) for the broader treatment.
+
 ## What generalizes
 
 The stack here is a list of **unfinished obligations**. That framing shows up far beyond brackets:
