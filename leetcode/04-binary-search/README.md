@@ -153,23 +153,21 @@ When `left > right`, the interval is empty. If the invariant still holds, `targe
 ## Why O(log n): where the equation comes from
 
 Each iteration discards `mid` and one side, so at most half of the remaining candidates survive.
-Start with `n` candidates and apply that repeatedly:
+Start with `n` candidates and divide by 2 each time:
 
 | Iteration | Candidates left (worst case) |
 | --- | --- |
 | 0 | `n` |
 | 1 | `n / 2` |
-| 2 | `n / 4` = `n / 2²` |
-| 3 | `n / 8` = `n / 2³` |
+| 2 | `n / 4` |
+| 3 | `n / 8` |
 | `k` | `n / 2^k` |
 
-The pattern is repeated multiplication by `1/2`:
+Each row divides by 2 one more time. After `k` iterations, we have divided by 2 exactly `k` times,
+which is written `n / 2^k`. That is where the expression comes from — it is just the table's last
+row.
 
-```text
-n × (1/2)^k = n / 2^k
-```
-
-The useful question is: **how many halvings does it take to get down to a single candidate?** Set
+The useful question is: **how many divisions does it take to get down to a single candidate?** Set
 the remaining count to 1:
 
 ```text
@@ -189,7 +187,7 @@ log₂ n = k
 ```
 
 So `k = log₂ n`. That is what a base-2 logarithm means: the number of times you can divide `n` by 2
-before reaching 1. For example, `16 → 8 → 4 → 2 → 1` is four halvings, and `log₂ 16 = 4`.
+before reaching 1. For example, `16 → 8 → 4 → 2 → 1` is four divisions by 2, and `log₂ 16 = 4`.
 
 The loop actually stops when the interval is empty, and a final one-element interval still needs a
 comparison, so the exact worst-case count can be `⌊log₂ n⌋ + 1` (for `n = 6`, that is `2 + 1 = 3`).
@@ -198,7 +196,7 @@ Big-O ignores the constant and the rounding, so the result is `O(log n)`.
 Each iteration is O(1) work — one midpoint calculation, one comparison, one pointer update — so the
 total is O(log n). Space is O(1): three integer variables.
 
-The halving is only guaranteed because the updates exclude `mid`. If an update leaves `mid` in the
+The interval only shrinks because the updates exclude `mid`. If an update leaves `mid` in the
 interval, the range can fail to shrink, and the loop can run forever.
 
 ### Sequential search: O(n), and sortedness buys nothing
