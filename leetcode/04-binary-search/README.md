@@ -150,25 +150,70 @@ It starts true because the interval is the whole array. Each comparison preserve
 When `left > right`, the interval is empty. If the invariant still holds, `target` cannot be in
 `nums`, so `-1` is correct.
 
-## Why O(log n)
+## Why O(log n): where the equation comes from
 
-Each iteration discards `mid` and one side, so at most half of the remaining candidates survive:
+Each iteration discards `mid` and one side, so at most half of the remaining candidates survive.
+Start with `n` candidates and apply that repeatedly:
+
+| Iteration | Candidates left (worst case) |
+| --- | --- |
+| 0 | `n` |
+| 1 | `n / 2` |
+| 2 | `n / 4` = `n / 2²` |
+| 3 | `n / 8` = `n / 2³` |
+| `k` | `n / 2^k` |
+
+The pattern is repeated multiplication by `1/2`:
 
 ```text
-n → n/2 → n/4 → ... → 1
+n × (1/2)^k = n / 2^k
 ```
 
-After `k` iterations, at most `n / 2^k` candidates remain. The search stops when that is below one:
+The useful question is: **how many halvings does it take to get down to a single candidate?** Set
+the remaining count to 1:
 
 ```text
-n / 2^k < 1  →  2^k > n  →  k > log₂ n
+n / 2^k = 1
 ```
 
-So the number of iterations is `O(log n)`, and each iteration does O(1) work. Space is O(1): three
-integer variables. For a million elements, that is about twenty comparisons instead of a million.
+Multiply both sides by `2^k`:
+
+```text
+n = 2^k
+```
+
+Take `log₂` of both sides:
+
+```text
+log₂ n = k
+```
+
+So `k = log₂ n`. That is what a base-2 logarithm means: the number of times you can divide `n` by 2
+before reaching 1. For example, `16 → 8 → 4 → 2 → 1` is four halvings, and `log₂ 16 = 4`.
+
+The loop actually stops when the interval is empty, and a final one-element interval still needs a
+comparison, so the exact worst-case count can be `⌊log₂ n⌋ + 1` (for `n = 6`, that is `2 + 1 = 3`).
+Big-O ignores the constant and the rounding, so the result is `O(log n)`.
+
+Each iteration is O(1) work — one midpoint calculation, one comparison, one pointer update — so the
+total is O(log n). Space is O(1): three integer variables.
 
 The halving is only guaranteed because the updates exclude `mid`. If an update leaves `mid` in the
 interval, the range can fail to shrink, and the loop can run forever.
+
+### Sequential search: O(n), and sortedness buys nothing
+
+A sequential search checks elements one at a time. It is O(n) in the worst case, and it does not
+benefit from the array being sorted: checking `nums[i]` tells you only whether *that one element* is
+the target. The order is never used, so it cannot eliminate anything except the element it just
+looked at.
+
+Binary search turns order into information. `nums[mid] > target` is not just "this element is
+wrong"; combined with sortedness, it rules out every element to the right. That is the benefit of
+the sorted input, and it is why the problem asks for O(log n) instead of accepting the linear scan.
+
+For a million elements, that is about twenty comparisons instead of a million. The sorted array is
+what makes the twenty possible.
 
 ## Tests worth keeping
 
