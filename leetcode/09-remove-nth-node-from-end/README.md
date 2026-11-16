@@ -166,6 +166,8 @@ class Solution:
         return dummy.next
 ```
 
+`fast` can become `None` on the final advance — specifically when `n == length`, where the target is the head. That is safe: the loop ends immediately, so no later iteration tries to read `.next` from `None`. For valid `n`, `fast` is a real node at the start of every iteration, including the one that moves it to `None`.
+
 The order inside the loop matters. `prev = slow` runs **before** `slow` moves. At the end of the iteration, `prev` is the node that `slow` just left. If you update `prev` after moving `slow`, `prev` becomes the target itself, and `prev.next = slow.next` does nothing useful.
 
 `prev = dummy` before the loop is what makes the head-removal case work when the loop has zero iterations. It is not a placeholder; it is the real predecessor of the head.
