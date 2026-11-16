@@ -9,6 +9,7 @@ The DSA track is deliberately separate from the topic notes: this is timed pract
 | # | Problem | Pattern | Notes |
 | --- | --- | --- | --- |
 | 20 | [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) | LIFO matching | [02-valid-parentheses/](./02-valid-parentheses) |
+| 74 | [Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) | Two-level binary search | [07-search-a-2d-matrix/](./07-search-a-2d-matrix) |
 | 141 | [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) | Fast/slow pointers | [05-linked-list-cycle/](./05-linked-list-cycle) |
 | 150 | [Evaluate Reverse Polish Notation](https://leetcode.com/problems/evaluate-reverse-polish-notation/) | Stack evaluation | [03-evaluate-rpn/](./03-evaluate-rpn) |
 | 155 | [Min Stack](https://leetcode.com/problems/min-stack/) | Derived state + history | [01-min-stack/](./01-min-stack) |
