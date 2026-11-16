@@ -94,7 +94,23 @@ step 1   slow = B, fast = A    gap = 1
 step 2   slow = C, fast = C    gap = 0
 ```
 
-The trace starts once both pointers are already inside the cycle. Their exact starting positions
+The cycle length does not have to be even. The same walk on a three-node cycle:
+
+```text
+cycle: A → B → C → A
+
+start    slow = A, fast = B    gap = 2
+step 1   slow = B, fast = A    gap = 1
+step 2   slow = C, fast = C    gap = 0
+```
+
+Both traces follow the same `2 → 1 → 0` sequence: a three-node cycle and a four-node cycle both
+close the gap and meet. The starting gap is 2 in both cases, so the only thing that changed is the
+cycle length — and it changed nothing. The relative speed is still one, so each step removes
+exactly one from the gap. The parity of the cycle length (and of the list) does not affect the
+meeting.
+
+Both traces start once the pointers are already inside the cycle. Their exact starting positions
 only change how long the gap takes to close.
 
 What if `fast` looks like it is *ahead* of `slow`? On a circle, "ahead" and "behind" are relative.
@@ -195,10 +211,15 @@ assert Solution().hasCycle(build([1, 2, 3, 4], 2)) is True    # tail back to the
 
 assert Solution().hasCycle(build([1, 1, 1], -1)) is False     # duplicate values, no cycle
 assert Solution().hasCycle(build([1, 1, 1], 0)) is True       # duplicate values, with cycle
+
+# Every cycle length from 1 to 19, odd or even.
+for n in range(1, 20):
+    assert Solution().hasCycle(build(list(range(n)), 0)) is True
 ```
 
-The duplicate-value cases are the ones that catch a value-based `seen` set. The single-node
-self-loop is the smallest cycle the fast/slow pointers can find.
+The loop over cycle lengths 1–19 makes the odd/even point explicit: every length meets. The
+duplicate-value cases are the ones that catch a value-based `seen` set. The single-node self-loop
+is the smallest cycle the fast/slow pointers can find.
 
 ## What generalizes
 
