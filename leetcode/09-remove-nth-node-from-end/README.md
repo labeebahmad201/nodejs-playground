@@ -144,7 +144,7 @@ If the head was removed, `dummy.next` is the new head. If it wasn't, `dummy.next
 
 The dummy is not part of the gap. `slow` and `fast` start at `head`; the dummy only sits before the chain as `prev` and as the anchor for the return value.
 
-## The code
+## The clean version
 
 ```python
 class Solution:
@@ -172,18 +172,37 @@ The order inside the loop matters. `prev = slow` runs **before** `slow` moves. A
 
 `prev = dummy` before the loop is what makes the head-removal case work when the loop has zero iterations. It is not a placeholder; it is the real predecessor of the head.
 
-## The defensive advance in the draft
+## The guarded version from the original solution
 
-The original draft wrote the advance like this:
+The original solution advances with a guard because `n` might be larger than the number of nodes:
 
 ```python
-for _ in range(n):
-    fast = fast.next if fast else None
+class Solution:
+    def removeNthFromEnd(self, head: ListNode | None, n: int) -> ListNode | None:
+        dummy = ListNode(0)
+        dummy.next = head
+        slow = head
+        fast = head
+
+        for _ in range(0, n):
+            # Keep fast as None instead of trying to read None.next.
+            fast = fast.next if fast else None
+
+        prev = dummy
+        while fast:
+            prev = slow
+            slow = slow.next
+            fast = fast.next
+
+        prev.next = slow.next
+        return dummy.next
 ```
 
-The guard prevents an `AttributeError` if `n` is larger than the list. But it does not make an oversized `n` correct. If `fast` falls off early, the `while` loop is skipped, `prev` stays at `dummy`, and the code removes the head instead of reporting that `n` is invalid.
+The reasoning is sound at the level of "do not dereference `None`": if `n` is 10 and the list has only 2 nodes, the counted loop needs to keep advancing `fast` without calling `.next` on `None`. The conditional expression does that.
 
-LeetCode guarantees `1 <= n <= length`, so that branch is unreachable for valid input. The simpler `fast = fast.next` is enough under the constraints. If you want to support invalid input, add a real precondition that returns or raises — a guard clause should exit with a meaningful result, not silently choose a different node:
+For valid input (`1 <= n <= length`), the guard is never false at the start of an iteration, so this is identical to the simpler `fast = fast.next`. In particular, when `n == length`, `fast` becomes `None` only on the final advance, and the loop then ends.
+
+But the guard only prevents the exception. It does not report that `n` was too large. Once `fast` is `None` early, the `while fast` loop is skipped, `prev` stays at `dummy`, and the code removes the head. That is a wrong answer, not a robust handling of the invalid input. For a general-purpose API, the guard should exit immediately:
 
 ```python
 for _ in range(n):
@@ -192,7 +211,9 @@ for _ in range(n):
     fast = fast.next
 ```
 
-That guard runs only when the input can actually violate `n <= length`. In the clean version, the problem's contract supplies that guarantee, so the extra check is left out. See [`fundamentals/45-guard-clauses`](../../fundamentals/45-guard-clauses) for the distinction between a guard that reports an invalid state and one that silently changes the operation.
+or return the original `head` unchanged, depending on the contract. The key is that the guard must decide what invalid input means, not just replace a crash with a different operation.
+
+LeetCode guarantees `1 <= n <= length`, so both versions produce the same result for every valid input. I keep both here because the guarded version shows the robustness instinct and the boundary it does not cover. See [`fundamentals/45-guard-clauses`](../../fundamentals/45-guard-clauses) for the distinction between a guard that reports an invalid state and one that silently changes the operation.
 
 The empty-list case is excluded by the constraints too. If `head` were `None`, `slow.next` would fail. A defensive version would need an explicit `if not head: return None` at the top.
 
@@ -255,4 +276,4 @@ If any of these feels fuzzy, re-trace the five-node list and the single-node lis
 - A dummy before the head gives the head a predecessor and makes `return dummy.next` work for every case.
 - The algorithm is one pass, O(L) time, and O(1) space.
 - `while fast` and `while fast.next` are two different invariants. Name the one you are using.
-- The draft's defensive `if fast else None` prevents a crash but does not make an invalid `n` correct.
+- The original solution's defensive `if fast else None` prevents a crash but does not make an invalid `n` correct; a robust guard must return or raise.
