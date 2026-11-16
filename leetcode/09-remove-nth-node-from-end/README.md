@@ -183,7 +183,16 @@ for _ in range(n):
 
 The guard prevents an `AttributeError` if `n` is larger than the list. But it does not make an oversized `n` correct. If `fast` falls off early, the `while` loop is skipped, `prev` stays at `dummy`, and the code removes the head instead of reporting that `n` is invalid.
 
-LeetCode guarantees `1 <= n <= length`, so that branch is unreachable for valid input. The simpler `fast = fast.next` is enough under the constraints. If you want to support invalid input, add a real precondition that returns or raises — a guard clause should exit with a meaningful result, not silently choose a different node. See [`fundamentals/45-guard-clauses`](../../fundamentals/45-guard-clauses) for that distinction.
+LeetCode guarantees `1 <= n <= length`, so that branch is unreachable for valid input. The simpler `fast = fast.next` is enough under the constraints. If you want to support invalid input, add a real precondition that returns or raises — a guard clause should exit with a meaningful result, not silently choose a different node:
+
+```python
+for _ in range(n):
+    if fast is None:
+        raise ValueError("n is larger than the list")
+    fast = fast.next
+```
+
+That guard runs only when the input can actually violate `n <= length`. In the clean version, the problem's contract supplies that guarantee, so the extra check is left out. See [`fundamentals/45-guard-clauses`](../../fundamentals/45-guard-clauses) for the distinction between a guard that reports an invalid state and one that silently changes the operation.
 
 The empty-list case is excluded by the constraints too. If `head` were `None`, `slow.next` would fail. A defensive version would need an explicit `if not head: return None` at the top.
 
