@@ -24,6 +24,7 @@ Add new architecture choices there first. Individual notes may repeat a row for 
 | **Failure mode** | The characteristic way a choice fails; not the cause, not the blast radius, not the incident. | [Avizienis et al., *Basic Concepts and Taxonomy of Dependable and Secure Computing* (2004)](https://doi.org/10.1109/TDSC.2004.2); [IEC 60812:2018](https://webstore.iec.ch/en/publication/26359); [Nygard, *Release It!* (2018)](https://pragprog.com/titles/mnee2/release-it-second-edition/) | What is the characteristic failure pattern? What is the blast radius? Does it fail open or closed? How would we detect it? What is the recovery path? | [Failure mode, failure domain, blast radius](architecture/01-tradeoff-vocabulary.md#failure-mode-failure-domain-blast-radius) |
 | **Architecture proposal review** | The 12 questions that turn “it depends” into a defensible choice with a revisit trigger. | Synthesis in [01](architecture/01-tradeoff-vocabulary.md); no single canonical list | Can I answer all 12? Which top three forces dominate? What is the simplest option that satisfies them? What would make me reverse this? | [The 12 trade-off questions](architecture/01-tradeoff-vocabulary.md#the-12-trade-off-questions) |
 | **ADR** | A one-page record of context, decision, consequences, alternatives, and revisit trigger. | [Nygard, *Documenting Architecture Decisions* (2011)](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions); [adr.github.io](https://adr.github.io/) | What forced the decision? What did we choose? What did we accept? What did we reject? What would make us revisit? Is it dated and owned? | [ADR](architecture/01-tradeoff-vocabulary.md#adr-record-the-decision) · [Worked ADR](architecture/adr/0001-composition-root.md) |
+| **Event Storming** | A workshop format for mapping domain events, commands, policies, and hotspots before choosing boundaries; Big Picture, Process Modeling, and Software Design are different zoom levels. | [Brandolini, *Introducing Event Storming* (2013)](https://ziobrando.blogspot.com/2013/11/introducing-event-storming.html); [Qlerify, *Event Storming – The Complete Guide* (2025)](https://www.qlerify.com/post/event-storming-the-complete-guide); [Evans (2003)](https://www.informit.com/store/domain-driven-design-tackling-complexity-in-the-heart-of-9780321125217) | What actually happens? Who decides? What is the happy path? Where are the hotspots? Which words change meaning across contexts? What is the aggregate invariant? | [Event Storming](architecture/04-microservices/event-storming/README.md) |
 | **Customer value** | Customer value is the outcome; working software is a leading indicator, not the primary measure. | [Okhravi, *Working Software Is Not The Primary Measure of Progress* (2024)](https://www.youtube.com/watch?v=rV0a-b_VhBg); [Agile Manifesto](https://agilemanifesto.org/principles.html); [Perri, *Escaping the Build Trap* (2018)](https://www.oreilly.com/library/view/escaping-the-build/9781491973790/) | Who is the customer? What outcome changes for them? What is the smallest test? What did we learn? What mess are we leaving? Would a customer notice? | [Customer value](architecture/01f-customer-value-and-progress.md#the-claim) |
 | **Trade-off matrix** | One row per decision: optimizes, costs, use when, avoid when, failure mode. | Synthesis in this repository; each row links to its note | Which row are we choosing? What does it optimize? What are we accepting? When would it be wrong? How does it fail? | [Trade-offs](architecture/tradeoffs.md#the-matrix) |
 
@@ -135,6 +136,80 @@ Add new architecture choices there first. Individual notes may repeat a row for 
 | **Consistency boundary** | A local transaction can span module schemas, but that couples migrations and extraction; use it only for real invariants. | Ford et al.; [Kleppmann, *Designing Data-Intensive Applications* (2017)](https://dataintensive.net/) | What invariant must be atomic? Which modules does it touch? Does it create a coordinated deploy? Does it hide a boundary violation? What would a saga cost? | [Transactions and consistency](architecture/01a-modular-monolith.md#transactions-and-consistency) |
 | **In-process call vs in-memory event** | A synchronous call couples latency and failure; an in-memory bus is non-durable and per-instance. | [Nygard, *Release It!* (2018)](https://pragprog.com/titles/mnee2/release-it-second-edition/); synthesis in [01a](architecture/01a-modular-monolith.md) | Does the caller need the result now? Should the side effect fail the caller? Must the event survive a crash? Do all instances need it? What happens on restart? | [Integration inside the monolith](architecture/01a-modular-monolith.md#integration-inside-the-monolith) |
 | **Service extraction trigger** | Extract only for a concrete deployment, scaling, ownership, failure-isolation, compliance, runtime, or measured release-bottleneck force. | [Fowler, *Microservice Trade-Offs* (2015)](https://martinfowler.com/articles/microservice-trade-offs.html); Newman; Shopify Engineering | What is the concrete force? Is the boundary clean? Is data owned? Can we operate it? Is the bottleneck measured? What is the migration plan? | [When to extract a service](architecture/01a-modular-monolith.md#when-to-extract-a-service) |
+
+### Microservices
+
+| Concept | Definition | Source | Questions to ask | Doc |
+| --- | --- | --- | --- | --- |
+| **Microservice** | An independently deployable service organized around a business capability, owning its data and communicating through explicit contracts over a network. | [Lewis & Fowler, *Microservices* (2014)](https://martinfowler.com/articles/microservices.html); [Newman, *Building Microservices* (2021)](https://samnewman.io/books/building_microservices_2nd_edition/) | Is it independently deployable? Does it own its data? Is the boundary a business capability? What network does it cross? What does the network cost? | [04 — Definition](architecture/04-microservices/README.md#the-definition) |
+| **Independent deployability** | The service can be released without releasing another service; the defining property, not process count or code size. | [Lewis & Fowler (2014)](https://martinfowler.com/articles/microservices.html); [Fowler, *Microservice Prerequisites* (2014)](https://martinfowler.com/bliki/MicroservicePrerequisites.html) | Can I ship this alone? What still forces a coordinated release? Is the contract backward compatible? Can I roll it back alone? | [04 — The definition](architecture/04-microservices/README.md#the-definition) · [Distributed monolith](architecture/04-microservices/README.md#the-distributed-monolith) |
+| **Service granularity** | The service boundary is also the transaction, data-ownership, deployment, failure, and ownership boundary; choose it by capability, not by entity or layer. | [Ford et al., *Software Architecture: The Hard Parts* (2021)](https://www.oreilly.com/library/view/software-architecture-the/9781492086888/); [Newman (2021)](https://samnewman.io/books/building_microservices_2nd_edition/) | Is this a capability or a noun? Can I describe it without "and"? Does one invariant span it? Is it too chatty? Can one team own it? | [04 — Service granularity](architecture/04-microservices/README.md#service-granularity) |
+| **Distributed monolith** | A system with microservice deployment topology and monolith coupling: shared data, lockstep releases, synchronous chains, and no independent deployability. | [Newman, *Monolith to Microservices* (2019)](https://samnewman.io/books/monolith-to-microservices/); [Ford et al. (2021)](https://www.oreilly.com/library/view/software-architecture-the/9781492086888/) | Can each service deploy alone? Is the database shared? Does one request need every service up? Does one change require many services? | [04 — The distributed monolith](architecture/04-microservices/README.md#the-distributed-monolith) |
+| **Database per service** | Each service owns its data store and migrations; other services use contracts or read models, never its tables. | [Richardson, *Database per service*](https://microservices.io/patterns/data/database-per-service.html); [Ford et al. (2021)](https://www.oreilly.com/library/view/software-architecture-the/9781492086888/) | Who owns each table? Is this a cross-service join? Who is the source of truth? How does the read model get rebuilt? | [04 — Data ownership](architecture/04-microservices/README.md#data-ownership) |
+| **API composition** | A consumer calls several services and combines the results for a query; simple, but runtime-coupled and partial-failure-prone. | [Richardson, *API composition*](https://microservices.io/patterns/data/api-composition.html) | Does the caller need the current answer? How many calls? What if one is slow or down? Would a read model be cheaper? | [04 — Cross-service reads](architecture/04-microservices/README.md#cross-service-reads) |
+| **Saga / process manager** | A long-running business process made of local transactions with explicit state and compensating actions; not a distributed ACID transaction. | [Richardson, *Saga*](https://microservices.io/patterns/data/saga.html); [Ford et al. (2021)](https://www.oreilly.com/library/view/software-architecture-the/9781492086888/) | What are the steps? What compensates each? Is every step idempotent? Where is the state? What if compensation fails? | [04 — Transactions across services](architecture/04-microservices/README.md#transactions-across-services) · [01a](architecture/01a-modular-monolith.md#transactions-and-consistency) |
+| **Synchronous vs asynchronous integration** | Sync couples runtime and gives an immediate answer; async decouples time and availability but adds eventual consistency, duplicates, and broker operations. | [Fowler, *What do you mean by Event-Driven?* (2017)](https://martinfowler.com/articles/201701-event-driven.html); [Nygard, *Release It!* (2018)](https://pragprog.com/titles/mnee2/release-it-second-edition/) | Does the caller need the answer now? Should the side effect fail the caller? Must the event survive a crash? What does async do to consistency and debugging? | [04 — Synchronous vs asynchronous](architecture/04-microservices/README.md#synchronous-vs-asynchronous-integration) |
+| **Partial failure / ambiguous outcome** | A timeout does not tell the caller whether the remote operation committed; the outcome is unknown until retried idempotently or reconciled. | [Kleppmann, *Designing Data-Intensive Applications* (2017)](https://dataintensive.net/); [Nygard (2018)](https://pragprog.com/titles/mnee2/release-it-second-edition/) | What if the response never arrives? Did the side effect happen? Is the retry safe? Is there an explicit unknown state? Who reconciles it? | [04 — Partial failure](architecture/04-microservices/README.md#partial-failure-the-ambiguous-outcome) · [Lab](architecture/04-microservices/README.md#run-the-lab) |
+| **Contract evolution** | APIs and events are public contracts; old consumers keep running while producers change, so changes must be versioned and tested from the consumer side. | [Fowler, *Consumer-Driven Contracts*](https://martinfowler.com/articles/consumerDrivenContracts.html); [Newman (2021)](https://samnewman.io/books/building_microservices_2nd_edition/) | Is the change additive? Who consumes this field? How long do old versions live? Is there a consumer-driven contract test? | [04 — Contracts and versioning](architecture/04-microservices/README.md#contracts-and-versioning) |
+| **Microservice premium** | The ongoing operational and coordination cost of a suite of services; pay it only when a concrete force justifies it. | [Fowler, *Microservice Premium* (2015)](https://martinfowler.com/bliki/MicroservicePremium.html); [Fowler, *Microservice Prerequisites* (2014)](https://martinfowler.com/bliki/MicroservicePrerequisites.html) | What is the force? What does the premium buy? Who operates it? What gets worse? What would make us merge it back? | [04 — What they cost](architecture/04-microservices/README.md#what-they-cost) · [When to extract](architecture/04-microservices/README.md#when-to-extract-a-service) |
+
+### Microservices — the decision questions
+
+*The article is [04 — Microservices](architecture/04-microservices/README.md). A microservice is not a maturity badge. It is a module that has been given an independent release and a network boundary. The questions below decide whether that trade is worth it.*
+
+**The force**
+
+- What concrete force requires a separate deployment: cadence, scaling, ownership, failure isolation, compliance, runtime, or a measured release bottleneck?
+- Is the force measured, or is it a prediction?
+- Could a modular monolith plus a separate worker satisfy it more cheaply?
+- What happens if we do nothing for six months?
+- Is the real problem the deployment boundary, or an unowned module?
+
+**The boundary**
+
+- Is this a business capability or bounded context, or only an entity, layer, screen, or team name?
+- Can I describe the service without the word "and"?
+- Is the boundary also a transaction and data-ownership boundary?
+- Can the service change, deploy, and fail alone?
+- Can one team own it end to end, including on-call?
+- Is it too fine-grained or chatty? Is it a nanoservice?
+
+**The data**
+
+- Who is the source of truth for each entity?
+- What must be strongly consistent, and what can be eventual?
+- Does any consumer join across service tables?
+- How do consumers read data they do not own: API composition, read model, events, or warehouse?
+- What is the compensation or reconciliation path?
+- Can the read model be rebuilt from the source of truth?
+
+**The integration**
+
+- Is each call synchronous or asynchronous, and why?
+- What happens on a timeout, and is the outcome explicit?
+- Is every retryable operation idempotent?
+- What are the timeout, retry, backoff, circuit-breaker, and bulkhead policies?
+- How are API and event contracts versioned?
+- Are there consumer-driven contract tests?
+- Does an event add coupling as well as remove it?
+
+**The operations**
+
+- Can one request be traced across services?
+- Can one service be deployed and rolled back alone?
+- Who is on-call, and where are the logs, metrics, and alerts?
+- How are secrets and service identity managed?
+- What does the service cost per month?
+- What gets worse when we extract it?
+- What would make us merge it back?
+
+**The distributed monolith test**
+
+- Can I deploy this service without deploying another?
+- Does it share a database, schema, or domain model?
+- Does one request require a synchronous chain of services?
+- Does one change require a coordinated release?
+- If the answer is no to the first and yes to any of the rest, it is a distributed monolith, not a microservice.
 
 ### C4 and events
 

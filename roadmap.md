@@ -116,7 +116,7 @@ If a day slips, write the output from memory and move on. Do not read more to co
 
 - [ ] **Learn:** service granularity; independent deployability; distributed monolith; data ownership; synchronous vs. asynchronous integration; partial failure.
 - [ ] **Read:** *Building Microservices*, early chapters; *Software Architecture: The Hard Parts* on granularity, data ownership, and distributed workflows.
-- [ ] **Output:** `architecture/04-microservices.md`
+- [ ] **Output:** `architecture/04-microservices/README.md`
   - microservices trade-off note;
   - "when to extract a service" checklist;
   - one proposed service boundary and the force that justifies it;
@@ -258,7 +258,8 @@ architecture/
   02a-big-ball-of-mud.md
   tradeoffs.md
   03-modular-monolith.md
-  04-microservices.md
+  04-microservices/
+    README.md
   05-events-cqrs.md
   06-distributed-data.md
   07-other-styles-and-teams.md

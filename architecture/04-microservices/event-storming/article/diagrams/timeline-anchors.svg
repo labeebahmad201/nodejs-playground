@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" width="960" height="360" role="img" aria-labelledby="title desc">
+  <title id="title">Pivotal events and swimlanes</title>
+  <desc id="desc">A timeline with two swimlanes for Customer and Operations, and two pivotal events marked as vertical anchors.</desc>
+  <rect width="960" height="360" fill="#fbfaf7"/>
+
+  <text x="24" y="36" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" fill="#1f2430">Sorting the timeline</text>
+  <text x="24" y="54" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#6b7280">Pivotal events anchor the flow. Swimlanes separate roles. Both are sorting aids, not model elements.</text>
+
+  <!-- Pivotal bands -->
+  <rect x="368" y="72" width="16" height="212" fill="#F6E27A" opacity="0.85"/>
+  <rect x="672" y="72" width="16" height="212" fill="#F6E27A" opacity="0.85"/>
+  <text x="376" y="66" text-anchor="middle" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700" fill="#6b5d16">PIVOTAL</text>
+  <text x="680" y="66" text-anchor="middle" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700" fill="#6b5d16">PIVOTAL</text>
+
+  <!-- Lane labels -->
+  <text x="24" y="126" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#5b6472">Customer</text>
+  <text x="24" y="230" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#5b6472">Operations</text>
+
+  <!-- Lane divider -->
+  <line x1="120" y1="168" x2="936" y2="168" stroke="#cfc8b8" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+  <g font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
+    <!-- Lane 1 events -->
+    <g>
+      <rect x="132" y="104" width="130" height="38" rx="7" fill="#F4A261"/>
+      <text x="197" y="128" text-anchor="middle" font-size="12" fill="#3a210d">Order placed</text>
+    </g>
+    <g>
+      <rect x="412" y="104" width="130" height="38" rx="7" fill="#F4A261"/>
+      <text x="477" y="128" text-anchor="middle" font-size="12" fill="#3a210d">Payment captured</text>
+    </g>
+    <g>
+      <rect x="704" y="104" width="130" height="38" rx="7" fill="#F4A261"/>
+      <text x="769" y="128" text-anchor="middle" font-size="12" fill="#3a210d">Order confirmed</text>
+    </g>
+
+    <!-- Lane 2 events -->
+    <g>
+      <rect x="280" y="208" width="130" height="38" rx="7" fill="#F4A261"/>
+      <text x="345" y="232" text-anchor="middle" font-size="12" fill="#3a210d">Inventory reserved</text>
+    </g>
+    <g>
+      <rect x="528" y="208" width="130" height="38" rx="7" fill="#F4A261"/>
+      <text x="593" y="232" text-anchor="middle" font-size="12" fill="#3a210d">Shipment booked</text>
+    </g>
+    <g>
+      <rect x="800" y="208" width="130" height="38" rx="7" fill="#F4A261"/>
+      <text x="865" y="232" text-anchor="middle" font-size="12" fill="#3a210d">Notification sent</text>
+    </g>
+  </g>
+
+  <!-- Timeline arrow -->
+  <g stroke="#8a8272" stroke-width="2" fill="none">
+    <path d="M120 292h800"/>
+    <path d="M914 286l8 6-8 6" fill="#8a8272" stroke="none"/>
+  </g>
+  <text x="930" y="314" text-anchor="end" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#6b7280">TIME</text>
+</svg>
