@@ -182,5 +182,6 @@ Ask two questions:
 - [God aggregates and transaction boundaries](god-aggregates-and-transaction-boundaries.md)
 - [Aggregate root IDs and foreign keys](aggregate-root-ids-and-foreign-keys.md)
 - [Repositories do not live in aggregates](repositories-do-not-live-in-aggregates.md)
+- [Transactions in repositories and the single responsibility principle](transactions-in-repositories-and-srp.md)
 - [Outbox pattern](../../architecture/01c-outbox-pattern.md)
 - [Outbox implementation](../../architecture/01d-outbox-implementation.md)

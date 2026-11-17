@@ -266,12 +266,18 @@ I usually attribute this confusion to two things: people learned DDD from "all y
 ## See also
 
 - [Lessons from Eberhard Wolff's DDD example](lessons-from-eberhard-wolff.md)
+- [Lessons from Rico Fritzsche: what "domain" means in DDD](lessons-from-rico-fritzsche.md)
+- [Lessons from Rodrigo Mecheri: domains, subdomains, and the operating model](lessons-from-rodrigo-mecheri.md)
 - [When to use DDD](when-to-use-ddd.md)
 - [What actually fails in a layered CRUD app](what-fails-in-a-layered-crud-app.md)
 - [Subdomains and bounded contexts](subdomains-and-bounded-contexts.md)
 - [Bounded contexts, microservices, and teams](bounded-contexts-microservices-and-teams.md)
+- [Analytics as a bounded context](analytics-as-a-bounded-context.md)
+- [Branching in Event Storming](branching-in-event-storming.md)
+- [Event Storming, read models, and data availability](event-storming-read-models-and-data-availability.md)
 - [Where DDD came from](where-ddd-came-from.md)
 - [Repositories do not live in aggregates](repositories-do-not-live-in-aggregates.md)
 - [Aggregate root IDs and foreign keys](aggregate-root-ids-and-foreign-keys.md)
 - [God aggregates and transaction boundaries](god-aggregates-and-transaction-boundaries.md)
 - [Cross-aggregate transactions and rollback](cross-aggregate-transactions-and-rollback.md)
+- [Transactions in repositories and the single responsibility principle](transactions-in-repositories-and-srp.md)
