@@ -2,6 +2,19 @@
 
 *Captured notes on [Vlad Mihalcea, "Optimistic vs. Pessimistic Locking"](https://vladmihalcea.com/optimistic-vs-pessimistic-locking/) (March 24, 2021). Kept because the framing is the cleanest short version of the argument: the two strategies are bets about the cost of retrying versus the cost of waiting.*
 
+## TL;DR
+
+> Pessimistic locking is suitable when the cost of retrying a transaction is very high or when contention is so large that many transactions would end up rolling back if optimistic locking were used.
+>
+> On the other hand, optimistic locking works even across multiple database transactions since it doesn't rely on locking physical records.
+>
+> — [Vlad Mihalcea](https://vladmihalcea.com/optimistic-vs-pessimistic-locking/)
+
+Two clauses, each answering a different question:
+
+- **Is a losing attempt expensive, or is contention high enough that most attempts would lose?** Pessimistic control: make them queue, because retrying costs more than waiting.
+- **Does the work span more than one database transaction?** Optimistic control: a lock dies with the transaction that took it, while a version token lives in the client and can be checked later.
+
 The article explains the two strategies through one anomaly — the lost update — and then adds the case that decides most real systems: reads and writes that do not share a database transaction at all.
 
 ## The framing: collisions on a network
@@ -108,17 +121,6 @@ The classic setup assumes reads and writes happen inside one database transactio
 | 5 | Web server | `OptimisticLockException` → `409`/`412` to Alice | `quantity 0, version 2` |
 
 The diagram shows the version travelling all the way to the client and back. That is the whole trick: **the version is part of the state the user is editing**, so a save can prove which snapshot it is based on. Pessimistic locking cannot express this, because there is no transaction to hold the lock in.
-
-## The conclusion, in the author's words
-
-> Pessimistic locking is suitable when the cost of retrying a transaction is very high or when contention is so large that many transactions would end up rolling back if optimistic locking were used.
->
-> Optimistic locking works even across multiple database transactions since it doesn't rely on locking physical records.
-
-That is the decision in two clauses:
-
-- **High retry cost or very high contention → pessimistic.**
-- **Long conversations, and therefore no shared transaction → optimistic.**
 
 ## Review: what holds up, and what to add
 
