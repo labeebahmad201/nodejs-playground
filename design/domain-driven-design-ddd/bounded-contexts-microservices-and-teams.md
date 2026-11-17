@@ -63,5 +63,6 @@ This is not DDD-specific. It applies to modules, microservices, monorepos, and o
 ## See also
 
 - [Subdomains and bounded contexts](subdomains-and-bounded-contexts.md)
+- [Analytics as a bounded context](analytics-as-a-bounded-context.md)
 - [Lessons from Eberhard Wolff's DDD example](lessons-from-eberhard-wolff.md)
 - [When to use DDD](when-to-use-ddd.md)

@@ -181,5 +181,6 @@ If testing an aggregate requires a database, the repository has leaked into the 
 - [Aggregates](../../fundamentals/07-aggregates/README.md)
 - [Domain services](../../fundamentals/09-domain-services/README.md)
 - [Aggregate root IDs and foreign keys](aggregate-root-ids-and-foreign-keys.md)
+- [Transactions in repositories and the single responsibility principle](transactions-in-repositories-and-srp.md)
 - [What actually fails in a layered CRUD app](what-fails-in-a-layered-crud-app.md)
 - [Lessons from Eberhard Wolff's DDD example](lessons-from-eberhard-wolff.md)

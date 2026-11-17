@@ -119,7 +119,7 @@ There are better options than a foreign key to `order_lines.id`:
 1. **Reference the order root.** Store `orderId` and let the order resolve the line through a business key, such as a product/SKU or a line number that is passed into an operation.
 2. **Use the line ID only transiently.** If the application already loaded the order, it can pass `OrderLineId` into `order.changeQuantity(lineId, ...)`. That is a local operation, not a durable external reference.
 3. **Promote the line to its own aggregate.** If a line has an independent lifecycle and other aggregates genuinely need to reference it, it may no longer be an internal entity.
-4. **Use a read model for reporting.** Reporting and UI projections can join across tables freely. The rule is about the transactional domain model, not analytics.
+4. **Use a read model for reporting.** Reporting and UI projections can join across tables freely. The rule is about the transactional domain model, not analytics. See [Analytics as a bounded context](analytics-as-a-bounded-context.md).
 5. **Use domain events.** Publish the root ID plus the relevant business identifiers. Do not make consumers depend on internal database IDs.
 
 The AxonIQ guidance is useful here: an `OrderLine` identifier should always be used in the context of an `Order`. If you want to do something with a line, pass both `OrderId` and `OrderLineId`; the `OrderId` locates the aggregate, and the root performs the operation on the line.
