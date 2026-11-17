@@ -2,9 +2,7 @@
 
 Short notes on Event Storming practice.
 
-The full guide — Big Picture, Process Modeling, Software Design, notation, and the local canvas — lives in `architecture/04-microservices/event-storming/`.
-
-This folder is for the smaller insights that come up while applying the method: a correction, a decision rule, a pattern, or a worked example.
+This folder is for the smaller insights that come up while applying the method: a correction, a decision rule, a pattern, or a worked example. It is not a full tutorial.
 
 ## Notes
 

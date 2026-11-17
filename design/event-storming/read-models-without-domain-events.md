@@ -160,8 +160,6 @@ Caveat: decision-supporting read models are the exception. You cannot defer the 
 - [Domain events](../../fundamentals/10-domain-events/README.md) — the event vocabulary.
 - [Aggregates](../../fundamentals/07-aggregates/README.md) — the consistency boundary.
 
-The full Event Storming guide lives in `architecture/04-microservices/event-storming/`.
-
 ## Sources
 
 - Brandolini, [*Introducing Event Storming*](https://ziobrando.blogspot.com/2013/11/introducing-event-storming.html) (2013) — the workshop format and the three levels.
