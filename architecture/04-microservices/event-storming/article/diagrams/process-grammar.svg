@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 380" width="980" height="380" role="img" aria-labelledby="title desc">
+  <title id="title">The Process Modeling grammar</title>
+  <desc id="desc">Event to policy to command to system to event. If a person decides, the policy hands off to a person, a read model, and then the command.</desc>
+  <rect width="980" height="380" fill="#fbfaf7"/>
+
+  <text x="24" y="34" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" fill="#1f2430">The grammar</text>
+  <text x="24" y="52" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#6b7280">A repeatable shape for every step. It forces you to name who reacts, what they see, what they decide, and what changes.</text>
+
+  <g font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
+    <!-- Top row -->
+    <g transform="translate(50,74)">
+      <rect width="150" height="68" rx="9" fill="#F4A261"/>
+      <text x="75" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="#6b3d19" letter-spacing="1">EVENT</text>
+      <text x="75" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#3a210d">a fact</text>
+    </g>
+    <g transform="translate(232,74)">
+      <rect width="150" height="68" rx="9" fill="#C3B1E1"/>
+      <text x="75" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="#4a3878" letter-spacing="1">POLICY</text>
+      <text x="75" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="#2c1f4d">whenever X, then Y</text>
+    </g>
+    <g transform="translate(414,74)">
+      <rect width="150" height="68" rx="9" fill="#8FB3E8"/>
+      <text x="75" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="#2b4f8c" letter-spacing="1">COMMAND</text>
+      <text x="75" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#17305c">an intent</text>
+    </g>
+    <g transform="translate(596,74)">
+      <rect width="150" height="68" rx="9" fill="#EF9FBC"/>
+      <text x="75" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="#8c3857" letter-spacing="1">SYSTEM</text>
+      <text x="75" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#5c1f38">a black box</text>
+    </g>
+    <g transform="translate(778,74)">
+      <rect width="150" height="68" rx="9" fill="#F4A261"/>
+      <text x="75" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="#6b3d19" letter-spacing="1">EVENT</text>
+      <text x="75" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#3a210d">a new fact</text>
+    </g>
+
+    <!-- Top arrows -->
+    <g stroke="#a8a08e" stroke-width="2" fill="none">
+      <path d="M202 108h22"/><path d="M218 103l8 5-8 5" fill="#a8a08e" stroke="none"/>
+      <path d="M384 108h22"/><path d="M400 103l8 5-8 5" fill="#a8a08e" stroke="none"/>
+      <path d="M566 108h22"/><path d="M582 103l8 5-8 5" fill="#a8a08e" stroke="none"/>
+      <path d="M748 108h22"/><path d="M764 103l8 5-8 5" fill="#a8a08e" stroke="none"/>
+    </g>
+  </g>
+
+  <text x="490" y="176" text-anchor="middle" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#5b6472">If a person decides, the policy hands off to a person and the information they need:</text>
+
+  <g font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
+    <g transform="translate(232,202)">
+      <rect width="150" height="68" rx="9" fill="#C3B1E1"/>
+      <text x="75" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="#4a3878" letter-spacing="1">POLICY</text>
+      <text x="75" y="50" text-anchor="middle" font-size="12" font-weight="700" fill="#2c1f4d">the rule</text>
+    </g>
+    <g transform="translate(414,202)">
+      <rect width="150" height="68" rx="9" fill="#F2CC8F"/>
+      <text x="75" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="#7a5620" letter-spacing="1">PERSON</text>
+      <text x="75" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#4a3312">the decision</text>
+    </g>
+    <g transform="translate(596,202)">
+      <rect width="150" height="68" rx="9" fill="#A8D5A2"/>
+      <text x="75" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="#356030" letter-spacing="1">READ MODEL</text>
+      <text x="75" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#24421f">what they see</text>
+    </g>
+    <g transform="translate(778,202)">
+      <rect width="150" height="68" rx="9" fill="#8FB3E8"/>
+      <text x="75" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="#2b4f8c" letter-spacing="1">COMMAND</text>
+      <text x="75" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#17305c">the action</text>
+    </g>
+
+    <g stroke="#a8a08e" stroke-width="2" fill="none">
+      <path d="M384 236h22"/><path d="M400 231l8 5-8 5" fill="#a8a08e" stroke="none"/>
+      <path d="M566 236h22"/><path d="M582 231l8 5-8 5" fill="#a8a08e" stroke="none"/>
+      <path d="M748 236h22"/><path d="M764 231l8 5-8 5" fill="#a8a08e" stroke="none"/>
+    </g>
+  </g>
+
+  <text x="490" y="318" text-anchor="middle" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#6b7280">The grammar is not bureaucracy. It mirrors how the business actually decides and how the software will eventually run.</text>
+</svg>

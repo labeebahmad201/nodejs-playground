@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A local event storming canvas for discovering domain events, commands, policies, and boundaries." />
+    <title>Event Storming Canvas</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__mark" aria-hidden="true">ES</span>
+        <div>
+          <h1>Event Storming Canvas</h1>
+          <p>Drag notes. Click a badge to change type. Everything saves in this browser.</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="export-json" class="button" type="button">Export JSON</button>
+        <label class="button file-button">
+          Import JSON
+          <input id="import-json" type="file" accept="application/json,.json" />
+        </label>
+        <button id="export-md" class="button" type="button">Export Markdown</button>
+        <button id="copy-prompt" class="button" type="button">Copy AI prompt</button>
+        <button id="clear-board" class="button button--danger" type="button">Clear</button>
+      </div>
+    </header>
+
+    <aside class="sidebar" aria-label="Note palette">
+      <div class="sidebar__section">
+        <h2>Add a note</h2>
+        <p class="sidebar__hint">Start with domain events, then add commands, policies, people, systems, and hotspots around them.</p>
+        <div id="palette" class="palette"></div>
+      </div>
+
+      <div class="sidebar__section sidebar__section--quiet">
+        <h3>How to use it</h3>
+        <ul class="tips">
+          <li>Drag the board background to pan.</li>
+          <li>Drag a note by its colored header.</li>
+          <li>Click the type badge to cycle note types.</li>
+          <li>Double-click the body to edit.</li>
+        </ul>
+      </div>
+    </aside>
+
+    <main id="viewport" class="viewport" aria-label="Event storming board">
+      <div id="board" class="board">
+        <div class="board__timeline" aria-hidden="true">
+          <span>time</span>
+          <span class="board__arrow">→</span>
+        </div>
+        <div id="notes-layer"></div>
+      </div>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

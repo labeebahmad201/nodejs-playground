@@ -22,6 +22,16 @@
 - [Layered architecture lab](02-layered-example/README.md) — 42 runnable TypeScript nuances, an end-to-end slice, and a `node:test` proof for each.
 - [Hexagonal architecture lab](02b-hexagonal-example/README.md) — 31 runnable TypeScript nuances, a registration walkthrough, and a `node:test` proof for each.
 
+## Day 3
+
+- [01a — Modular monolith](01a-modular-monolith.md) — the reference note for the Day 3 module map, data ownership, transaction boundaries, and extraction triggers.
+
+## Day 4
+
+- [04 — Microservices](04-microservices/README.md) — independent deployability, distributed monolith, service granularity, data ownership, synchronous versus asynchronous integration, partial failure, and when extraction is worth it. The same folder contains the runnable partial-failure lab: a timeout after the charge, a stable idempotency key, an explicit unknown outcome, and reconciliation.
+- [Event Storming](04-microservices/event-storming/README.md) — the full guide from Big Picture to Process Modeling to aggregates and code, plus a local browser canvas for building the board.
+- [Event Storming — the complete article](04-microservices/event-storming/article/event-storming-the-complete-guide.md) — the long-form version with diagrams: the three levels, facilitation steps, notation, checklists, and the path from board to code.
+
 ## Trade-offs
 
 - [Consolidated trade-off matrix](tradeoffs.md) — one row per style or decision: optimizes, costs, use when, avoid when, failure mode.

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" width="900" height="470" role="img" aria-labelledby="title desc">
+  <title id="title">From board note to code artifact</title>
+  <desc id="desc">A mapping table: domain event to immutable event type, command to method, aggregate to class, policy to event handler, read model to projection, external system to port and adapter, hot spot to ADR, bounded context to module or service.</desc>
+  <rect width="900" height="470" fill="#fbfaf7"/>
+
+  <text x="30" y="34" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" fill="#1f2430">From board to code</text>
+  <text x="30" y="52" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#6b7280">The board supplies the names and boundaries. The code supplies the implementation.</text>
+
+  <g font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700" letter-spacing="1">
+    <text x="30" y="82" fill="#6b7280">ON THE BOARD</text>
+    <text x="450" y="82" text-anchor="middle" fill="#6b7280">MAPS TO</text>
+    <text x="510" y="82" fill="#6b7280">IN THE CODE</text>
+  </g>
+
+  <g font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12.5">
+    <!-- Row template: y, left, right, fill -->
+    <!-- 1 -->
+    <rect x="30" y="94" width="360" height="38" rx="7" fill="#fff" stroke="#e4ded1"/>
+    <text x="44" y="118" fill="#1f2430">Domain event</text>
+    <rect x="510" y="94" width="360" height="38" rx="7" fill="#fff" stroke="#e4ded1"/>
+    <text x="524" y="118" fill="#1f2430">Immutable event type or record</text>
+    <path d="M396 113h96" stroke="#c6bfae" stroke-width="2"/>
+    <path d="M486 107l8 6-8 6" fill="#c6bfae" stroke="none"/>
+
+    <!-- 2 -->
+    <rect x="30" y="138" width="360" height="38" rx="7" fill="#f5f2ea" stroke="#e4ded1"/>
+    <text x="44" y="162" fill="#1f2430">Command</text>
+    <rect x="510" y="138" width="360" height="38" rx="7" fill="#f5f2ea" stroke="#e4ded1"/>
+    <text x="524" y="162" fill="#1f2430">Method or use-case input</text>
+    <path d="M396 157h96" stroke="#c6bfae" stroke-width="2"/>
+    <path d="M486 151l8 6-8 6" fill="#c6bfae" stroke="none"/>
+
+    <!-- 3 -->
+    <rect x="30" y="182" width="360" height="38" rx="7" fill="#fff" stroke="#e4ded1"/>
+    <text x="44" y="206" fill="#1f2430">Aggregate</text>
+    <rect x="510" y="182" width="360" height="38" rx="7" fill="#fff" stroke="#e4ded1"/>
+    <text x="524" y="206" fill="#1f2430">Class with state and invariants</text>
+    <path d="M396 201h96" stroke="#c6bfae" stroke-width="2"/>
+    <path d="M486 195l8 6-8 6" fill="#c6bfae" stroke="none"/>
+
+    <!-- 4 -->
+    <rect x="30" y="226" width="360" height="38" rx="7" fill="#f5f2ea" stroke="#e4ded1"/>
+    <text x="44" y="250" fill="#1f2430">Policy</text>
+    <rect x="510" y="226" width="360" height="38" rx="7" fill="#f5f2ea" stroke="#e4ded1"/>
+    <text x="524" y="250" fill="#1f2430">Event handler or process manager</text>
+    <path d="M396 245h96" stroke="#c6bfae" stroke-width="2"/>
+    <path d="M486 239l8 6-8 6" fill="#c6bfae" stroke="none"/>
+
+    <!-- 5 -->
+    <rect x="30" y="270" width="360" height="38" rx="7" fill="#fff" stroke="#e4ded1"/>
+    <text x="44" y="294" fill="#1f2430">Read model</text>
+    <rect x="510" y="270" width="360" height="38" rx="7" fill="#fff" stroke="#e4ded1"/>
+    <text x="524" y="294" fill="#1f2430">Query or projection</text>
+    <path d="M396 289h96" stroke="#c6bfae" stroke-width="2"/>
+    <path d="M486 283l8 6-8 6" fill="#c6bfae" stroke="none"/>
+
+    <!-- 6 -->
+    <rect x="30" y="314" width="360" height="38" rx="7" fill="#f5f2ea" stroke="#e4ded1"/>
+    <text x="44" y="338" fill="#1f2430">External system</text>
+    <rect x="510" y="314" width="360" height="38" rx="7" fill="#f5f2ea" stroke="#e4ded1"/>
+    <text x="524" y="338" fill="#1f2430">Port plus adapter</text>
+    <path d="M396 333h96" stroke="#c6bfae" stroke-width="2"/>
+    <path d="M486 327l8 6-8 6" fill="#c6bfae" stroke="none"/>
+
+    <!-- 7 -->
+    <rect x="30" y="358" width="360" height="38" rx="7" fill="#fff" stroke="#e4ded1"/>
+    <text x="44" y="382" fill="#1f2430">Hot spot</text>
+    <rect x="510" y="358" width="360" height="38" rx="7" fill="#fff" stroke="#e4ded1"/>
+    <text x="524" y="382" fill="#1f2430">ADR or open question</text>
+    <path d="M396 377h96" stroke="#c6bfae" stroke-width="2"/>
+    <path d="M486 371l8 6-8 6" fill="#c6bfae" stroke="none"/>
+
+    <!-- 8 -->
+    <rect x="30" y="402" width="360" height="38" rx="7" fill="#f5f2ea" stroke="#e4ded1"/>
+    <text x="44" y="426" fill="#1f2430">Bounded context</text>
+    <rect x="510" y="402" width="360" height="38" rx="7" fill="#f5f2ea" stroke="#e4ded1"/>
+    <text x="524" y="426" fill="#1f2430">Module or service boundary</text>
+    <path d="M396 421h96" stroke="#c6bfae" stroke-width="2"/>
+    <path d="M486 415l8 6-8 6" fill="#c6bfae" stroke="none"/>
+  </g>
+</svg>

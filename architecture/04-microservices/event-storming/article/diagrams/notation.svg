@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" width="960" height="500" role="img" aria-labelledby="title desc">
+  <title id="title">Event Storming notation</title>
+  <desc id="desc">Colored notes for domain events, commands, policies, read models, aggregates, people, external systems, hot spots, opportunities, and bounded contexts.</desc>
+  <rect width="960" height="500" fill="#fbfaf7"/>
+
+  <text x="24" y="34" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" fill="#1f2430">The notation</text>
+  <text x="24" y="52" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#6b7280">Colour is a memory aid, not the model. Adapt the notation to the question the workshop is answering.</text>
+
+  <g font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
+    <!-- Row 1 -->
+    <g transform="translate(24,74)">
+      <rect width="168" height="178" rx="12" fill="#fff" stroke="#ded8ca"/>
+      <path d="M0 12a12 12 0 0 1 12-12h144a12 12 0 0 1 12 12v54H0z" fill="#F4A261"/>
+      <text x="16" y="30" font-size="13" font-weight="700" fill="#3a210d">Domain event</text>
+      <text x="16" y="48" font-size="11" fill="#6b3d19">past tense · a fact</text>
+      <text x="16" y="92" font-size="12" fill="#3a4150">Something that</text>
+      <text x="16" y="110" font-size="12" fill="#3a4150">happened and the</text>
+      <text x="16" y="128" font-size="12" fill="#3a4150">business cares about.</text>
+      <text x="16" y="156" font-size="11" fill="#7b8494">Order placed</text>
+    </g>
+
+    <g transform="translate(208,74)">
+      <rect width="168" height="178" rx="12" fill="#fff" stroke="#ded8ca"/>
+      <path d="M0 12a12 12 0 0 1 12-12h144a12 12 0 0 1 12 12v54H0z" fill="#8FB3E8"/>
+      <text x="16" y="30" font-size="13" font-weight="700" fill="#17305c">Command</text>
+      <text x="16" y="48" font-size="11" fill="#2b4f8c">imperative · an intent</text>
+      <text x="16" y="92" font-size="12" fill="#3a4150">A request to change</text>
+      <text x="16" y="110" font-size="12" fill="#3a4150">state. It can be</text>
+      <text x="16" y="128" font-size="12" fill="#3a4150">rejected.</text>
+      <text x="16" y="156" font-size="11" fill="#7b8494">Place order</text>
+    </g>
+
+    <g transform="translate(392,74)">
+      <rect width="168" height="178" rx="12" fill="#fff" stroke="#ded8ca"/>
+      <path d="M0 12a12 12 0 0 1 12-12h144a12 12 0 0 1 12 12v54H0z" fill="#C3B1E1"/>
+      <text x="16" y="30" font-size="13" font-weight="700" fill="#2c1f4d">Policy</text>
+      <text x="16" y="48" font-size="11" fill="#4a3878">whenever X, then Y</text>
+      <text x="16" y="92" font-size="12" fill="#3a4150">The rule that turns</text>
+      <text x="16" y="110" font-size="12" fill="#3a4150">one event into the</text>
+      <text x="16" y="128" font-size="12" fill="#3a4150">next command.</text>
+      <text x="16" y="156" font-size="11" fill="#7b8494">When paid → ship</text>
+    </g>
+
+    <g transform="translate(576,74)">
+      <rect width="168" height="178" rx="12" fill="#fff" stroke="#ded8ca"/>
+      <path d="M0 12a12 12 0 0 1 12-12h144a12 12 0 0 1 12 12v54H0z" fill="#A8D5A2"/>
+      <text x="16" y="30" font-size="13" font-weight="700" fill="#24421f">Read model</text>
+      <text x="16" y="48" font-size="11" fill="#356030">what a decision needs</text>
+      <text x="16" y="92" font-size="12" fill="#3a4150">The information a</text>
+      <text x="16" y="110" font-size="12" fill="#3a4150">person needs before</text>
+      <text x="16" y="128" font-size="12" fill="#3a4150">they decide.</text>
+      <text x="16" y="156" font-size="11" fill="#7b8494">Price and stock</text>
+    </g>
+
+    <g transform="translate(760,74)">
+      <rect width="168" height="178" rx="12" fill="#fff" stroke="#ded8ca"/>
+      <path d="M0 12a12 12 0 0 1 12-12h144a12 12 0 0 1 12 12v54H0z" fill="#F6E27A"/>
+      <text x="16" y="30" font-size="13" font-weight="700" fill="#443c0d">Aggregate</text>
+      <text x="16" y="48" font-size="11" fill="#6b5d16">consistency boundary</text>
+      <text x="16" y="92" font-size="12" fill="#3a4150">A white box you own.</text>
+      <text x="16" y="110" font-size="12" fill="#3a4150">It accepts commands</text>
+      <text x="16" y="128" font-size="12" fill="#3a4150">and emits events.</text>
+      <text x="16" y="156" font-size="11" fill="#7b8494">Order</text>
+    </g>
+
+    <!-- Row 2 -->
+    <g transform="translate(24,272)">
+      <rect width="168" height="178" rx="12" fill="#fff" stroke="#ded8ca"/>
+      <path d="M0 12a12 12 0 0 1 12-12h144a12 12 0 0 1 12 12v54H0z" fill="#F2CC8F"/>
+      <text x="16" y="30" font-size="13" font-weight="700" fill="#4a3312">Person</text>
+      <text x="16" y="48" font-size="11" fill="#7a5620">a role that decides</text>
+      <text x="16" y="92" font-size="12" fill="#3a4150">Someone who acts</text>
+      <text x="16" y="110" font-size="12" fill="#3a4150">or makes a decision</text>
+      <text x="16" y="128" font-size="12" fill="#3a4150">in the flow.</text>
+      <text x="16" y="156" font-size="11" fill="#7b8494">Customer, CFO</text>
+    </g>
+
+    <g transform="translate(208,272)">
+      <rect width="168" height="178" rx="12" fill="#fff" stroke="#ded8ca"/>
+      <path d="M0 12a12 12 0 0 1 12-12h144a12 12 0 0 1 12 12v54H0z" fill="#EF9FBC"/>
+      <text x="16" y="30" font-size="13" font-weight="700" fill="#5c1f38">External system</text>
+      <text x="16" y="48" font-size="11" fill="#8c3857">black box</text>
+      <text x="16" y="92" font-size="12" fill="#3a4150">A system you do not</text>
+      <text x="16" y="110" font-size="12" fill="#3a4150">own. It receives a</text>
+      <text x="16" y="128" font-size="12" fill="#3a4150">command, emits an event.</text>
+      <text x="16" y="156" font-size="11" fill="#7b8494">Payment provider</text>
+    </g>
+
+    <g transform="translate(392,272)">
+      <rect width="168" height="178" rx="12" fill="#fff" stroke="#ded8ca"/>
+      <path d="M0 12a12 12 0 0 1 12-12h144a12 12 0 0 1 12 12v54H0z" fill="#E07A7A"/>
+      <text x="16" y="30" font-size="13" font-weight="700" fill="#3d1414">Hot spot</text>
+      <text x="16" y="48" font-size="11" fill="#6e2626">a question or conflict</text>
+      <text x="16" y="92" font-size="12" fill="#3a4150">Something unresolved.</text>
+      <text x="16" y="110" font-size="12" fill="#3a4150">Capture it; do not</text>
+      <text x="16" y="128" font-size="12" fill="#3a4150">solve it in the room.</text>
+      <text x="16" y="156" font-size="11" fill="#7b8494">Did the charge happen?</text>
+    </g>
+
+    <g transform="translate(576,272)">
+      <rect width="168" height="178" rx="12" fill="#fff" stroke="#ded8ca"/>
+      <path d="M0 12a12 12 0 0 1 12-12h144a12 12 0 0 1 12 12v54H0z" fill="#B7E4A0"/>
+      <text x="16" y="30" font-size="13" font-weight="700" fill="#2b4a1d">Opportunity</text>
+      <text x="16" y="48" font-size="11" fill="#456b30">an idea worth trying</text>
+      <text x="16" y="92" font-size="12" fill="#3a4150">An improvement where</text>
+      <text x="16" y="110" font-size="12" fill="#3a4150">a solution is already</text>
+      <text x="16" y="128" font-size="12" fill="#3a4150">in mind.</text>
+      <text x="16" y="156" font-size="11" fill="#7b8494">Auto-approve small refunds</text>
+    </g>
+
+    <g transform="translate(760,272)">
+      <rect width="168" height="178" rx="12" fill="#fff" stroke="#ded8ca"/>
+      <path d="M0 12a12 12 0 0 1 12-12h144a12 12 0 0 1 12 12v54H0z" fill="#D9D4C7"/>
+      <text x="16" y="30" font-size="13" font-weight="700" fill="#2f2b22">Bounded context</text>
+      <text x="16" y="48" font-size="11" fill="#5f5849">one language, one model</text>
+      <text x="16" y="92" font-size="12" fill="#3a4150">The boundary where a</text>
+      <text x="16" y="110" font-size="12" fill="#3a4150">word means one thing.</text>
+      <text x="16" y="128" font-size="12" fill="#3a4150">Not a service.</text>
+      <text x="16" y="156" font-size="11" fill="#7b8494">Payments, Contracts</text>
+    </g>
+  </g>
+
+  <text x="480" y="484" text-anchor="middle" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#7b8494">Big Picture uses events, people, systems, hot spots, and opportunities. Process Modeling adds commands, policies, and read models. Software Design adds aggregates and contexts.</text>
+</svg>
