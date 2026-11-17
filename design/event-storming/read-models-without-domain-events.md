@@ -125,9 +125,40 @@ This is where teams get the order wrong. They spend weeks on the home page and d
 - Source ownership must be explicit early: which context owns the write model, the invariant, and the authoritative data.
 - Projection implementation can be late: the API shape, cache, and read store can wait until you know the access pattern.
 - The asymmetry is deliberate. Source ownership is expensive to change; projections are disposable and rebuildable.
-- This is a working rule (synthesis), not a named principle. The underlying ideas come from Evans, Helland, Young/Fowler, and Brandolini; the asymmetry is an inference.
+- This is a working rule (synthesis), not a named principle. See [Where this rule comes from](#where-this-rule-comes-from) for the published ideas behind each half.
 
 Caveat: decision-supporting read models are the exception. You cannot defer the availability check until after you have built the bid-acceptance flow.
+
+## Where this rule comes from
+
+The exact sentence — **own the source early; own the projection late** — is not a named principle in the literature. It is a synthesis of two well-supported ideas:
+
+1. **The source of truth belongs to a boundary and should be decided early.**
+2. **A projection is derived data, so its implementation can be deferred and rebuilt.**
+
+The first idea is the bounded-context and data-ownership argument. [Evans](https://www.informit.com/store/domain-driven-design-tackling-complexity-in-the-heart-of-9780321125217) makes the model boundary explicit; [Helland](https://www.microsoft.com/en-us/research/publication/data-on-the-outside-versus-data-on-the-inside/) argues that a service encapsulates and protects its data, and that one service owns the authoritative perspective of a shared collection; [Richardson's "database per service"](https://microservices.io/patterns/data/database-per-service.html) keeps each service's data private behind its API; [Fowler](https://martinfowler.com/bliki/CQRS.html) applies CQRS per bounded context, not to the system as a whole.
+
+The second idea is the derived-data argument. [Kleppmann](https://dataintensive.net/) separates a **system of record** (the source of truth) from **derived data** and writes: "If you lose derived data, you can recreate it from the original source." [Fowler's Event Sourcing note](https://martinfowler.com/eaaDev/EventSourcing.html) describes a **complete rebuild** from the event log: application state is "purely derivable from the event log." [Dudycz](https://event-driven.io/en/projections_and_read_models_in_event_driven_architecture/) makes the same point for read models: events are the source of truth, read models are secondary data, and they can be rebuilt.
+
+The asymmetry is the inference. If the source is authoritative and expensive to change, while the projection is derived and rebuildable, then decide the source early and defer the projection. That sequencing rule is ours; the premises are theirs.
+
+| Claim | Source | What the source supports |
+| --- | --- | --- |
+| Own the source early | Evans, *Domain-Driven Design* (2003) | A bounded context owns its model and language. |
+| Own the source early | Helland, *Data on the Outside versus Data on the Inside* (2005) | A service encapsulates and protects its data; one service owns the authoritative perspective of a shared collection. |
+| Own the source early | Richardson, *Database per service* | Keep each service's data private and accessible only via its API. |
+| Own the source early | Fowler, *CQRS* (2011) | Apply CQRS per bounded context; each context decides how it is modeled. |
+| Own the projection late | Kleppmann, *Designing Data-Intensive Applications* (2017), Part III | A system of record is authoritative; derived data can be recreated from the original source. |
+| Own the projection late | Fowler, *Event Sourcing* (2005) | Application state is purely derivable from the event log; a complete rebuild is possible. |
+| Own the projection late | Dudycz, *Guide to Projections and Read Models* (2023) | Events are the source of truth; read models are secondary data and can be rebuilt. |
+| Early/late asymmetry | This note | Inference from the two premises; not a named principle or a direct quote. |
+
+The closest single statement to the rule is Kleppmann's distinction between systems of record and derived data. He does not say "early" or "late"; he says which one is authoritative and which one can be recreated. The sequencing is the practical consequence.
+
+Two clarifications:
+
+- **Sequencing is not importance.** A decision-supporting read model still has to be designed early. "Late" applies to the projection implementation, not to the decision that depends on it.
+- **Late is not never.** The projection still needs an owner, a contract, and a rebuild path. Owning the source early is what makes the later projection cheap.
 
 ## Checklist
 
@@ -163,7 +194,11 @@ Caveat: decision-supporting read models are the exception. You cannot defer the 
 ## Sources
 
 - Brandolini, [*Introducing Event Storming*](https://ziobrando.blogspot.com/2013/11/introducing-event-storming.html) (2013) — the workshop format and the three levels.
-- Evans, [*Domain-Driven Design*](https://www.informit.com/store/domain-driven-design-tackling-complexity-in-the-heart-of-9780321125217) (2003) — bounded contexts and ubiquitous language.
+- Dudycz, [*Guide to Projections and Read Models in Event-Driven Architecture*](https://event-driven.io/en/projections_and_read_models_in_event_driven_architecture/) (2023) — read models as secondary data, and projection rebuilds.
+- Evans, [*Domain-Driven Design*](https://www.informit.com/store/domain-driven-design-tackling-complexity-in-the-heart-of-9780321125217) (2003) — bounded contexts, ubiquitous language, and model ownership.
 - Fowler, [*BoundedContext*](https://martinfowler.com/bliki/BoundedContext.html) — the linguistic boundary.
-- Helland, [*Data on the Outside versus Data on the Inside*](https://www.microsoft.com/en-us/research/publication/data-on-the-outside-versus-data-on-the-inside/) (2005) — data ownership across boundaries.
-- Fowler, [*CQRS*](https://martinfowler.com/bliki/CQRS.html) — read models and projections.
+- Fowler, [*CQRS*](https://martinfowler.com/bliki/CQRS.html) (2011) — separate models for reads and writes; CQRS per bounded context. Fowler credits Greg Young with the pattern.
+- Fowler, [*Event Sourcing*](https://martinfowler.com/eaaDev/EventSourcing.html) (2005) — application state is derivable from the event log; complete rebuild is possible.
+- Helland, [*Data on the Outside versus Data on the Inside*](https://www.microsoft.com/en-us/research/publication/data-on-the-outside-versus-data-on-the-inside/) (2005) — service data encapsulation and authoritative ownership.
+- Kleppmann, [*Designing Data-Intensive Applications*](https://dataintensive.net/) (2017), Part III, "Derived Data" — systems of record versus derived data; derived data can be recreated.
+- Richardson, [*Database per service*](https://microservices.io/patterns/data/database-per-service.html) — each service's data is private behind its API.
