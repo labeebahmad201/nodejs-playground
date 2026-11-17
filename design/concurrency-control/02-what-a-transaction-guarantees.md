@@ -190,6 +190,7 @@ When you write `BEGIN`, ask:
 
 ## See also
 
+- [SELECT ... FOR UPDATE in PostgreSQL](04-select-for-update.md) — the lock mechanism in detail: modes, deadlocks, `SKIP LOCKED`, and its limits.
 - [Captured: Optimistic vs. pessimistic locking — Vlad Mihalcea](01-vlad-mihalcea-optimistic-vs-pessimistic-locking.md) — the same schedule in the article's diagrams.
 - [Layered architecture, §23 — Isolation levels](../../architecture/02-layered-nuances.md#23-isolation-levels) — what each level permits, anomaly by anomaly.
 - [Cross-aggregate transactions and rollback](../domain-driven-design-ddd/cross-aggregate-transactions-and-rollback.md) — the version of this mistake that spans aggregates.

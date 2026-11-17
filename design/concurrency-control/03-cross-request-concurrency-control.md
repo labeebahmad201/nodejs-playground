@@ -190,6 +190,7 @@ The rule underneath: **the mechanism's lifetime has to match the window's lifeti
 
 ## See also
 
+- [SELECT ... FOR UPDATE in PostgreSQL](04-select-for-update.md) — the row lock that cannot make the trip, and what it costs when you hold it anyway.
 - [What a transaction guarantees](02-what-a-transaction-guarantees.md) — why the transaction boundary is a commit boundary, and why the lock stops at it.
 - [Captured: Optimistic vs. pessimistic locking — Vlad Mihalcea](01-vlad-mihalcea-optimistic-vs-pessimistic-locking.md) — the long-conversation section, with diagrams.
 - [01g — Idempotency](../../architecture/01g-idempotency.md) — why a retried `PUT` needs a key.
