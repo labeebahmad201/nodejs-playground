@@ -94,27 +94,34 @@ Answer: `nums[4] = 0`.
 
 Step 3 is the one that matters. `mid` is sitting on the minimum, and the range keeps it — `r = mid`, not `mid - 1` — so the loop ends with `l == r == 4` and `nums[l]` is `0`.
 
-## The code
+## The optimized version (no `minimum` variable)
 
 ```python
 class Solution:
     def findMin(self, nums: list[int]) -> int:
+        # Candidate range, inclusive on both ends.
         l, r = 0, len(nums) - 1
 
-        # Stop with one value left. That value is the minimum.
+        # Stop at one candidate. `l <= r` would never terminate here:
+        # at l == r, mid == r, so the else branch sets r = mid and nothing moves.
         while l < r:
-            mid = (l + r) // 2
+            mid = (l + r) // 2   # floor division: always a valid index
 
+            # Compare with the end of the current range. If mid is bigger,
+            # the drop is somewhere to its right.
             if nums[mid] > nums[r]:
-                # The drop is to the right, so mid cannot be the minimum.
+                # mid cannot be the minimum: nums[r] is already smaller.
                 l = mid + 1
             else:
                 # nums[mid] <= nums[r]: the minimum is at mid or to the left.
-                # Keep mid in range, because it may be the answer.
+                # `r = mid`, not `mid - 1`: mid itself may be the answer.
                 r = mid
 
+        # l == r: the only candidate left has never been ruled out.
         return nums[l]
 ```
+
+This is the version without a `minimum` variable. It keeps the answer in the range and returns it at the end.
 
 The two moves are deliberately different. One throws `mid` away; the other keeps it. That difference is what makes the loop condition `l < r` instead of `l <= r`.
 
@@ -156,21 +163,28 @@ l == r == 2 → return 0         return nums[0] = 4   ← wrong
 
 `l = mid + 1` is safe for the opposite reason. When `nums[mid] > nums[r]`, a smaller value (at least `nums[r]`) exists, so `mid` is definitely not the minimum.
 
-## The other design: record the minimum
+## The alternative: record the minimum
 
-The first version of this note tracked a `minimum` variable. That design can afford to drop `mid`, because it records the value first:
+Both versions use the same comparison. The optimized version above keeps the answer in the range; this one records it in a variable, which lets it drop `mid` every iteration.
 
 ```python
 l, r = 0, len(nums) - 1
+
+# Covers the unrotated array: the first value is already the minimum.
 minimum = nums[0]
 
+# `<=` because a one-element range still holds a candidate.
 while l <= r:
     mid = (l + r) // 2
+
+    # Record before moving: mid may be the minimum itself.
     minimum = min(minimum, nums[mid])
 
     if nums[mid] > nums[r]:
+        # The drop is to the right, so mid is not the answer.
         l = mid + 1
     else:
+        # Safe to drop mid only because it was recorded one line above.
         r = mid - 1
 
 return minimum
@@ -206,6 +220,8 @@ With distinct values, `nums[mid]` is either bigger or smaller than `nums[r]`, so
 
 ```python
 elif nums[mid] == nums[r]:
+    # Equal values hide which side the minimum is on, so discard one index
+    # and try again. This is the step that costs the O(log n) guarantee.
     r -= 1
 ```
 
