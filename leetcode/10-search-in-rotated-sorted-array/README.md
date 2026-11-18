@@ -115,14 +115,17 @@ class Solution:
     def search(self, nums: list[int], target: int) -> int:
         l, r = 0, len(nums) - 1
 
+        # `<=`, not `<`: when l == r there is still one candidate left to check.
         while l <= r:
             mid = (l + r) // 2
 
             if nums[mid] == target:
                 return mid
 
+            # `<=`, not `<`: when l == mid the left side is a single element,
+            # and a single element is always sorted.
             if nums[l] <= nums[mid]:
-                # Left side [l ... mid] is sorted.
+                # Left side is sorted, so its smallest value is nums[l].
                 if target > nums[mid]:
                     # Bigger than the largest of the left side: go right.
                     l = mid + 1
