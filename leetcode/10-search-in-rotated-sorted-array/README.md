@@ -51,6 +51,35 @@ So each step becomes:
 2. Check whether the target can be inside that sorted side.
 3. If it can, search there. If it can't, search the other side.
 
+## Why the two halves change the rules
+
+The rotation gives us two sorted pieces:
+
+```text
+[4, 5, 6, 7]   [0, 1, 2]
+   first          second
+```
+
+`mid` always sits inside one of them. Which one matters, because the break lies between the pieces: every value in the first piece is larger than every value in the second.
+
+**If `mid` is in the first piece**, everything from `l` to `mid` is sorted. A value smaller than `nums[mid]` could be just to its left — or it could be in the second piece, because every value there is smaller than the first piece's values.
+
+| Compare | Where the target can be |
+| --- | --- |
+| `target < nums[mid]` | left of `mid`, or in the second piece |
+| `target > nums[mid]` | only to the right, inside the first piece |
+
+**If `mid` is in the second piece**, it is the mirror image. Now `mid`'s own piece is sorted to its right, and the first piece is far to the left.
+
+| Compare | Where the target can be |
+| --- | --- |
+| `target < nums[mid]` | only to the left, inside the second piece |
+| `target > nums[mid]` | right of `mid`, or far left in the first piece |
+
+Read the two tables together. A target smaller than `mid` means "keep looking left" in one case and "it might be in the other piece" in the other. A target bigger than `mid` flips which comparison is the ambiguous one. The action depends on which piece `mid` landed in, so the code needs a separate branch for each piece, and each branch needs its own extra check against that piece's outer edge — `nums[l]` for the first, `nums[r]` for the second.
+
+That is the whole reason for the `if nums[l] <= nums[mid]: ... else: ...`. The two branches are not two ways of writing the same rule. They are two different rules.
+
 ## How to tell which side is sorted
 
 Compare the first value with the middle value:
@@ -176,6 +205,7 @@ You could find the rotation point first and then binary search the correct half.
 ## The short version
 
 - The array is two sorted pieces.
+- `mid` lands in one piece or the other, and the two pieces need different rules. In one, `target < mid` is the ambiguous case; in the other, `target > mid` is.
 - At every `mid`, one side is sorted. Find it with `nums[l] <= nums[mid]`.
 - If the target falls inside that sorted side, go there. Otherwise go to the other side.
 - Compare against the sorted side's edge: `nums[l]` on the left, `nums[r]` on the right.
