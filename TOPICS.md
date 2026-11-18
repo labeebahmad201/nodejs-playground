@@ -60,6 +60,17 @@ Serialization turns an object graph into bytes; deserialization turns bytes back
 - **Where it happens:** HTTP bodies ([DTOs](fundamentals/11-data-transfer-objects/README.md)), database rows to objects, cache values, queue messages, and logs. Each boundary has its own compatibility rule.
 - **Node specifics:** `JSON.stringify`/`parse` with replacer and reviver, `toJSON`, `v8.serialize` for binary, and `structuredClone` for in-process copies.
 
+## 6. OWASP Top 10
+
+A consensus awareness document about the most critical web-application risks. Useful as a coverage checklist and as a way to name a class of bug, not as a compliance standard.
+
+- **The current edition is 2025** (the site redirects from `/Top10/` to `/Top10/2025/`): A01 Broken Access Control, A02 Security Misconfiguration, A03 Software Supply Chain Failures, A04 Cryptographic Failures, A05 Injection, A06 Insecure Design, A07 Authentication Failures, A08 Software or Data Integrity Failures, A09 Security Logging and Alerting Failures, A10 Mishandling of Exceptional Conditions.
+- **What changed from 2021:** two new entries (Software Supply Chain Failures, Mishandling of Exceptional Conditions), several categories reordered, SSRF no longer its own entry, and "Identification and Authentication Failures" renamed to Authentication Failures.
+- **How to use it:** threat-model each category against this codebase, then turn the gaps into tests. The categories are symptoms; the fixes live in the [Cheat Sheet Series](https://cheatsheetseries.owasp.org/) and [ASVS](https://owasp.org/www-project-application-security-verification-standard/).
+- **Where the repo already touches it:** [mTLS](security/01-tls-vs-mtls/README.md) and [encryption vs hashing](fundamentals/24-hashing-encryption-encoding/README.md) cover parts of A04; [password hashing](fundamentals/29-password-hashing/README.md) and [JWT](fundamentals/22-jwt/README.md) cover parts of A07; the injection and access-control categories have no notes yet.
+- **Node-specific angles:** SQL/NoSQL injection and `eval`-style sinks (A05), mass assignment and missing object-level authorization (A01), dependency and lockfile risk (A03), error responses leaking stack traces (A02/A10), and logs that record the event without the identity (A09).
+- **The boundary:** the Top 10 ranks risk. It does not tell you what to build, and passing it is not the same as being secure.
+
 ## Also queued
 
 - **Lock timeouts vs. deadlocks vs. serialization failures** — when to retry, when to fail, and which error reaches the user.
