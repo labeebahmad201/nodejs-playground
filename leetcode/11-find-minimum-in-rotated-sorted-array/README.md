@@ -56,7 +56,7 @@ Compare `nums[mid]` with `nums[r]`, the last value in the current range:
 | Comparison | What it means | Move |
 | --- | --- | --- |
 | `nums[mid] > nums[r]` | The array drops somewhere after `mid`, so the minimum is to the right. | `l = mid + 1` |
-| `nums[mid] <= nums[r]` | From `mid` to `r` the values only go up, so the minimum is at `mid` or to the left. | `r = mid - 1` |
+| `nums[mid] <= nums[r]` | From `mid` to `r` the values only go up, so the minimum is at `mid` or to the left. | `r = mid` |
 
 Why `nums[r]` answers it: the last position always belongs to the part after the drop. If `mid`'s value is bigger than the value at the end, the drop is still ahead. If it is smaller or equal, `mid` has already passed the drop's low point, or it is sitting on it.
 
@@ -73,24 +73,26 @@ mid at 5 (1): 1 <= 2 → the drop is at or left → go left
 
 `nums = [3, 4, 5, 1, 2]`
 
-| Step | `l` | `r` | `mid` | `nums[mid]` | `nums[r]` | Decision | `minimum` |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 0 | 4 | 2 | `5` | `2` | `5 > 2`, go right: `l = 3` | `3` |
-| 2 | 3 | 4 | 3 | `1` | `2` | `1 <= 2`, go left: `r = 2` | `1` |
-| 3 | 3 | 2 | — | — | — | `l > r`, stop | `1` |
+| Step | `l` | `r` | `mid` | `nums[mid]` | `nums[r]` | Decision |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 0 | 4 | 2 | `5` | `2` | `5 > 2`, go right: `l = 3` |
+| 2 | 3 | 4 | 3 | `1` | `2` | `1 <= 2`, keep `mid`: `r = 3` |
+| 3 | 3 | 3 | — | — | — | `l == r`, stop |
 
-Answer: `1`.
+Answer: `nums[3] = 1`.
 
 And the case that broke the first idea, `nums = [4, 5, 6, 7, 0, 1, 2]`:
 
-| Step | `l` | `r` | `mid` | `nums[mid]` | `nums[r]` | Decision | `minimum` |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 0 | 6 | 3 | `7` | `2` | `7 > 2`, go right: `l = 4` | `4` |
-| 2 | 4 | 6 | 5 | `1` | `2` | `1 <= 2`, go left: `r = 4` | `1` |
-| 3 | 4 | 4 | 4 | `0` | `0` | `0 <= 0`, go left: `r = 3` | `0` |
-| 4 | 4 | 3 | — | — | — | stop | `0` |
+| Step | `l` | `r` | `mid` | `nums[mid]` | `nums[r]` | Decision |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 0 | 6 | 3 | `7` | `2` | `7 > 2`, go right: `l = 4` |
+| 2 | 4 | 6 | 5 | `1` | `2` | `1 <= 2`, keep `mid`: `r = 5` |
+| 3 | 4 | 5 | 4 | `0` | `1` | `0 <= 1`, keep `mid`: `r = 4` |
+| 4 | 4 | 4 | — | — | — | `l == r`, stop |
 
-Here `mid` lands on the minimum in step 3, so it gets recorded before the range goes past it.
+Answer: `nums[4] = 0`.
+
+Step 3 is the one that matters. `mid` is sitting on the minimum, and the range keeps it — `r = mid`, not `mid - 1` — so the loop ends with `l == r == 4` and `nums[l]` is `0`.
 
 ## The code
 
@@ -99,27 +101,95 @@ class Solution:
     def findMin(self, nums: list[int]) -> int:
         l, r = 0, len(nums) - 1
 
-        # Covers the unrotated case and the first candidate.
-        minimum = nums[0]
-
-        while l <= r:
+        # Stop with one value left. That value is the minimum.
+        while l < r:
             mid = (l + r) // 2
 
-            # Record before discarding: mid may be the minimum itself.
-            minimum = min(minimum, nums[mid])
-
             if nums[mid] > nums[r]:
-                # The drop is to the right of mid, so the minimum is too.
+                # The drop is to the right, so mid cannot be the minimum.
                 l = mid + 1
             else:
-                # nums[mid] <= nums[r]: this part only goes up,
-                # so the minimum is at mid or somewhere to its left.
-                r = mid - 1
+                # nums[mid] <= nums[r]: the minimum is at mid or to the left.
+                # Keep mid in range, because it may be the answer.
+                r = mid
 
-        return minimum
+        return nums[l]
 ```
 
-`r = mid - 1` looks dangerous because it throws away `mid`. It is safe because `mid` was recorded one line earlier. If `mid` was the minimum, `minimum` already holds it.
+The two moves are deliberately different. One throws `mid` away; the other keeps it. That difference is what makes the loop condition `l < r` instead of `l <= r`.
+
+## Why `l < r`
+
+`[l, r]` is the range of indices that could still hold the minimum. Every iteration removes values that cannot be it:
+
+- `l = mid + 1` removes `[l, mid]`, because `nums[mid] > nums[r]` proves the minimum is past `mid`.
+- `r = mid` removes `(mid, r]`, because the minimum is at `mid` or before it. `mid` stays.
+
+When `l == r`, exactly one index is left. It has never been ruled out, so it is the minimum, and the function returns `nums[l]`.
+
+`l <= r` would break this, because at `l == r` the update does nothing:
+
+```text
+l = r = 2, mid = 2
+nums[2] > nums[2]  → false
+r = mid = 2        → the range did not change → infinite loop
+```
+
+That is why `l < r` is not a style choice. It is part of the same decision as `r = mid`.
+
+## Why `r = mid`, and not `r = mid - 1`
+
+In the `else` branch, `nums[mid] <= nums[r]`, so `mid` may itself be the minimum. This version has no `minimum` variable to remember it, so the range has to keep it.
+
+`[4, 5, 0, 1, 2]` shows the difference:
+
+```text
+r = mid                        r = mid - 1
+l=0 r=4 mid=2 → 0              l=0 r=4 mid=2 → 0
+0 <= 2 → r = 2                 0 <= 2 → r = 1        ← index 2 dropped
+l=0 r=2 mid=1 → 5              l=0 r=1 mid=0 → 4
+5 > 0 → l = 2                  4 <= 5 → r = -1
+l == r == 2 → return 0         return nums[0] = 4   ← wrong
+```
+
+`mid` landed on the minimum, and `mid - 1` threw it away. The answer was in the one index the update discarded.
+
+`l = mid + 1` is safe for the opposite reason. When `nums[mid] > nums[r]`, a smaller value (at least `nums[r]`) exists, so `mid` is definitely not the minimum.
+
+## The other design: record the minimum
+
+The first version of this note tracked a `minimum` variable. That design can afford to drop `mid`, because it records the value first:
+
+```python
+l, r = 0, len(nums) - 1
+minimum = nums[0]
+
+while l <= r:
+    mid = (l + r) // 2
+    minimum = min(minimum, nums[mid])
+
+    if nums[mid] > nums[r]:
+        l = mid + 1
+    else:
+        r = mid - 1
+
+return minimum
+```
+
+The two designs are consistent inside themselves, and each one fixes the other's variables:
+
+| | Record the candidate | Keep the candidate |
+| --- | --- | --- |
+| Loop | `while l <= r` | `while l < r` |
+| Drop `mid` | `r = mid - 1` (already recorded) | never — `r = mid` |
+| Answer | the `minimum` variable | `nums[l]` |
+
+Mixing them breaks in both directions:
+
+- `l <= r` with `r = mid` → nothing changes at `l == r` → infinite loop.
+- `l < r` with `r = mid - 1` → the minimum can be dropped → `[4,5,0,1,2]` returns `4`.
+
+Pick one design: either record the candidate and discard it, or keep the candidate and return it at the end.
 
 ## Why `nums[mid] > nums[r]` is the right test
 
@@ -129,29 +199,6 @@ The rotated array has exactly one place where a bigger value is followed by a sm
 - If `nums[mid] <= nums[r]`, then `mid` is at or past the drop. The values from `mid` to `r` are in order, so the smallest value in that stretch is at `mid`. The global minimum is therefore `mid` or to its left.
 
 The first test, `nums[l] <= nums[mid]`, only says "this stretch is sorted". Both pieces are sorted, so it stays true inside the right piece and cannot decide anything.
-
-## Two ways to finish
-
-The code above carries a `minimum` variable. A shorter version lets the range collapse onto the answer:
-
-```python
-l, r = 0, len(nums) - 1
-while l < r:
-    mid = (l + r) // 2
-    if nums[mid] > nums[r]:
-        l = mid + 1
-    else:
-        r = mid
-return nums[l]
-```
-
-| | Track `minimum` | Shrink to one index |
-| --- | --- | --- |
-| Loop | `while l <= r` | `while l < r` |
-| Update | `r = mid - 1` | `r = mid` |
-| Answer | the `minimum` variable | `nums[l]` |
-
-Both are correct. The shorter one is easier to type; the longer one is easier to explain, because every candidate is recorded the moment it is seen.
 
 ## If there are duplicates
 
@@ -176,7 +223,8 @@ A single scan tracking the smallest value is O(n). That is the thing the problem
 ## Mistakes to avoid
 
 - Using `nums[l] <= nums[mid]` to decide which side holds the minimum. It tells you which side is sorted, and both sides can be sorted.
-- Moving `r = mid - 1` before recording `nums[mid]`. Then the minimum gets discarded.
+- Pairing `l <= r` with `r = mid`. At `l == r` the update changes nothing, and the loop never ends.
+- Pairing `l < r` with `r = mid - 1`. That discards `mid` while it may be the minimum; `[4,5,0,1,2]` returns `4` instead of `0`.
 - Writing `nums[mid] < nums[r]` instead of `>`. The comparison direction *is* the rule; check it against a picture.
 - Forgetting the array may not be rotated at all. `[1, 2, 3]` should return `1`.
 
@@ -186,13 +234,15 @@ A single scan tracking the smallest value is O(n). That is the thing the problem
 - [ ] Trace `[4,5,6,7,0,1,2]` with the wrong test and show it returns `1`.
 - [ ] Trace the same array with the right test and show it returns `0`.
 - [ ] Explain why `nums[mid] > nums[r]` means "go right".
-- [ ] Explain why `r = mid - 1` does not lose the answer.
-- [ ] Write the shorter `while l < r` version.
+- [ ] Explain why the loop stops at `l == r` and why the answer is `nums[l]`.
+- [ ] Explain what goes wrong with `l <= r` when the update is `r = mid`.
+- [ ] Explain why `r = mid` keeps the answer, using `[4,5,0,1,2]`.
 - [ ] Say what changes with duplicates.
 
 ## The short version
 
 - Compare `nums[mid]` with `nums[r]`, not with `nums[l]`.
-- `nums[mid] > nums[r]` → the minimum is to the right → `l = mid + 1`.
-- Otherwise → the minimum is at `mid` or to the left → record it, then `r = mid - 1`.
-- Record `mid` before moving, because `mid` may be the answer.
+- `nums[mid] > nums[r]` → the minimum is to the right → `l = mid + 1`; `mid` cannot be it.
+- Otherwise → the minimum is at `mid` or to the left → `r = mid`; keep `mid` in range.
+- Stop when `l == r`. One candidate is left, so return `nums[l]`.
+- Keep the two decisions together: `l < r` goes with `r = mid`; `l <= r` goes with `r = mid - 1` and a recorded minimum.
