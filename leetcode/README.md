@@ -11,6 +11,7 @@ The DSA track is deliberately separate from the topic notes: this is timed pract
 | 19 | [Remove Nth Node From End of List](https://leetcode.com/problems/remove-nth-node-from-end-of-list/) | Fixed-gap two pointers | [09-remove-nth-node-from-end/](./09-remove-nth-node-from-end) ↻ |
 | 20 | [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) | LIFO matching | [02-valid-parentheses/](./02-valid-parentheses) |
 | 21 | [Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/) | Dummy node + tail pointer | [12-merge-two-sorted-lists/](./12-merge-two-sorted-lists) ↻ |
+| 22 | [Generate Parentheses](https://leetcode.com/problems/generate-parentheses/) | Backtracking: choose, recurse, undo | [14-generate-parentheses/](./14-generate-parentheses) ↻↻ |
 | 33 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Find the sorted half | [10-search-in-rotated-sorted-array/](./10-search-in-rotated-sorted-array) ↻↻↻ |
 | 74 | [Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) | Two-level binary search | [07-search-a-2d-matrix/](./07-search-a-2d-matrix) |
 | 138 | [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/) | Two passes + identity map | [13-copy-list-with-random-pointer/](./13-copy-list-with-random-pointer) ↻ |
@@ -21,6 +22,7 @@ The DSA track is deliberately separate from the topic notes: this is timed pract
 | 206 | [Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/) | In-place pointer rewiring | [06-reverse-linked-list/](./06-reverse-linked-list) |
 | 380 | [Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/) | List + index map | [08-insert-delete-getrandom-o1/](./08-insert-delete-getrandom-o1) |
 | 704 | [Binary Search](https://leetcode.com/problems/binary-search/) | Halve the search space | [04-binary-search/](./04-binary-search) |
+| 739 | [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) | Monotonic decreasing stack | [15-daily-temperatures/](./15-daily-temperatures) ↻↻ |
 
 `↻` in the Notes column marks a problem I want to re-solve later. `↻↻↻` marks one that needs repeated revision — more marks, more often.
 
