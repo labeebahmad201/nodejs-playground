@@ -1,87 +1,140 @@
 # Generate Parentheses
 
-*The output has to be well-formed, and "well-formed" is a property of every prefix, not just the finished string. That single fact is what turns a generate-everything-and-filter problem into a tree you can prune while you build.*
+*Take one output string and read it character by character. Every position was a choice between `(` and `)`. That makes each answer a path through a decision tree — so the problem becomes deciding which paths are worth walking, and when to walk back out of one.*
 
 Part of the [`leetcode/`](../) section.
 
-> **Revisit later.** ↻↻ This is the cleanest example of the backtracking template: a state, two choices, constraints checked *before* descending, and an undo step. Get this one automatic and the harder search problems are variations.
+> **Revisit later.** ↻↻ Six thoughts carry the whole solution. If you can recall them in order, you can rebuild the code.
 
 ---
 
-## The problem
+## The reasoning in six lines
 
-Given `n` pairs of parentheses, return every well-formed combination.
+1. Each character of an answer is a two-way choice → the search space is a binary tree.
+2. The tree contains invalid strings → some branches must not be walked.
+3. A `)` must close a `(` that already exists → `close < open`.
+4. You own exactly `n` of each → `open < n`.
+5. Refusing to descend changes the shape of the walk → that is backtracking.
+6. Build the string once, at the leaf → keep a list, join at the end.
 
-```text
-n = 3  →  ["((()))", "(()())", "(())()", "()(())", "()()()"]
-```
+Everything below is those six lines with the details that make them work.
 
-Every result has exactly `2n` characters: `n` opening and `n` closing. The order is what varies, and most orders are invalid.
+## 1. Each output is a path
 
-## The output is a path of decisions
-
-Look at `(()())` one character at a time. At each position you chose `(` or `)`. So the whole search space is a binary tree of depth `2n`:
-
-```text
-""  →  "(" or ")"
-        then "(" or ")"
-        ...
-```
-
-For `n = 3` that is `2^6 = 64` paths. Only 5 of them are valid. Generating all 64 and filtering works, but it throws away 59 paths at the end — after building them.
-
-The alternative is to never build an invalid prefix in the first place. That requires a rule you can check *at every step*, not just at the end.
-
-## The invariant: the balance never goes negative
-
-Walk the string left to right and keep `balance = opens - closes`.
+Take `(()())` for `n = 3` and look at each position:
 
 ```text
-( ( ) ( ) )
-1 2 1 2 1 0     valid: balance is never negative, ends at 0
+position:   1  2  3  4  5  6
+character:  (  (  )  (  )  )
+
+choice:     (        )        every position had two candidates
 ```
+
+Six positions, two candidates each: a binary tree with `2^6 = 64` leaves. The five valid ones are the answer.
 
 ```text
-( ) ) ( ( )
-1 0 -1 ...      invalid: once it goes negative, no suffix can repair it
+((()))   (()())   (())()   ()(())   ()()()
 ```
 
-That last point is the whole justification for pruning: **a prefix with negative balance is dead, no matter what follows.** You do not need to see the rest of the string to reject it.
+So a node in the tree is a **prefix**, an edge is **one character**, and an answer is a **root-to-leaf path**.
 
-The same idea in terms of counters at a partial state `(openP, closedP)`:
+> The tree is the search space. An answer is one path through it.
 
-| Choice | Allowed when | Why |
+## 2. The tree does not know what is valid
+
+`)))(((` is also a path — always pick `)` first. `(()))(` is another. The tree explores *potential* answers, not *valid* ones:
+
+> The decision tree lets us explore the answer space, not necessarily the valid answers.
+
+That is the point where validity has to enter. Two ways:
+
+- **Check at the end.** Build all 64 strings, filter to 5. Correct, and it wastes 59 strings after finishing them.
+- **Check on the way down.** If a prefix can never become valid, do not extend it. This is backtracking, and it requires a test that works on a *partial* string.
+
+Everything interesting in this problem is finding that test.
+
+## 3. Rule one: a closing bracket needs an opening one
+
+Brackets pair left to right. A `)` at some position needs an unmatched `(` **before it**. It cannot borrow from a `(` that appears later.
+
+So, with `open` and `close` counting what has been written:
+
+> Take `)` only when `close < open`.
+
+Think of it as pairing, not counting. With three pairs, the third `)` needs the third `(` to exist first. A fourth `)` would mean four closes against at most three opens — one of them has no partner, and no later character can give it one.
+
+The same rule in balance form: `balance = open - close`, and writing `)` is legal only while `balance > 0`.
+
+The first character shows the rule working without a special case:
+
+```text
+state (0, 0):   close < open  →  0 < 0  →  false
+```
+
+The branch that starts with `)` is not created and then rejected. It is never created.
+
+## 4. Rule two: you only own `n` of each, and that is why the opening rule is different
+
+Write `(` only while `open < n`. That one is obvious. The subtle part is *why* it cannot instead be a comparison between the two counters:
+
+> At the beginning, `open` and `close` are both zero. So the condition for adding `(` cannot be a comparison between them — that comparison is false. The only reason opening is legal is that we are below the `n` threshold.
+
+That is what fixes the two conditions:
+
+| Choice | Question it really asks | Rule |
 | --- | --- | --- |
-| add `(` | `openP < n` | you only have `n` to spend |
-| add `)` | `closedP < openP` | there must be an unmatched `(` for it to close |
+| `(` | Do I still have an opening bracket to spend? | `open < n` |
+| `)` | Is there an opening bracket waiting to be closed? | `close < open` |
 
-`closedP < openP` is exactly "the balance is positive", i.e. the next character can be a closing one. And because `openP ≤ n` is enforced separately, the tree can never grow past `2n`.
+Mnemonics: **opening spends budget, closing spends balance.**
 
-Two consequences worth stating plainly:
+Also note what kind of thing these rules are. The tree is generic — any problem with two choices at each step has the same shape. The rules are specific to parentheses:
 
-- **The first character can only be `(`.** At `(0, 0)`, `closedP < openP` is `0 < 0`, false. No special case needed; the constraint handles it.
-- **Every non-finished state has at least one legal move.** If `openP == closedP < n`, open is allowed. If `closedP < openP`, close is allowed. So pruning never creates a dead end — every branch that is explored reaches a valid leaf.
+> The conditions are specific to the question we are solving, not universal.
 
-## The tree for n = 3
+Change the problem and the tree stays; the pruning rules are what change.
 
-Each node is a prefix `(openP, closedP)`. The five leaves are the five answers.
+## 5. Walking a path, then walking back out
+
+Descend along the leftmost path, checking the two rules at every state:
+
+| Step | Prefix | `(open, close)` | open legal? | close legal? | What happens |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `""` | `(0, 0)` | `0 < 3` ✓ | `0 < 0` ✗ | only `(` |
+| 2 | `"("` | `(1, 0)` | ✓ | `0 < 1` ✓ | both; try `(` first |
+| 3 | `"(("` | `(2, 0)` | ✓ | ✓ | both; try `(` first |
+| 4 | `"((("` | `(3, 0)` | `3 < 3` ✗ | ✓ | forced to close |
+| 5 | `"((()"` | `(3, 1)` | ✗ | ✓ | forced to close |
+| 6 | `"((())"` | `(3, 2)` | ✗ | ✓ | forced to close |
+| 7 | `"((()))"` | `(3, 3)` | ✗ | `3 < 3` ✗ | record the answer, return |
+
+Now watch the return trip, because this is the part that is easy to hand-wave:
+
+1. At step 7 the answer is recorded and the frame returns.
+2. The three `)` pop as their frames unwind: the path goes from `"((()))"` back to `"((("`.
+3. The frame at `(2, 0)` then pops **its own** `(`, leaving `"(("`.
+4. That frame's opening branch is finished, so its second `if` now runs — with the path restored to exactly the state the frame started with. It writes `)` and starts the `"(()"` subtree.
+
+That is backtracking: not a special algorithm, just *returning with the state restored, then trying the other choice*. The `pop` is what makes the return meaningful.
+
+The rest of the tree, with the blocked choice named at every node:
 
 ```text
 ""  (0,0)
 └─ "("  (1,0)
    ├─ "(("  (2,0)
-   │  ├─ "((("  (3,0)              open blocked: open == n
+   │  ├─ "((("  (3,0)              open blocked: 3 == n
    │  │  └─ "((()"  (3,1)
    │  │     └─ "((())"  (3,2)
    │  │        └─ "((()))"  (3,3)  ✓
-   │  └─ "(()"  (2,1)
+   │  └─ "(()"  (2,1)              ← step 4 above, after coming back
    │     ├─ "(()("  (3,1)
    │     │  └─ "(()()"  (3,2)
    │     │     └─ "(()())"  (3,3)  ✓
-   │     └─ "(())"  (2,2)          close blocked: closed == open
+   │     └─ "(())"  (2,2)          close blocked: close == open
    │        └─ "(())("  (3,2)
    │           └─ "(())()"  (3,3)  ✓
-   └─ "()"  (1,1)                  close blocked: closed == open
+   └─ "()"  (1,1)                  close blocked: close == open
       ├─ "()("  (2,1)
       │  ├─ "()(("  (3,1)
       │  │  └─ "()(()"  (3,2)
@@ -91,33 +144,53 @@ Each node is a prefix `(openP, closedP)`. The five leaves are the five answers.
       │        └─ "()()()"  (3,3)  ✓
 ```
 
-Read the blocked annotations: at `""` the closing branch does not exist; at `"()"` and `"(())"` the balance is zero, so no `)` can follow; at any `(3, ·)` node the opening allowance is spent.
+Twenty-two nodes instead of sixty-four. The pruning is doing real work, and every leaf is a valid answer — there is nothing left to filter at the end.
 
-The tree has 22 nodes, not 64. That is the pruning paying for itself.
+## 6. Collect at the leaf, not on the way down
 
-## The code
+You need a string for each answer. The tempting way is to carry a string and extend it:
+
+```python
+backtrack(open + 1, close, path + "(")     # works, but copies
+```
+
+Python strings are immutable, so every extension allocates a new string. Along one path the sizes go `1, 2, 3, …, 2n`, and each step copies the whole thing — the cost is quadratic in the depth, repeated for every answer.
+
+Instead, keep **one list** for the current path:
+
+- `path.append(...)` and `path.pop()` are O(1).
+- `"".join(path)` runs **once**, when a complete answer is recorded.
+
+For `n = 3`: 22 recursive calls, 5 joins of length 6. For `n = 8`: 6,917 calls, 1,430 joins of length 16. The list is not a micro-optimisation; it is what keeps the per-answer cost at O(n) instead of O(n²).
+
+The string version is still correct — it just needs no `pop`, because it never mutates anything. The list version is the one to default to.
+
+## 7. The code, assembled in the order the pieces were figured out
 
 ```python
 class Solution:
     def generateParenthesis(self, n: int) -> list[str]:
-        result = []
+        result = []                       # answers land here, at the leaves
 
-        # State: how many of each we have used, plus the prefix we are building.
         def backtrack(openP: int, closedP: int, path: list[str]) -> None:
-            # A state only reaches this point by legal moves, so a full
-            # state is a valid answer. No filtering needed.
+            # 1. Stopping condition: all n of each have been written.
+            #    The rules guarantee closedP can never pass openP, and
+            #    openP can never pass n, so this is the only terminal state.
             if openP == closedP == n:
-                result.append("".join(path))
+                result.append("".join(path))   # the only place we pay for a string
                 return
 
-            # Choice 1: add "(" while we still have some of the n allowance.
+            # 2. Opening spends budget: openP < n.
+            #    It cannot be `closedP < openP` — at (0, 0) that is false,
+            #    yet opening is exactly what we must do.
             if openP < n:
                 path.append("(")
                 backtrack(openP + 1, closedP, path)
-                path.pop()          # undo before trying the other choice
+                path.pop()                # undo before the sibling branch
 
-            # Choice 2: add ")" only if something is open to close.
-            # A separate `if`, not `elif`: both choices can be legal here.
+            # 3. Closing spends balance: there must be an unmatched "(".
+            #    At (0, 0) this is false, which is why ")" can never start
+            #    the string. After an "(" it can become true.
             if closedP < openP:
                 path.append(")")
                 backtrack(openP, closedP + 1, path)
@@ -127,187 +200,135 @@ class Solution:
         return result
 ```
 
-`n` is read from the enclosing scope, so it is not a parameter. `openP` and `closedP` are plain ints, so passing `openP + 1` needs no undo — the caller's value is untouched. `path` is the only shared mutable object, which is why it is the only thing that needs the `pop()`.
+Details that matter:
 
-The base case equality `openP == closedP == n` is a chained comparison: `openP == closedP and closedP == n`.
+- **`n` is not a parameter.** It never changes, so the inner function reads it from the enclosing scope. Only the state that changes is passed down.
+- **`openP` and `closedP` need no undo.** Integers are immutable: `openP + 1` creates a new value for the child, and the parent's `openP` is untouched when the child returns. `path` is the only shared mutable object, which is exactly why it is the only thing that needs `pop`.
+- **`openP == closedP == n` is a chained comparison**, i.e. `openP == closedP and closedP == n`. The first part is guaranteed by the rules at this point; it is there to say "both spent" in one line.
+- **The counters and the path stay in sync.** Every recursive call adds exactly one character, so `len(path) == openP + closedP` at every frame. That invariant is what lets the base case be about the counters rather than the length.
 
-## The two conditions must stay separate
+## 8. The `pop` is the backtrack
 
-From `"(("` — `(openP=2, closedP=0), n=3` — both choices are legal:
-
-```text
-openP < n        →  2 < 3   true
-closedP < openP  →  0 < 2   true
-```
-
-So this node has two children, `"((("` and `"(()"`. Writing the second branch as `elif` silently drops the `"(()"` subtree:
-
-```python
-if openP < n: ...
-elif closedP < openP: ...        # wrong
-```
-
-For `n = 3` that returns exactly one answer, `["((()))"]`, instead of five. The `elif` assumption — "if I didn't open, I must close" — does not match the problem; the choices are independent.
-
-## Why `path.pop()` is not optional
-
-`path` is mutated in place and shared by every frame. The pattern is:
+The list is shared by every frame, and the frames run one at a time. The contract is:
 
 ```text
-append  →  recurse (the child sees the new prefix)  →  pop (restore)
+append  →  recurse (the child sees the new character)  →  pop (restore)
 ```
 
-Without the `pop`, each result inherits every character ever appended anywhere in the tree. For `n = 3` you get:
+Without the `pop`, the sibling branch inherits the character that belonged to the branch just explored, and so does every later branch. For `n = 3` the output becomes:
 
 ```text
 ["((()))", "((())))())", "((())))()))()", "((())))()))())(())", ...]
 ```
 
-The first entry looks right, which is exactly why this bug survives a casual test. The recursion *returns* to the parent, but the list does not — `pop` is what makes the return meaningful.
+The first answer is correct, which is why this bug survives a quick test: the first path never needs to undo anything. The recursion *returns*, but the list does not — the `pop` is what makes the return meaningful.
 
-## Why a list instead of a string
+## 9. Two `if`s, not `elif`
 
-Building `path` as a string would copy it on every append:
+At `"(("` — state `(2, 0)` — both choices are legal:
 
-```python
-backtrack(openP + 1, closedP, path + "(")   # copies O(len) each level
+```text
+openP < n        →  2 < 3  true
+closedP < openP  →  0 < 2  true
 ```
 
-Across one root-to-leaf path that is `O(n²)` copying, and there are `C_n` leaves. The list version does `O(1)` appends and pops during the search, then one `O(n)` join per finished answer.
+So that node has two children, `"((("` and `"(()"`. Writing the second branch as `elif` encodes "if I did not open, I must close", which is false here: both can be done, and the tree needs both subtrees.
 
-| Operation | String | List |
-| --- | --- | --- |
-| extend the prefix | copy the whole string | `append`, amortised O(1) |
-| undo | nothing to undo (immutable) | `pop`, O(1) |
-| produce the answer | already a string | `"".join`, O(n) once |
+For `n = 3` an `elif` returns one answer:
 
-The list version is the one to internalise; the string version is fine for small `n` and simpler if you dislike the undo step.
+```text
+["((()))"]
+```
 
-## How many calls is it, really
+The order of the two `if` blocks does not affect correctness — only the order of the results.
 
-The *depth* of the recursion is `2n` — one level per character. The *number of calls* is the number of nodes in the tree, which is larger:
+## 10. How much work it is
 
-| n | calls | results |
-| --- | --- | --- |
-| 1 | 3 | 1 |
-| 2 | 8 | 2 |
-| 3 | 22 | 5 |
-| 4 | 64 | 14 |
-| 8 | 6917 | 1430 |
-
-So "the search makes `2n` calls" describes a single path, not the tree. A finished answer costs `2n` appends and one join; the search as a whole visits every prefix in the table.
-
-## Counting the answers: Catalan numbers
-
-The number of well-formed strings with `n` pairs is the `n`-th Catalan number:
+The number of valid strings is the `n`-th Catalan number:
 
 ```text
 C_n = (1 / (n + 1)) · C(2n, n)
-
-n:      0   1   2   3    4    5     6      7      8
-C_n:    1   1   2   5   14   42   132    429   1430
 ```
 
-Why: take any arrangement of `n` opens and `n` closes (`C(2n, n)` of them) and exactly `1/(n+1)` of them never go negative. That factor is the Catalan correction.
+| `n` | recursive calls | answers (`C_n`) | all balanced-count arrangements `C(2n, n)` | all binary strings `4^n` |
+| --- | --- | --- | --- | --- |
+| 1 | 3 | 1 | 2 | 4 |
+| 2 | 8 | 2 | 6 | 16 |
+| 3 | 22 | 5 | 20 | 64 |
+| 4 | 64 | 14 | 70 | 256 |
+| 8 | 6,917 | 1,430 | 12,870 | 65,536 |
 
-- **Time:** `O(n · C_n)` — `C_n` answers, each costing `O(n)` to join and copy.
-- **Space:** `O(n)` auxiliary for the recursion and `path`, plus the output itself.
+- **Time:** `O(n · C_n)` — `C_n` answers, each joined once in `O(n)`.
+- **Space:** `O(n)` for the recursion and `path`, plus the output itself.
 
-For comparison, generate-all-and-filter walks `2^(2n)` strings: for `n = 8` that is 65,536 strings (12,870 if you only generate balanced counts) filtered down to 1,430. The pruned search visits 6,917 nodes and returns exactly the 1,430 that survive.
+On the call count: a single root-to-leaf path makes `2n` choices, which is `2n + 1` calls including the terminal one — that is the depth. The *whole tree* calls the function 22 times for `n = 3`, because every prefix gets its own call. Both numbers are true; they count different things.
 
-## Mistakes
+For comparison, generate-and-filter walks all `4^n` strings. At `n = 8` that is 65,536 strings built to keep 1,430, versus 6,917 nodes explored. And if you instead generate only arrangements with `n` opens and `n` closes, that is 12,870 — still nine times the tree.
 
-### 1. `-> void` on the inner function
+## 11. Mistakes
+
+### `-> void` on the inner function
 
 ```python
 def backtrack(openP, closedP, path) -> void:   # NameError on LeetCode
 ```
 
-`void` is not a Python type. On Python 3.13 and earlier, annotations are evaluated when the `def` runs, so submitting this raises `NameError: name 'void' is not defined`.
+`void` is not a Python type. Up to Python 3.13, annotations are evaluated when `def` runs, so this raises `NameError: name 'void' is not defined`. It can pass locally on Python 3.14+, where annotations are deferred (PEP 649) — local green, submit red. Use `-> None`.
 
-It can pass locally on Python 3.14+, where annotations are deferred (PEP 649) and never evaluated unless something reads `__annotations__` — which is the worst kind of portability bug: works on your machine, fails on submit. Use `-> None`.
+### `elif` between the two choices
 
-### 2. `elif` between the two choices
+Returns only `["((()))"]` for `n = 3`, as shown above. Both conditions are independent, not alternatives.
 
-Covered above: from `"(("` both branches are legal, and `elif` returns 1 answer instead of 5 for `n = 3`.
-
-### 3. Closing whenever there is allowance left
+### Closing whenever budget remains
 
 ```python
-if closedP < n:        # wrong: allows ")" before any "(" exists
+if closedP < n:        # wrong
 ```
 
-This generates *all* arrangements of `n` opens and `n` closes. For `n = 3` that is the full 20 (`C(6,3)`), including:
+This generates every arrangement of `n` opens and `n` closes — all 20 for `n = 3` — including strings like `")))((("` and `"(()))("`. The counts are right; the pairing is not. Closing needs an **open**, not an allowance.
+
+### Forgetting the `pop`
+
+The first answer looks right and the rest accumulate characters from earlier branches:
 
 ```text
-")((())", "())(()", "(()))(", ")))((("
+["((()))", "((())))())", "((())))()))()", ...]
 ```
 
-The output is 20 strings where 5 were asked for, and nothing in the loop rejects them — the damage happened at generation time.
+### Relying on the base case to stop the recursion
 
-The correct test is `closedP < openP`: a closing bracket needs an **open** bracket, not merely budget.
+The `return` after recording is good style, but it is not what prevents overrunning: at `(n, n)` both `if`s are false anyway. The base case is there to record the answer and skip two comparisons. That also means an off-by-one in the rules shows up as missing or extra answers, not as a crash.
 
-### 4. Forgetting the `pop`
+### Generating everything and filtering
 
-Covered above: the first result still looks correct, the rest accumulate junk. It is the classic shared-state bug in backtracking.
-
-### 5. Trusting the base case to clean up
-
-`return` after recording the answer is good style, but it is not what stops the recursion from overrunning: at `(n, n)` both `openP < n` and `closedP < openP` are false, so the function would fall through anyway. The base case is there to *record* and to skip the two checks. Nothing else is needed — which is also why an off-by-one in the constraints shows up as missing or extra answers, not as a crash.
-
-### 6. Generating everything, then filtering
-
-Correct, and the clearest way to state the problem:
+The honest baseline, and worth writing once to see the difference:
 
 ```python
 for bits in product("()", repeat=2 * n):
-    if valid(bits):
+    if is_balanced(bits):
         result.append("".join(bits))
 ```
 
-But it checks validity at the leaf instead of enforcing it along the way. The backtracking version is the same idea moved earlier, where it costs nothing.
+It checks validity at the leaf, after paying for the string. The backtracking version moves the same check to the edge, before the cost is paid.
 
-## Edge cases
+## 12. Edge cases
 
-| Case | Result |
+| Case | What happens |
 | --- | --- |
 | `n = 0` | `[""]` — one empty string (LeetCode's constraint is `n ≥ 1`) |
 | `n = 1` | `["()"]` |
 | `n = 2` | `["(())", "()()"]` |
-| maximum `n = 8` | 1,430 strings, recursion depth 16 |
-| duplicates? | none — each root-to-leaf path is a distinct string |
-| order of results | `"("` is explored first, so `"((()))"` comes first; LeetCode accepts any order |
+| maximum `n = 8` | 1,430 answers, recursion depth 16 |
+| duplicates | none — each root-to-leaf path is a distinct string |
+| result order | `(` is tried first, so `((()))` comes first; any order is accepted |
+| a state with both choices blocked | only at `(n, n)`, which is the recorded leaf |
 
-## What generalizes
+## 13. The version to remember
 
-This is the backtracking template in its smallest form:
-
-```text
-state          →  (openP, closedP, path)
-choices        →  "(" and ")"
-constraints    →  openP < n, closedP < openP
-record         →  at the completed state only
-undo           →  path.pop()
-```
-
-The transferable habit is deciding *where* validity is checked. If the problem's validity is prefix-closed — a bad prefix can never become good — check it before descending and never build the bad branch. If it is not prefix-closed (a partial answer can still be repaired), pruning needs a different argument, or none is available.
-
-The same skeleton becomes subsets, permutations, and combination-sum: mutate a shared path, recurse, undo, and let problem-specific constraints cut the tree.
-
-## Revision checklist
-
-- [ ] State the invariant in one line: `closes ≤ opens` at every prefix, `opens ≤ n`.
-- [ ] Explain why a negative balance can never be repaired.
-- [ ] Say why `)` at the root is impossible without a special case.
-- [ ] Say why the two branches are two `if`s, not `if/elif`.
-- [ ] Explain what breaks without `path.pop()`.
-- [ ] Give the Catalan count and the `O(n · C_n)` time.
-- [ ] Contrast with generating `2^(2n)` strings and filtering.
-- [ ] Recite the template: state, choices, constraints, record, undo.
-
-## The short version
-
-- A prefix is valid while `closes ≤ opens`; enforce that as you build, so invalid strings are never created.
-- Add `(` if `open < n`; add `)` if `close < open`; record when both reach `n`.
-- Two independent `if`s, a shared `path`, and a `pop` after each recursive call.
-- Every leaf is a valid answer, the leaves number `C_n`, and the work is `O(n · C_n)`.
+- An answer is a **path** of `2n` binary choices; the tree is the search space, not the answer set.
+- A `)` needs an `(` already written → `close < open`; the root `(0, 0)` makes `)` impossible without a special case.
+- You own `n` opens → `open < n`; this is why the opening rule is a budget check instead of a counter comparison.
+- Both rules can be true at the same node → two `if`s, never `elif`.
+- Record at `(n, n)` with `"".join(path)`; keep `path` a list so the walk is O(1) per step.
+- `append → recurse → pop`; the `pop` is the backtrack.
+- The rules are problem-specific; the tree/backtracking skeleton is not.
