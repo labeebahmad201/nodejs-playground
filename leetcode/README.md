@@ -23,6 +23,7 @@ The DSA track is deliberately separate from the topic notes: this is timed pract
 | 380 | [Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/) | List + index map | [08-insert-delete-getrandom-o1/](./08-insert-delete-getrandom-o1) |
 | 704 | [Binary Search](https://leetcode.com/problems/binary-search/) | Halve the search space | [04-binary-search/](./04-binary-search) |
 | 739 | [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) | Monotonic decreasing stack | [15-daily-temperatures/](./15-daily-temperatures) ↻↻ |
+| 901 | [Online Stock Span](https://leetcode.com/problems/online-stock-span/) | Stack of absorbed spans | [16-online-stock-span/](./16-online-stock-span) ↻↻ |
 
 `↻` in the Notes column marks a problem I want to re-solve later. `↻↻↻` marks one that needs repeated revision — more marks, more often.
 
