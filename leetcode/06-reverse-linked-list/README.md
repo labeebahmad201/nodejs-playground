@@ -138,6 +138,10 @@ The recursive version reverses the rest of the list first and then points the ne
 current one. It is elegant, but it uses O(n) stack space, so the iterative version is the one that
 satisfies the O(1)-space follow-up.
 
+Why the iterative version is worth preferring when a solution needs to read a list from the back,
+rather than pushing the nodes onto a stack, is in
+[reversing instead of stacking](../techniques/reverse-instead-of-stack.md).
+
 ## Tests worth keeping
 
 ```python

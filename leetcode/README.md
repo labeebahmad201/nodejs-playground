@@ -32,7 +32,7 @@ The DSA track is deliberately separate from the topic notes: this is timed pract
 
 Some mechanisms are bigger than the problem that first needed them. Those live in [`techniques/`](./techniques), worked out once and linked from the solutions that depend on them.
 
-The first is [where the slow pointer lands](./techniques/fast-slow-pointers.md): the fast/slow middle loop, both middles for even lists, the `head.next` offset, and why the guard inside the loop is required.
+Four notes so far. [Where the slow pointer lands](./techniques/fast-slow-pointers.md) works out the fast/slow middle loop, both middles for even lists, the `head.next` offset, and the guard inside the loop. [Splitting a linked list at the middle](./techniques/splitting-a-linked-list.md) covers the cut that turns one list into two. [Reversing instead of stacking](./techniques/reverse-instead-of-stack.md) compares the memory a stack costs with the mutation an in-place reverse costs. [Attaching the remainder after a merge](./techniques/merge-remainder.md) explains the `curr1 or curr2` line that finishes a merge.
 
 ## How to add a problem
 

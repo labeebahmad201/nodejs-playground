@@ -110,43 +110,60 @@ The return value is ignored by LeetCode, because the function is specified to ed
 
 Collecting the nodes is one walk, and the interleaving makes one placement per node, so the time is `O(n)`. The array holds every node, so the space is `O(n)` beyond the existing list.
 
-The follow-up asks for `O(1)` extra space, and the standard way is to use the list's own structure instead of an index. Find the middle with a slow pointer and a fast pointer, split the list after the middle, reverse the second half, and then merge the two halves alternately. Reversing is the trick that turns "take from the back" into "take from the front of the reversed half", which a singly linked list can do.
+The follow-up asks for `O(1)` extra space, and the version from the notes gets there with the list's own structure instead of an index. It finds the middle with the fast/slow loop, splits the list after it, reverses the second half, and then merges the two halves one node at a time. Reversing is the trick that turns "take from the back" into "take from the front of the reversed half", which a singly linked list can do; the memory trade-off behind that move is worked out in [reversing instead of stacking](../techniques/reverse-instead-of-stack.md).
 
 ```python
 class Solution:
-    def reorderList(self, head: ListNode | None) -> None:
-        if not head or not head.next:
-            return
-
-        # Middle: slow stops at the end of the first half.
-        slow = fast = head
-        while fast.next and fast.next.next:
-            slow = slow.next
-            fast = fast.next.next
-
-        second = slow.next
-        slow.next = None                 # split
-
-        # Reverse the second half.
+    def reverseList(self, head: ListNode) -> ListNode:
+        curr = head
         prev = None
-        while second:
-            nxt = second.next
-            second.next = prev
-            prev = second
-            second = nxt
+        while curr:
+            new_next = curr.next        # save it before rewiring
+            curr.next = prev
+            prev = curr
+            curr = new_next
+        return prev
 
-        # Merge: first half in front, reversed half interleaved.
-        first, second = head, prev
-        while second:
-            first_next, second_next = first.next, second.next
-            first.next = second
-            second.next = first_next
-            first, second = first_next, second_next
+    def reorderList(self, head: ListNode | None) -> None:
+        slow = head
+        fast = head.next
+
+        while fast:
+            slow = slow.next
+            fast = fast.next.next if fast.next else None
+
+        second_half = slow.next
+        slow.next = None                # split
+
+        new_list = self.reverseList(second_half)
+
+        curr1, curr2 = head, new_list
+
+        dummy = ListNode(0)
+        tail = dummy
+
+        while curr1 and curr2:
+            tail.next = curr1
+            tail = curr1
+            curr1 = curr1.next
+
+            tail.next = curr2
+            tail = curr2
+            curr2 = curr2.next
+
+        # One half is exhausted; the other is already linked.
+        tail.next = curr1 or curr2
+
+        return dummy.next
 ```
 
-The merge loop runs while the second half has nodes, because the second half is never longer than the first. For an even-length list the split leaves two equal halves; for an odd-length list the middle stays with the first half, which is exactly where the array version's guard puts it.
+The middle loop is the right-middle variant from [where the slow pointer lands](../techniques/fast-slow-pointers.md), and the two lines that cut the list are [splitting a linked list at the middle](../techniques/splitting-a-linked-list.md). On even lengths it stops one node later than the left-middle loop, so `second_half` is shorter than the first half; for `[1, 2, 3, 4]` it is just `[4]`. That still produces the right sequence. The merge pairs one node from each half until the shorter one runs out, and whatever remains of the first half is the middle run in its original order, which is exactly the tail of the target. On `[1..6]` the halves are `[1, 2, 3, 4]` and `[6, 5]`; after the pairs `1-6` and `2-5`, the leftover `[3, 4]` is appended, giving `1, 6, 2, 5, 3, 4`.
 
-This is the left-middle loop. The related loop with `fast = head.next` and `while fast` lands one node later on even lists and would leave the second half short; both landings and the reasons behind them are worked out in [where the slow pointer lands](../techniques/fast-slow-pointers.md).
+The merge is the dummy/tail construction again, and the last line is the technique from [attaching the remainder](../techniques/merge-remainder.md). Because the first half is strictly longer in this split, only `curr1` can survive the loop; `curr1 or curr2` states the general rule anyway, and the remaining chain is already linked in the order it needs to appear.
+
+`reverseList` is the standard three-pointer rewire, and it is worth being precise about its end state. When the loop exits, `curr` is `None` — that is why the loop stopped — and `prev` is the last node processed, which is the new head. Returning `curr` returns `None`; `prev` is the return value that carries the list.
+
+The left-middle loop is the alternative split. It gives balanced halves on even lengths, which is why the palindrome and merge-style splits prefer it; both splits are correct for reorder, and the difference is only which half carries the leftover nodes.
 
 ## Edge cases
 
