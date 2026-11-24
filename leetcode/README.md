@@ -12,6 +12,7 @@ The DSA track is deliberately separate from the topic notes: this is timed pract
 | 20 | [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) | LIFO matching | [02-valid-parentheses/](./02-valid-parentheses) |
 | 21 | [Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/) | Dummy node + tail pointer | [12-merge-two-sorted-lists/](./12-merge-two-sorted-lists) ↻ |
 | 22 | [Generate Parentheses](https://leetcode.com/problems/generate-parentheses/) | Backtracking: choose, recurse, undo | [14-generate-parentheses/](./14-generate-parentheses) ↻↻ |
+| 23 | [Merge k Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) | Min-heap of the k current heads | [18-merge-k-sorted-lists/](./18-merge-k-sorted-lists) ↻↻ |
 | 33 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Find the sorted half | [10-search-in-rotated-sorted-array/](./10-search-in-rotated-sorted-array) ↻↻↻ |
 | 74 | [Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) | Two-level binary search | [07-search-a-2d-matrix/](./07-search-a-2d-matrix) |
 | 138 | [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/) | Two passes + identity map | [13-copy-list-with-random-pointer/](./13-copy-list-with-random-pointer) ↻ |
