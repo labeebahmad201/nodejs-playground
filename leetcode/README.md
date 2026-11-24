@@ -1,6 +1,6 @@
 # LeetCode
 
-*Pattern-based solutions to the problems I'm working through — one directory per problem. The point isn't the accepted submission; it's naming the invariant or pattern clearly enough to recognize it somewhere else.*
+*Pattern-based solutions to the problems I'm working through — one directory per problem, plus a `techniques/` folder for mechanisms that span several. The point isn't the accepted submission; it's naming the invariant or pattern clearly enough to recognize it somewhere else.*
 
 The DSA track is deliberately separate from the topic notes: this is timed practice and pattern recognition, not runtime or architecture depth.
 
@@ -16,6 +16,7 @@ The DSA track is deliberately separate from the topic notes: this is timed pract
 | 74 | [Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) | Two-level binary search | [07-search-a-2d-matrix/](./07-search-a-2d-matrix) |
 | 138 | [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/) | Two passes + identity map | [13-copy-list-with-random-pointer/](./13-copy-list-with-random-pointer) ↻ |
 | 141 | [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) | Fast/slow pointers | [05-linked-list-cycle/](./05-linked-list-cycle) |
+| 143 | [Reorder List](https://leetcode.com/problems/reorder-list/) | Index the nodes, then merge from both ends | [17-reorder-list/](./17-reorder-list) ↻↻ |
 | 150 | [Evaluate Reverse Polish Notation](https://leetcode.com/problems/evaluate-reverse-polish-notation/) | Stack evaluation | [03-evaluate-rpn/](./03-evaluate-rpn) |
 | 153 | [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Compare mid to the right end | [11-find-minimum-in-rotated-sorted-array/](./11-find-minimum-in-rotated-sorted-array) ↻↻↻ |
 | 155 | [Min Stack](https://leetcode.com/problems/min-stack/) | Derived state + history | [01-min-stack/](./01-min-stack) ↻|
@@ -26,6 +27,12 @@ The DSA track is deliberately separate from the topic notes: this is timed pract
 | 901 | [Online Stock Span](https://leetcode.com/problems/online-stock-span/) | Stack of absorbed spans | [16-online-stock-span/](./16-online-stock-span) ↻↻ |
 
 `↻` in the Notes column marks a problem I want to re-solve later. `↻↻↻` marks one that needs repeated revision — more marks, more often.
+
+## Techniques
+
+Some mechanisms are bigger than the problem that first needed them. Those live in [`techniques/`](./techniques), worked out once and linked from the solutions that depend on them.
+
+Four notes so far. [Where the slow pointer lands](./techniques/fast-slow-pointers.md) works out the fast/slow middle loop, both middles for even lists, the `head.next` offset, and the guard inside the loop. [Splitting a linked list at the middle](./techniques/splitting-a-linked-list.md) covers the cut that turns one list into two. [Reversing instead of stacking](./techniques/reverse-instead-of-stack.md) compares the memory a stack costs with the mutation an in-place reverse costs. [Attaching the remainder after a merge](./techniques/merge-remainder.md) explains the `curr1 or curr2` line that finishes a merge.
 
 ## How to add a problem
 
