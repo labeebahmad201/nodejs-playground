@@ -74,6 +74,8 @@ The first element is what the heap orders by: the value. The third is the payloa
 
 The middle element is Python-specific. Tuple comparison is lexicographic, so when two values are equal it moves on to the second element. `ListNode` has no ordering, so a tuple of `(value, node)` with equal values raises `TypeError: '<' not supported between instances of 'ListNode' and 'ListNode'`. A unique counter as the second element means the heap never has to compare two nodes.
 
+The shape generalises beyond this problem, and the choice of middle value has consequences for tie order; both are worked out in [heap tuples: priority, tiebreaker, payload](../techniques/heap-tuples.md).
+
 ## The code
 
 ```python
