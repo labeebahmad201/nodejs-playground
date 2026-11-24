@@ -1,6 +1,6 @@
 # LeetCode
 
-*Pattern-based solutions to the problems I'm working through — one directory per problem. The point isn't the accepted submission; it's naming the invariant or pattern clearly enough to recognize it somewhere else.*
+*Pattern-based solutions to the problems I'm working through — one directory per problem, plus a `techniques/` folder for mechanisms that span several. The point isn't the accepted submission; it's naming the invariant or pattern clearly enough to recognize it somewhere else.*
 
 The DSA track is deliberately separate from the topic notes: this is timed practice and pattern recognition, not runtime or architecture depth.
 
@@ -27,6 +27,12 @@ The DSA track is deliberately separate from the topic notes: this is timed pract
 | 901 | [Online Stock Span](https://leetcode.com/problems/online-stock-span/) | Stack of absorbed spans | [16-online-stock-span/](./16-online-stock-span) ↻↻ |
 
 `↻` in the Notes column marks a problem I want to re-solve later. `↻↻↻` marks one that needs repeated revision — more marks, more often.
+
+## Techniques
+
+Some mechanisms are bigger than the problem that first needed them. Those live in [`techniques/`](./techniques), worked out once and linked from the solutions that depend on them.
+
+The first is [where the slow pointer lands](./techniques/fast-slow-pointers.md): the fast/slow middle loop, both middles for even lists, the `head.next` offset, and why the guard inside the loop is required.
 
 ## How to add a problem
 

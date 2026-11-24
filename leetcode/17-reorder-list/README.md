@@ -102,6 +102,8 @@ class Solution:
         return dummy.next
 ```
 
+The per-pick `next = None` writes are gone as well, and they were never needed. The only link that has to be right at any moment is `tail`'s: each placement overwrites it with the node that follows, and the single cut after the loop ends the result. Writing into `nodes[left]` was aiming at the node that had already been placed, which is what made the earlier version cut the chain.
+
 The return value is ignored by LeetCode, because the function is specified to edit the list in place; returning `dummy.next` is convenient for local testing and harmless on the judge.
 
 ## How much work it is
@@ -143,6 +145,8 @@ class Solution:
 ```
 
 The merge loop runs while the second half has nodes, because the second half is never longer than the first. For an even-length list the split leaves two equal halves; for an odd-length list the middle stays with the first half, which is exactly where the array version's guard puts it.
+
+This is the left-middle loop. The related loop with `fast = head.next` and `while fast` lands one node later on even lists and would leave the second half short; both landings and the reasons behind them are worked out in [where the slow pointer lands](../techniques/fast-slow-pointers.md).
 
 ## Edge cases
 
