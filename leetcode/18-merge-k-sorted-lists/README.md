@@ -10,7 +10,49 @@ Part of the [`leetcode/`](../) section.
 
 [`12-merge-two-sorted-lists`](../12-merge-two-sorted-lists) rests on one invariant: at every step the next output node is the smaller of the two current heads. Nothing about that depends on there being two lists. With k lists the next node is the smallest of the k current heads, where "head" means the first node of what remains of that list.
 
-So the algorithm is the same merge. The only thing that changes is how the minimum is found. With two lists a comparison is enough; with k, a scan over the candidates costs `k` per output node, which is `O(Nk)` overall. A heap keeps the candidates ordered and makes each step `O(log k)`.
+So the algorithm is the same merge. The only thing that changes is how the minimum is found. With two lists a comparison is enough; with k, the obvious extension is to scan the k heads. That version is worth writing out, because seeing what it costs is what makes the heap worth the extra structure.
+
+## The N·k version
+
+Keep the current head of each list in an array and scan the array at every step:
+
+```python
+heads = [node for node in lists if node]
+dummy = tail = ListNode(0)
+
+while True:
+    best = -1
+    for i, node in enumerate(heads):
+        if node is not None and (best == -1 or node.val < heads[best].val):
+            best = i
+
+    if best == -1:                 # every list is exhausted
+        break
+
+    node = heads[best]
+    tail.next = node
+    tail = tail.next
+    heads[best] = node.next
+
+tail.next = None
+return dummy.next
+```
+
+Each outer iteration emits exactly one node, so there are `N` of them, and each inner loop inspects up to `k` heads. That is `O(Nk)` time and `O(k)` space. It is correct, and for two or three lists it is perfectly reasonable; the cost only becomes the problem when `k` grows.
+
+The waste is specific. Between two steps, exactly one candidate changes: the head of the list whose node was just popped. The scan throws away the comparison information from the previous step and recomputes the minimum over all `k` heads from scratch. The heap keeps that information in its structure, so a change costs one pop and one push, `O(log k)` each, instead of `k` comparisons.
+
+The same `O(Nk)` bound shows up by a different route if the lists are merged one at a time with the two-list routine:
+
+```python
+result = None
+for lst in lists:
+    result = mergeTwoLists(result, lst)
+```
+
+After `i` merges the accumulated list holds the nodes from the first `i` lists, so the next merge walks all of them again. With `k` equal lists of `N/k` nodes the total is `(N/k)(2 + 3 + … + k)`, which is about `Nk/2`. Every node is re-walked in every later merge, so the repetition is in the nodes, not in the comparisons of heads. Merging in a balanced order — pair the lists, then pair the results, for `log k` levels — touches all `N` nodes once per level and brings the total to `O(N log k)`. The logarithm is the number of balanced levels; the heap reaches the same bound through the size of the heap instead.
+
+Counting the push and the pop for every node, the heap does about `2N log2 k` comparisons against the scan's `Nk`, so the ratio is `k / (2 log2 k)`. It is close to 1 for eight lists, about 5 for sixty-four, and about 50 for a thousand. With `N = 10,000` nodes and `k = 64` that is roughly 640,000 comparisons for the scan and 120,000 for the heap. The heap's comparisons are individually more expensive than a single array compare, which is why the scan is competitive for two or three lists, but the `k` factor is what wins as the number of lists grows.
 
 ## Appending, not inserting
 
@@ -107,7 +149,7 @@ Two other unique second elements work. The list's index is unique among the entr
 
 There are `N` nodes in total and `k` lists. Building the heap costs `O(k log k)`, and every node is pushed once and popped once, with each operation `O(log k)`. The total is `O(N log k)` time and `O(k)` space for the heap, since the output reuses the input nodes.
 
-The alternatives bracket that bound. Scanning the `k` heads on every step is `O(Nk)`. Collecting every value and sorting is `O(N log N)` and ignores the fact that each list is already ordered, and it needs new nodes if the result must reuse the originals. Merging the lists pairwise with a divide-and-conquer order is also `O(N log k)`; it does the same number of comparisons in a different arrangement and avoids the heap's per-operation overhead, which is why it is often faster in practice even though the heap version is shorter.
+The scan and the sequential pairwise merge are accounted for in the comparison above, and both are `O(Nk)`. Sorting every value is the other baseline: `O(N log N)`, and it ignores the fact that each list is already ordered; it also needs new nodes if the result must reuse the originals. The balanced pairwise merge is also `O(N log k)`, with a smaller constant because it runs the tight two-list loop rather than allocating and comparing heap tuples, so in practice it is often faster even though the heap version is shorter. The heap keeps `O(k)` state and fits naturally when the lists arrive incrementally or when the candidates are not conveniently stored in an array.
 
 ## Edge cases
 
