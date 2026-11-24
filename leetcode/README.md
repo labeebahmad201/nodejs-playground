@@ -16,6 +16,7 @@ The DSA track is deliberately separate from the topic notes: this is timed pract
 | 74 | [Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) | Two-level binary search | [07-search-a-2d-matrix/](./07-search-a-2d-matrix) |
 | 138 | [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/) | Two passes + identity map | [13-copy-list-with-random-pointer/](./13-copy-list-with-random-pointer) ↻ |
 | 141 | [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) | Fast/slow pointers | [05-linked-list-cycle/](./05-linked-list-cycle) |
+| 143 | [Reorder List](https://leetcode.com/problems/reorder-list/) | Index the nodes, then merge from both ends | [17-reorder-list/](./17-reorder-list) ↻↻ |
 | 150 | [Evaluate Reverse Polish Notation](https://leetcode.com/problems/evaluate-reverse-polish-notation/) | Stack evaluation | [03-evaluate-rpn/](./03-evaluate-rpn) |
 | 153 | [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Compare mid to the right end | [11-find-minimum-in-rotated-sorted-array/](./11-find-minimum-in-rotated-sorted-array) ↻↻↻ |
 | 155 | [Min Stack](https://leetcode.com/problems/min-stack/) | Derived state + history | [01-min-stack/](./01-min-stack) ↻|
