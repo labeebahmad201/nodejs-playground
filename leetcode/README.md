@@ -15,6 +15,7 @@ The DSA track is deliberately separate from the topic notes: this is timed pract
 | 23 | [Merge k Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) | Min-heap of the k current heads | [18-merge-k-sorted-lists/](./18-merge-k-sorted-lists) ↻↻ |
 | 33 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Find the sorted half | [10-search-in-rotated-sorted-array/](./10-search-in-rotated-sorted-array) ↻↻↻ |
 | 74 | [Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) | Two-level binary search | [07-search-a-2d-matrix/](./07-search-a-2d-matrix) |
+| 84 | [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) | Monotonic stack of open bars | [20-largest-rectangle-in-histogram/](./20-largest-rectangle-in-histogram) ↻↻↻ |
 | 138 | [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/) | Two passes + identity map | [13-copy-list-with-random-pointer/](./13-copy-list-with-random-pointer) ↻ |
 | 141 | [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) | Fast/slow pointers | [05-linked-list-cycle/](./05-linked-list-cycle) |
 | 143 | [Reorder List](https://leetcode.com/problems/reorder-list/) | Index the nodes, then merge from both ends | [17-reorder-list/](./17-reorder-list) ↻↻ |
