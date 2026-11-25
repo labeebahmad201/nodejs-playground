@@ -6,29 +6,31 @@ The DSA track is deliberately separate from the topic notes: this is timed pract
 
 ## Problems
 
-| # | Problem | Pattern | Notes |
-| --- | --- | --- | --- |
-| 19 | [Remove Nth Node From End of List](https://leetcode.com/problems/remove-nth-node-from-end-of-list/) | Fixed-gap two pointers | [09-remove-nth-node-from-end/](./09-remove-nth-node-from-end) ↻ |
-| 20 | [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) | LIFO matching | [02-valid-parentheses/](./02-valid-parentheses) |
-| 21 | [Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/) | Dummy node + tail pointer | [12-merge-two-sorted-lists/](./12-merge-two-sorted-lists) ↻ |
-| 22 | [Generate Parentheses](https://leetcode.com/problems/generate-parentheses/) | Backtracking: choose, recurse, undo | [14-generate-parentheses/](./14-generate-parentheses) ↻↻ |
-| 23 | [Merge k Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) | Min-heap of the k current heads | [18-merge-k-sorted-lists/](./18-merge-k-sorted-lists) ↻↻ |
-| 33 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Find the sorted half | [10-search-in-rotated-sorted-array/](./10-search-in-rotated-sorted-array) ↻↻↻ |
-| 74 | [Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) | Two-level binary search | [07-search-a-2d-matrix/](./07-search-a-2d-matrix) |
-| 84 | [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) | Monotonic stack of open bars | [20-largest-rectangle-in-histogram/](./20-largest-rectangle-in-histogram) ↻↻↻ |
-| 138 | [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/) | Two passes + identity map | [13-copy-list-with-random-pointer/](./13-copy-list-with-random-pointer) ↻ |
-| 141 | [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) | Fast/slow pointers | [05-linked-list-cycle/](./05-linked-list-cycle) |
-| 143 | [Reorder List](https://leetcode.com/problems/reorder-list/) | Index the nodes, then merge from both ends | [17-reorder-list/](./17-reorder-list) ↻↻ |
-| 150 | [Evaluate Reverse Polish Notation](https://leetcode.com/problems/evaluate-reverse-polish-notation/) | Stack evaluation | [03-evaluate-rpn/](./03-evaluate-rpn) |
-| 153 | [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Compare mid to the right end | [11-find-minimum-in-rotated-sorted-array/](./11-find-minimum-in-rotated-sorted-array) ↻↻↻ |
-| 155 | [Min Stack](https://leetcode.com/problems/min-stack/) | Derived state + history | [01-min-stack/](./01-min-stack) ↻|
-| 206 | [Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/) | In-place pointer rewiring | [06-reverse-linked-list/](./06-reverse-linked-list) |
-| 217 | [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) | Sort neighbours or remember with a set | [21-contains-duplicate/](./21-contains-duplicate) |
-| 380 | [Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/) | List + index map | [08-insert-delete-getrandom-o1/](./08-insert-delete-getrandom-o1) |
-| 704 | [Binary Search](https://leetcode.com/problems/binary-search/) | Halve the search space | [04-binary-search/](./04-binary-search) |
-| 739 | [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) | Monotonic decreasing stack | [15-daily-temperatures/](./15-daily-temperatures) ↻↻ |
-| 853 | [Car Fleet](https://leetcode.com/problems/car-fleet/) | Sort by position, compare arrival times | [19-car-fleet/](./19-car-fleet) ↻↻ |
-| 901 | [Online Stock Span](https://leetcode.com/problems/online-stock-span/) | Stack of absorbed spans | [16-online-stock-span/](./16-online-stock-span) ↻↻ |
+| Id | # | Problem | Pattern | Notes |
+| --- | --- | --- | --- | --- |
+| 1 | 19 | [Remove Nth Node From End of List](https://leetcode.com/problems/remove-nth-node-from-end-of-list/) | Fixed-gap two pointers | [09-remove-nth-node-from-end/](./09-remove-nth-node-from-end) ↻ |
+| 2 | 20 | [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) | LIFO matching | [02-valid-parentheses/](./02-valid-parentheses) |
+| 3 | 21 | [Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/) | Dummy node + tail pointer | [12-merge-two-sorted-lists/](./12-merge-two-sorted-lists) ↻ |
+| 4 | 22 | [Generate Parentheses](https://leetcode.com/problems/generate-parentheses/) | Backtracking: choose, recurse, undo | [14-generate-parentheses/](./14-generate-parentheses) ↻↻ |
+| 5 | 23 | [Merge k Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) | Min-heap of the k current heads | [18-merge-k-sorted-lists/](./18-merge-k-sorted-lists) ↻↻ |
+| 6 | 33 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | Find the sorted half | [10-search-in-rotated-sorted-array/](./10-search-in-rotated-sorted-array) ↻↻↻ |
+| 7 | 74 | [Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) | Two-level binary search | [07-search-a-2d-matrix/](./07-search-a-2d-matrix) |
+| 8 | 84 | [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) | Monotonic stack of open bars | [20-largest-rectangle-in-histogram/](./20-largest-rectangle-in-histogram) ↻↻↻ |
+| 9 | 138 | [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/) | Two passes + identity map | [13-copy-list-with-random-pointer/](./13-copy-list-with-random-pointer) ↻ |
+| 10 | 141 | [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) | Fast/slow pointers | [05-linked-list-cycle/](./05-linked-list-cycle) |
+| 11 | 143 | [Reorder List](https://leetcode.com/problems/reorder-list/) | Index the nodes, then merge from both ends | [17-reorder-list/](./17-reorder-list) ↻↻ |
+| 12 | 150 | [Evaluate Reverse Polish Notation](https://leetcode.com/problems/evaluate-reverse-polish-notation/) | Stack evaluation | [03-evaluate-rpn/](./03-evaluate-rpn) |
+| 13 | 153 | [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | Compare mid to the right end | [11-find-minimum-in-rotated-sorted-array/](./11-find-minimum-in-rotated-sorted-array) ↻↻↻ |
+| 14 | 155 | [Min Stack](https://leetcode.com/problems/min-stack/) | Derived state + history | [01-min-stack/](./01-min-stack) ↻ |
+| 15 | 206 | [Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/) | In-place pointer rewiring | [06-reverse-linked-list/](./06-reverse-linked-list) |
+| 16 | 217 | [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) | Sort neighbours or remember with a set | [21-contains-duplicate/](./21-contains-duplicate) |
+| 17 | 380 | [Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/) | List + index map | [08-insert-delete-getrandom-o1/](./08-insert-delete-getrandom-o1) |
+| 18 | 704 | [Binary Search](https://leetcode.com/problems/binary-search/) | Halve the search space | [04-binary-search/](./04-binary-search) |
+| 19 | 739 | [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) | Monotonic decreasing stack | [15-daily-temperatures/](./15-daily-temperatures) ↻↻ |
+| 20 | 853 | [Car Fleet](https://leetcode.com/problems/car-fleet/) | Sort by position, compare arrival times | [19-car-fleet/](./19-car-fleet) ↻↻ |
+| 21 | 901 | [Online Stock Span](https://leetcode.com/problems/online-stock-span/) | Stack of absorbed spans | [16-online-stock-span/](./16-online-stock-span) ↻↻ |
+
+The `Id` column numbers the rows in order, so its last value is how many problems are written up so far; the `#` column is the LeetCode problem number.
 
 `↻` in the Notes column marks a problem I want to re-solve later. `↻↻↻` marks one that needs repeated revision — more marks, more often.
 
@@ -42,4 +44,4 @@ Five notes so far. [Where the slow pointer lands](./techniques/fast-slow-pointer
 
 1. Pick the next number and name the directory `{n}-{slug}`.
 2. Add the solution plus a `README.md` covering the key invariant, the complexity tradeoff, and what generalizes.
-3. Add a row to the table above.
+3. Add a row to the table above in LeetCode-number order, and renumber `Id` so the rows stay sequential from `1`.
